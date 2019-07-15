@@ -1,0 +1,42 @@
+body
+{
+	/*	This pattern is downloaded from www.toptal.com/designers/subtlepatterns	*/
+	background-image: url("../img/funky-lines.png");
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+}
+
+h1
+{
+	font-size: 36px;
+	font-weight: 400;
+	color: #C0D06F;
+	margin: 20px;
+}
+
+.navbar
+{
+	min-height: 57px;
+}
+.curiosities
+{
+	text-align: center;	
+}
+.curiosities img
+{
+	width: 100%;
+	height: auto;
+}
+.curiosities p
+{
+	margin-bottom: 30px;
+
+}
+.curiosities figcaption
+{
+	margin-top: 8px;
+}
+
+
+
+
