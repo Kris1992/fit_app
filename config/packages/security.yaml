@@ -1,0 +1,48 @@
+security:
+    encoders:
+        App\Entity\User:
+            algorithm: auto
+    #In Symfony 4.3, you should use auto as your algorithm. This will use the best possible algorithm available on your system.
+    #Oh, and for both encoders, there is one other option you can configure: cost. A higher cost makes passwords harder to crack... but will take more CPU. If security is really important for your app, check out this setting.
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+    #role_hierarchy:
+    #    ROLE_ADMIN: [ROLE_ADMIN_COMMENT, ROLE_ADMIN_ARTICLE, ROLE_ALLOWED_TO_SWITCH] # ostatnia wartość jest predefiniowana i pozwala na przełączanie się pomiędzy kontami w linku http://127.0.0.1:8000?_switch_user=spacebar0@example.com
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: true
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+            #remember_me:
+            #    secret: '%kernel.secret%'
+            #    lifetime: 2592000 # 30 days in seconds defaultowo jest rok
+            #switch_user: true #dodane pozwala na podgląd strony z innego konta np. by wykryć przyczynę buga związanego z tym danym kontem
+# to co wpisujemy w link _switch_user jest zależne od provider property u nas jest to email
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#firewalls-authentication
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        #- { path: ^/admin, roles: ROLE_ADMIN } # komentarz na czas article edit
+        # but, definitely allow /login to be accessible anonymously
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }// wszyscy (ci zalogowani jak i niezalogowani)
+        # if you wanted to force EVERY URL to be protected
+        #- { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/profile, roles: ROLE_USER }
+        #IS_AUTHENTICATED_REMEMBERED. This says that you don't care whether the user just logged in during this session or if they are logged in via the remember me cookie. Then you can protect more sensitive pages - like the change password page - with IS_AUTHENTICATED_FULLY
+

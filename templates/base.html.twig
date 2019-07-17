@@ -18,8 +18,8 @@
     <body>
     	<div class="main_cointainer">
 			<header>
-				<nav class="navbar navbar-dark bg-primary navbar-expand-sm {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
-					<a class="navbar-brand" href="{{ path('homepage') }}"><img class="d-inline-block mr-1 align-bottom" src="{{ asset('img/logo.png') }}" width="30" height="30" alt=""> FitApp </a>
+				<nav class="navbar navbar-dark bg-primary navbar-expand-sm">
+					<a class="navbar-brand" href="{{ path('app_homepage') }}"><img class="d-inline-block mr-1 align-bottom" src="{{ asset('img/logo.png') }}" width="30" height="30" alt=""> FitApp </a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main_menu" aria-controls="main_menu" aria-expanded="false" aria-label="Navigation button">
 						<span class="navbar-toggler-icon"></span>
 					</button>
@@ -33,13 +33,13 @@
 							<li class="nav-item dropdown" style="margin-right: 75px;">
 								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">My Account</a>
 								<div class="dropdown-menu" aria-labelledby="submenu">
-									<a class="dropdown-item" href="#">Logout</a>
-									<a class="dropdown-item" href="#">Login</a>
+									<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
+									<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
 							
 									<!-- separator -->
 									<div class="dropdown-divider"></div>
 
-									<a class="dropdown-item" href="#">Register</a>
+									<a class="dropdown-item" href="{{ path('app_register') }}">Register</a>
 								</div>
 							</li>
                 		</ul>

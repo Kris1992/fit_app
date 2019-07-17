@@ -10,10 +10,12 @@ h1
 {
 	font-size: 36px;
 	font-weight: 400;
-	color: #C0D06F;
 	margin: 20px;
 }
-
+.text-green
+{
+	color: #C0D06F;
+}
 .navbar
 {
 	min-height: 57px;
