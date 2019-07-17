@@ -33,13 +33,14 @@
 							<li class="nav-item dropdown" style="margin-right: 75px;">
 								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">My Account</a>
 								<div class="dropdown-menu" aria-labelledby="submenu">
-									<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
-									<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
-							
-									<!-- separator -->
-									<div class="dropdown-divider"></div>
-
-									<a class="dropdown-item" href="{{ path('app_register') }}">Register</a>
+									{% if is_granted('ROLE_USER') %}
+										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
+									{% else %}
+										<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
+										<div class="dropdown-divider"></div>
+										<a class="dropdown-item" href="{{ path('app_register') }}">Register</a>
+									{% endif %}
+									
 								</div>
 							</li>
                 		</ul>

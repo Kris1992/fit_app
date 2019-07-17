@@ -62,18 +62,18 @@ class SecurityController extends AbstractController
             $user = new User();
             $user->setEmail($userModel->email);
             $user->setFirstName($userModel->firstName);
+            $user->setSecondName($userModel->secondName);
 
             
             $user->setPassword($passwordEncoder->encodePassword(
                 $user,
                 $userModel->plainPassword
             ));
-            // be absolutely sure they agree
-            //if (true === $userModel->agreeTerms)
-            //{
-            //$form['agreeTerms']->getData()) {// jeszcze raz walidujemy dla pewności
-            //    $user->agreeToTerms();
-            //}
+            
+            if (true === $userModel->agreeTerms)// make sure it's valid data
+            {
+            	$user->agreeToTerms();
+            }
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
