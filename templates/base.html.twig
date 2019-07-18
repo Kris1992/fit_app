@@ -18,7 +18,7 @@
     <body>
     	<div class="main_cointainer">
 			<header>
-				<nav class="navbar navbar-dark bg-primary navbar-expand-sm">
+				<nav class="navbar navbar-dark bg-primary navbar-expand-sm {{ app.session.flashbag.peek('success')|length > 0 ? 'mb-3' : '' }}">
 					<a class="navbar-brand" href="{{ path('app_homepage') }}"><img class="d-inline-block mr-1 align-bottom" src="{{ asset('img/logo.png') }}" width="30" height="30" alt=""> FitApp </a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main_menu" aria-controls="main_menu" aria-expanded="false" aria-label="Navigation button">
 						<span class="navbar-toggler-icon"></span>
@@ -31,7 +31,11 @@
                 
 						<ul class="navbar-nav ml-auto">
 							<li class="nav-item dropdown" style="margin-right: 75px;">
-								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">My Account</a>
+								{% if is_granted('ROLE_USER') %}
+									<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">{{ app.user.username }}</a>
+								{% else %}
+									<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">My Account</a>
+								{% endif %}	
 								<div class="dropdown-menu" aria-labelledby="submenu">
 									{% if is_granted('ROLE_USER') %}
 										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>

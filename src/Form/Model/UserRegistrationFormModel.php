@@ -15,30 +15,94 @@ class UserRegistrationFormModel
      * @Assert\Email()
      * @UniqueUser()
      */
-    public $email;
+    private $email;
 
      /**
      * @Assert\NotBlank(message="Please enter your first name!")
      */
-    public $firstName;
+    private $firstName;
 
     /**
      * @Assert\NotBlank(message="Please enter your second name!")
      */
-    public $secondName;
+    private $secondName;
 
     /**
      * @Assert\NotBlank(message="Choose a password!")
      * @ContainsAlphanumeric()
      */
-    public $plainPassword;
+    private $plainPassword;
 
     /**
      * @Assert\IsTrue(message="You must agree to our terms.")
      */
-    public $agreeTerms;
+    private $agreeTerms;
 
-  
+
+
+   /* public function getId(): ?int
+    {
+        return $this->id;
+    }*/
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function getSecondName(): ?string
+    {
+        return $this->secondName;
+    }
+
+    public function setSecondName(string $secondName): self
+    {
+        $this->secondName = $secondName;
+
+        return $this;
+    }
+
+    public function getAgreeTerms(): ?bool
+    {
+        return $this->agreeTerms;
+    }
+    public function setAgreeTerms(bool $agreeTerms): self
+    {
+        $this->agreeTerms = $agreeTerms;
+
+        return $this;
+    }
+
 }
 
 ?>

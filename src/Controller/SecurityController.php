@@ -23,7 +23,7 @@ class SecurityController extends AbstractController
 {
 	
 	/**
-     * @Route("/login", name="app_login")
+     * @Route("/login", name="app_login", methods={"POST", "GET"})
      */
     public function login(AuthenticationUtils $authenticationUtils)
     {
@@ -37,7 +37,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="app_logout")
+     * @Route("/logout", name="app_logout",  methods={"GET"})
      */
     public function logout()
     {
@@ -45,7 +45,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator)
     {
@@ -60,17 +60,17 @@ class SecurityController extends AbstractController
             $userModel = $form->getData();
 
             $user = new User();
-            $user->setEmail($userModel->email);
-            $user->setFirstName($userModel->firstName);
-            $user->setSecondName($userModel->secondName);
+            $user->setEmail($userModel->getEmail());
+            $user->setFirstName($userModel->getFirstName());
+            $user->setSecondName($userModel->getSecondName());
 
             
             $user->setPassword($passwordEncoder->encodePassword(
                 $user,
-                $userModel->plainPassword
+                $userModel->getPlainPassword()
             ));
             
-            if (true === $userModel->agreeTerms)// make sure it's valid data
+            if (true === $userModel->getAgreeTerms())// make sure it's valid data
             {
             	$user->agreeToTerms();
             }

@@ -1,0 +1,48 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Accounts list{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-green{% endblock %} 
+{% block content_body %}
+    
+    <a href="{{ path('app_register') }}" class="btn btn-primary pull-right">
+        Create <span class="fa fa-plus-circle"></span>
+    </a>
+    <h2 class="text-green">All Accounts</h2>
+    <div class="table-responsive">
+	    <table class="table table-hover" id="list">
+	        <thead>
+	            <tr>
+	            	<th>#</th>
+	                <th>First Name</th>
+	                <th>Last Name</th>
+	                <th>E-mail</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            {% for user in users %}
+	                <tr>
+	                	<td>{{ user.id }}</td>
+	                    <td>{{ user.firstName }}</td>
+	                    <td>{{ user.secondName }}</td>
+	                    <td>{{ user.email }}</td>
+	                    <td>
+	                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
+	                            <span class="fa fa-pencil"></span>
+	                        </a>
+	                        <a href="">
+	                           <span class="fa fa-trash user" data-id="{{ user.id }}"></span>
+	                        </a>
+	                    </td>
+	                   
+	                </tr>
+	            {% endfor %}
+	        </tbody>
+	    </table>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript" src="{{ asset('js/_delete.js') }}"></script>
+{% endblock %}
