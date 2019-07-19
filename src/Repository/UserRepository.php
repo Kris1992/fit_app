@@ -19,6 +19,17 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+
+    /**
+    * @return Query
+    */
+
+    public function findAllQuery()
+    {
+        return $this->createQueryBuilder('u')
+            ->getQuery()
+        ;
+    }
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

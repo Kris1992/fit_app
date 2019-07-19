@@ -39,6 +39,7 @@
 								<div class="dropdown-menu" aria-labelledby="submenu">
 									{% if is_granted('ROLE_USER') %}
 										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
+										<a class="dropdown-item" href="{{ path('admin_account_list') }}">Account list</a>
 									{% else %}
 										<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
 										<div class="dropdown-divider"></div>

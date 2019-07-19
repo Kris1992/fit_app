@@ -14,7 +14,7 @@ if(items)
 				
 				fetch('/admin/account/delete/' + id, {
 				method: 'DELETE'
-			}).then(res => window.location.reload());
+			});//.then(res => window.location.reload());
 			
 
 			

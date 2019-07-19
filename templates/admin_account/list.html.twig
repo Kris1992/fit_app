@@ -8,7 +8,7 @@
     <a href="{{ path('app_register') }}" class="btn btn-primary pull-right">
         Create <span class="fa fa-plus-circle"></span>
     </a>
-    <h2 class="text-green">All Accounts</h2>
+    <h2 class="text-green">All Accounts ({{ pagination.getTotalItemCount }})</h2>
     <div class="table-responsive">
 	    <table class="table table-hover" id="list">
 	        <thead>
@@ -20,7 +20,7 @@
 	            </tr>
 	        </thead>
 	        <tbody>
-	            {% for user in users %}
+	            {% for user in pagination %}
 	                <tr>
 	                	<td>{{ user.id }}</td>
 	                    <td>{{ user.firstName }}</td>
@@ -39,6 +39,14 @@
 	            {% endfor %}
 	        </tbody>
 	    </table>
+
+	</div>
+	<div class="navigation">
+
+		{{ knp_pagination_render(pagination, null, {}, {
+			'align': 'center'
+		}) }}
+		{% include 'per_page.html.twig' %}
 	</div>
 {% endblock %}
 

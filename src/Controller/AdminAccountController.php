@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 
 use App\Form\UserRegistrationFormType;
@@ -19,12 +20,18 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account", name="admin_account_list", methods={"GET"})
      */
-    public function list(UserRepository $userRepository)
+    public function list(UserRepository $userRepository, PaginatorInterface $paginator, Request $request)
     {
-    	$users = $userRepository->findAll();
+    	$userQuery = $userRepository->findAllQuery();
+
+        $pagination = $paginator->paginate(
+            $userQuery, /* query NOT result */
+            $request->query->getInt('page', 1)/*page number*/,
+            $request->query->getInt('perPage', 5)/*limit per page*/
+        );
         
         return $this->render('admin_account/list.html.twig', [
-            'users' => $users,
+            'pagination' => $pagination
         ]);
     }
 
