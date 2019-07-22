@@ -50,5 +50,28 @@ h1
     border-color: #C0D06F;
 } 
 
+/*profile page */
+.bg-profile
+{
+	/*	This pattern is downloaded from www.toptal.com/designers/subtlepatterns	*/
+	background-image: url("../img/prism.png");
+}
+.user-image
+{
+	position: absolute;
+	margin-top: 50px;
+}
+.btn-label {
+    position: relative;
+    left: -12px;
+    padding: 6px 12px;
+    border-radius: 3px 0 0 3px;
+}
+
+.btn-labeled {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 
 

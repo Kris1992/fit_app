@@ -47,6 +47,7 @@ class AdminAccountController extends AbstractController
         //}
 
         //transform user object to userModel object
+        $userModel->setId($user->getId());
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
@@ -54,10 +55,11 @@ class AdminAccountController extends AbstractController
          
             
 
-		$form = $this->createForm(UserRegistrationFormType::class, $userModel);
-        /*$form = $this->createForm(ArticleFormType::class, $article, [
-            'include_published_at' => true          //tak można sterować czy dane pole ma się znajdować w formie czy nie
-        ]);*/
+		//$form = $this->createForm(UserRegistrationFormType::class, $userModel);
+        $form = $this->createForm(UserRegistrationFormType::class, $userModel, [
+            'include_id' => true         //tak można sterować czy dane pole ma się znajdować w formie czy nie
+        ]);
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) 
         {
