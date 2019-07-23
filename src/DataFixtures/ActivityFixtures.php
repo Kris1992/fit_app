@@ -10,6 +10,13 @@ use Doctrine\Common\Persistence\ObjectManager;
 class ActivityFixtures extends BaseFixture
 {
 
+	private static $activities = [
+        'Running',
+        'Cycling',
+        'Boxing',
+        'Swimming',
+        'Rock climbing'
+    ];
 
     protected function loadData(ObjectManager $manager)
     {
@@ -17,7 +24,7 @@ class ActivityFixtures extends BaseFixture
         $this->createMany(10, 'main_activity', function($i)
         {
             $activity = new Activity();
-            $activity->setName($this->faker->word); 
+            $activity->setName($this->faker->randomElement(self::$activities)); //self::$activities[$i]
             $activity->setEnergy($this->faker->numberBetween(10,400)); 
 
             return $activity;

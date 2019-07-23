@@ -52,23 +52,21 @@ class AdminAccountController extends AbstractController
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
             
-         
-            
-
-		//$form = $this->createForm(UserRegistrationFormType::class, $userModel);
-        $form = $this->createForm(UserRegistrationFormType::class, $userModel, [
-            'include_id' => true         //tak można sterować czy dane pole ma się znajdować w formie czy nie
-        ]);
+        $form = $this->createForm(UserRegistrationFormType::class, $userModel);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) 
         {
+            $userModel2 = $form->getData();
+        
+            $user->setEmail($userModel2->getEmail());
+            $user->setFirstName($userModel2->getFirstName());
+            $user->setSecondName($userModel2->getSecondName());
             /** @var User $user */
-            //$article = $form->getData(); tego już nie trzeba
             $em->persist($user);
             $em->flush();
             $this->addFlash('success', 'User is updated!');
-            //return $this->redirectToRoute('admin_article_list');
+
             return $this->redirectToRoute('admin_account_edit', [
                 'id' => $user->getId(),
             ]);
@@ -82,7 +80,7 @@ class AdminAccountController extends AbstractController
      * @Route("/admin/account/delete/{id}", name="admin_account_delete",  methods={"DELETE"})
      */
 
-    public function accountDelete(Request $req, User $user)//$id)
+    public function delete(Request $req, User $user)//$id)
     {
         //$userRepository = $this->getDoctrine()->getRepository(User::class);
         //$user = $user_rep->find($id);

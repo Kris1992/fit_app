@@ -7,11 +7,12 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-				{% include 'flash_messages.html.twig' %} 
+				{% include 'flash_messages.html.twig' %}
+                <div class="{% block content_class %} list-container p-2 my-4 col-12{% endblock %}">
+                	
+                    {% block content_body %}{% endblock %}
+                </div>
             </div>
-        </div>
-        <div class="row {% block content_class %} list-container p-2 my-4{% endblock %}">
-            {% block content_body %}{% endblock %}
         </div>
     </div>
 {% endblock %}

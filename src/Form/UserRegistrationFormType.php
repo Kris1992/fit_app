@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 
@@ -44,20 +45,19 @@ public function buildForm(FormBuilderInterface $builder, array $options)
             ])
             ->add('agreeTerms', CheckboxType::class);
         }
+        else
+        {
+             $builder->add('id', HiddenType::class);
+        }
 
-
-        if ($options['include_id']) {// sterowanie zmienną z kontrolera czy ma być w danym formie czy nie
-            $builder->add('id', TextType::class);
-            }
-            
+       
             
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => UserRegistrationFormModel::class,
-            'include_id' => false//test
+            'data_class' => UserRegistrationFormModel::class
         ]);
     }
 }

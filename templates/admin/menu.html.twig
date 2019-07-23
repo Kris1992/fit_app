@@ -1,0 +1,19 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Admin Management{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-green bg-profile text-center{% endblock %} 
+{% block content_body %}
+    
+
+
+    	<div class="col-sm-12"><h2 class="text-green">Management</h2></div>
+   		<div class="col-sm-12 col-md-5 p-3 mx-auto border rounded"><a href=""><h4 class="text-green">Accounts</h4></a></div>
+    	<div class="col-sm-12 col-md-5 p-3 mx-auto border rounded"><a href=""><h4 class="text-green">Accounts</h4></a></div>
+    
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+{% endblock %}

@@ -15,39 +15,18 @@ if(items)
 				fetch('/admin/account/delete/' + id, {
 				method: 'DELETE'
 			});//.then(res => window.location.reload());
-			
-
-			
-			}
-		
-			
+			}	
 		}
-		if (ev.target.className === "button button-delete product" )
+		if (ev.target.className === "fa fa-trash activity" )
 		{
 			const id = ev.target.getAttribute('data-id');
-			if(confirm("Do you want delete product number: " + id + " ??"))
+			if(confirm("Do you want delete activity number: " + id + " ??"))
 			{
-				
-				fetch('/admin/product/delete/' + id, {
+				fetch('/admin/activity/delete/' + id, {
 				method: 'DELETE'
 			});//.then(res => window.location.reload());
-			
-
-			
-			}
+			}	
 		}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	})
 }

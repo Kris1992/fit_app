@@ -6,20 +6,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueUser;
 use App\Validator\ContainsAlphanumeric;
 
+/**
+* @UniqueUser(
+* fields={"email"},
+* errorPath="email"
+*)
+*/
 
 
 class UserRegistrationFormModel
 {
 
-    /**
-     * @Assert\NotBlank(message="Please enter an id")
-     */
+    
     private $id;
 
 	/**
      * @Assert\NotBlank(message="Please enter an email")
      * @Assert\Email()
-     * @UniqueUser()
      */
     private $email;
 
@@ -34,7 +37,7 @@ class UserRegistrationFormModel
     private $secondName;
 
     /**
-     * @Assert\NotBlank(message="Choose a password!")
+     * @Assert\NotBlank(message="Choose a password!", groups={"registration"})
      * @ContainsAlphanumeric()
      */
     private $plainPassword;
