@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -60,6 +62,16 @@ class User implements UserInterface
      * @ORM\OneToOne(targetEntity="App\Entity\PasswordToken", inversedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $passwordToken;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Workout", mappedBy="user", orphanRemoval=true)
+     */
+    private $workouts;
+
+    public function __construct()
+    {
+        $this->workouts = new ArrayCollection();
+    }
     
 
     public function getId(): ?int
@@ -189,6 +201,37 @@ class User implements UserInterface
     public function setPasswordToken(?PasswordToken $passwordToken): self
     {
         $this->passwordToken = $passwordToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Workout[]
+     */
+    public function getWorkouts(): Collection
+    {
+        return $this->workouts;
+    }
+
+    public function addWorkout(Workout $workout): self
+    {
+        if (!$this->workouts->contains($workout)) {
+            $this->workouts[] = $workout;
+            $workout->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkout(Workout $workout): self
+    {
+        if ($this->workouts->contains($workout)) {
+            $this->workouts->removeElement($workout);
+            // set the owning side to null (unless already changed)
+            if ($workout->getUser() === $this) {
+                $workout->setUser(null);
+            }
+        }
 
         return $this;
     }
