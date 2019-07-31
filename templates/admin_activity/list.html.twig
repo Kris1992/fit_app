@@ -2,49 +2,50 @@
 
 {% block title %}Activity list{% endblock %}
 
-{% block content_class %}{{ parent() }} container-border-green{% endblock %} 
+{% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
-    
-    <a href="{{ path('admin_activity_add') }}" class="btn btn-primary pull-right">
-        Create <span class="fa fa-plus-circle"></span>
-    </a>
-    <h2 class="text-green">All Activities ({{ pagination.getTotalItemCount }})</h2>
-    <div class="table-responsive">
-	    <table class="table table-hover" id="list">
-	        <thead>
-	            <tr>
-	            	<th>#</th>
-	                <th>Name</th>
-	                <th>Energy</th>
-	            </tr>
-	        </thead>
-	        <tbody>
-	            {% for activity in pagination %}
-	                <tr>
-	                	<td>{{ activity.id }}</td>
-	                    <td>{{ activity.name }}</td>
-	                    <td>{{ activity.energy }}</td>
-	                    <td>
-	                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
-	                            <span class="fa fa-pencil"></span>
-	                        </a>
-	                        <a href="">
-	                           <span class="fa fa-trash activity" data-id="{{ activity.id }}"></span>
-	                        </a>
-	                    </td>
-	                   
-	                </tr>
-	            {% endfor %}
-	        </tbody>
-	    </table>
+    <div class="col-sm-12">
+	    <a href="{{ path('admin_activity_add') }}" class="btn btn-primary pull-right">
+	        Create <span class="fa fa-plus-circle"></span>
+	    </a>
+	    <h2 class="text-green">All Activities ({{ pagination.getTotalItemCount }})</h2>
+	    <div class="table-responsive">
+		    <table class="table table-hover" id="list">
+		        <thead>
+		            <tr>
+		            	<th>#</th>
+		                <th>Name</th>
+		                <th>Energy</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            {% for activity in pagination %}
+		                <tr>
+		                	<td>{{ activity.id }}</td>
+		                    <td>{{ activity.name }}</td>
+		                    <td>{{ activity.energy }}</td>
+		                    <td>
+		                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+		                            <span class="fa fa-pencil"></span>
+		                        </a>
+		                        <a href="">
+		                           <span class="fa fa-trash activity" data-id="{{ activity.id }}"></span>
+		                        </a>
+		                    </td>
+		                   
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		    </table>
 
-	</div>
-	<div class="navigation">
+		</div>
+		<div class="navigation">
 
-		{{ knp_pagination_render(pagination, null, {}, {
-			'align': 'center'
-		}) }}
-		{% include 'per_page.html.twig' %}
+			{{ knp_pagination_render(pagination, null, {}, {
+				'align': 'center'
+			}) }}
+			{% include 'per_page.html.twig' %}
+		</div>
 	</div>
 {% endblock %}
 

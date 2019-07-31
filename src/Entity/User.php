@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;//
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -25,6 +26,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank
+     * @Assert\Email(message = "Please enter e-mail")
      */
     private $email;
 
@@ -52,6 +55,12 @@ class User implements UserInterface
      * @ORM\Column(type="datetime")
      */
     private $agreedTermsAt;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\PasswordToken", inversedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    private $passwordToken;
+    
 
     public function getId(): ?int
     {
@@ -171,4 +180,18 @@ class User implements UserInterface
     {
         $this->agreedTermsAt = new \DateTime();
     }
+
+    public function getPasswordToken(): ?PasswordToken
+    {
+        return $this->passwordToken;
+    }
+
+    public function setPasswordToken(?PasswordToken $passwordToken): self
+    {
+        $this->passwordToken = $passwordToken;
+
+        return $this;
+    }
+
+
 }

@@ -73,5 +73,33 @@ h1
     padding-bottom: 0;
 }
 
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: "";
+    background-color: rgba(0,0,0,0);
+}
+.link-card
+{
+	box-shadow: 0 0 0 1px #000;
+	background-color: rgba(255,255,255,.1);
+	border: 1px solid rgba(255,255,255,.15); 
+	border-radius: 5px;
+}
+.link-card:hover
+{
+	background-color: rgba(255,255,255,.35);
+}
+.link-card a:hover
+{
+	text-decoration: none;
+}
+
+
 
 

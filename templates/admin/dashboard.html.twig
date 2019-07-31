@@ -1,0 +1,23 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Admin Management{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-green bg-profile text-center p-2{% endblock %} 
+{% block content_body %}
+    
+
+
+    	<div class="col-sm-12"><h2 class="text-green">Management</h2></div>
+   		<div class="col-sm-12 col-md-5 p-3 mx-auto link-card">
+   			<a href="{{ path('admin_account_list') }}" class="stretched-link"><h4 class="text-green">Accounts</h4></a>
+   		</div>
+    	<div class="col-sm-12 col-md-5 p-3 mx-auto link-card">
+    		<a href="{{ path('admin_activity_list') }}" class="stretched-link"><h4 class="text-green">Activities</h4></a>
+    	</div>
+    
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+{% endblock %}

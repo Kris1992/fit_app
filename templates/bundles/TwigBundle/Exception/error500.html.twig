@@ -1,0 +1,29 @@
+{% extends 'content_base.html.twig' %}
+{% block title %}Error 500{% endblock %}
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/_error_pages.css') }}">
+{% endblock %}
+
+{% block content_body %}
+
+<div class="col-12 bg-profile border rounded pb-3">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center text-white text-uppercase">
+            	<div class="col-12 error-title">
+            		<span class="line">500</span>
+            	</div>
+            	<div class="col-12 error-body-1">Internal</div>
+            	<div class="col-12 error-body-2">Server error</div>
+            	<div class="col-12">
+            		<a href="{{ path('app_homepage') }}" class="btn btn-primary btn-lg" role="button">Return to homepage</a>
+				</div>
+               
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+
+
+

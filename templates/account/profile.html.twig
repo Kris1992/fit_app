@@ -1,84 +1,63 @@
-{% extends 'base.html.twig' %}
-{% block stylesheets %}
-	{{ parent() }}
-	<link rel="stylesheet" type="text/css" href="{{ asset('css/font-awesome.css') }}">
-{% endblock %}
+{% extends 'content_base.html.twig' %}
 
-{% block title %}Account Management{% endblock %}
+{% block title %}Profile{% endblock %}
 
-{% block content %}
-    
+{% block content_body %}
 
 <section class="account">
-	<div class="container">
-		<div class="row">
-	      	<div class="col-sm-12 mx-auto my-4">
-		        <div class="row">
-		          	<div class="col-sm-12 bg-profile rounded-top">
-                    	<div class="row">
-                        	<div class="col-xs-12 col-sm-2">
-                        		<div class="user-image">
-                            		<img src="{{asset('img/users/default.png')}}" class="img-responsive thumbnail" height="100" width="100"><!--  https://robohash.org/{app.user.email } -->
-                            	</div>
-                        	</div>
-                    		<div class="col-xs-12 col-sm-10 text-green p-3 mb-3">
-                            	<h3 class="d-inline-block">Welcome back, {{ app.user.firstName }}</h3>
-                            	<a class="btn btn-labeled btn-info float-right d-inline-block" href="#">
-                                	<span class="btn-label"><i class="fa fa-pencil"></i></span>Update
-                            	</a>
-                    		</div>
-                    	</div>
-                	</div>
+	<div class="col-sm-12 bg-profile border rounded">
+        <div class="row">
+            <div class="col-xs-12 col-sm-2">
+                <div class="user-image">
+                    <img src="{{asset('img/users/default.png')}}" class="img-responsive thumbnail" height="100" width="100">
                 </div>
-                <div class="row bg-primary">
-                    <div class="offset-md-3 col-md-3 text-center">
-                        <h3 class="text-uppercase">Activities</h3>
-                        <h4>184</h4>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <h3 class="text-uppercase">Time</h3>
-                        <h4>1,910</h4>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <h3 class="text-uppercase">Likes</h3>
-                        <h4>3,892</h4>
-                    </div>
-                </div>
-                <div class="row bg-white border pb-3">
-                	<div class="col-12 text-center">
-                		<span><h4>Last Activities</h4></span>
-                   	</div>
-                   	<div class="col-sm-6">
-    					<div class="card">
- 							<h5 class="card-header">Featured</h5>
-  							<div class="card-body">
-    							<h5 class="card-title">Special title treatment</h5>
-    							<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    							<a href="#" class="btn btn-primary">Go somewhere</a>
-  							</div>
-						</div>
-                	</div>
-                	<div class="col-sm-6">
-    					<div class="card">
- 							<h5 class="card-header">Featured</h5>
-  							<div class="card-body">
-    							<h5 class="card-title">Special title treatment</h5>
-    							<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    							<a href="#" class="btn btn-primary">Go somewhere</a>
-  							</div>
-						</div>
-                	</div>
-                </div>
-
-          
-	      	</div>
-	    </div>
-    </div>
+            </div>
+            <div class="col-xs-12 col-sm-10 text-green p-3 mb-3">
+                <h3 class="d-inline-block">Welcome back, {{ app.user.firstName }}</h3>
+                <a class="btn btn-labeled btn-info float-right d-inline-block" href="#">
+                    <span class="btn-label"><i class="fa fa-pencil"></i></span>Update
+                </a>
+            </div>
+        </div>
+        <div class="row bg-primary">
+            <div class="offset-md-3 col-md-3 text-center">
+                <h3 class="text-uppercase">Activities</h3>
+                <h4>184</h4>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-uppercase">Time</h3>
+                <h4>1,910</h4>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-uppercase">Likes</h3>
+                <h4>3,892</h4>
+            </div>
+        </div>
+        <div class="row bg-white pb-3">
+            <div class="col-12 text-center">
+                <span><h4>Last Activities</h4></span>
+            </div>
+            <div class="col-sm-6">
+    			<div class="card">
+ 					<h5 class="card-header">Featured</h5>
+  					<div class="card-body">
+    					<h5 class="card-title">Special title treatment</h5>
+    					<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    					<a href="#" class="btn btn-primary">Go somewhere</a>
+  					</div>
+				</div>
+            </div>
+            <div class="col-sm-6">
+    			<div class="card">
+ 					<h5 class="card-header">Featured</h5>
+  					<div class="card-body">
+    					<h5 class="card-title">Special title treatment</h5>
+    					<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    					<a href="#" class="btn btn-primary">Go somewhere</a>
+  					</div>
+				</div>
+            </div>
+        </div>
+	</div>
 </section>
-                
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script type="text/javascript" src="{{ asset('js/_delete.js') }}"></script>
 {% endblock %}

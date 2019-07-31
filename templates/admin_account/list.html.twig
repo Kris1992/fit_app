@@ -2,51 +2,52 @@
 
 {% block title %}Accounts list{% endblock %}
 
-{% block content_class %}{{ parent() }} container-border-green{% endblock %} 
+{% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
-    
-    <a href="{{ path('app_register') }}" class="btn btn-primary pull-right">
-        Create <span class="fa fa-plus-circle"></span>
-    </a>
-    <h2 class="text-green">All Accounts ({{ pagination.getTotalItemCount }})</h2>
-    <div class="table-responsive">
-	    <table class="table table-hover" id="list">
-	        <thead>
-	            <tr>
-	            	<th>#</th>
-	                <th>First Name</th>
-	                <th>Last Name</th>
-	                <th>E-mail</th>
-	            </tr>
-	        </thead>
-	        <tbody>
-	            {% for user in pagination %}
-	                <tr>
-	                	<td>{{ user.id }}</td>
-	                    <td>{{ user.firstName }}</td>
-	                    <td>{{ user.secondName }}</td>
-	                    <td>{{ user.email }}</td>
-	                    <td>
-	                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
-	                            <span class="fa fa-pencil"></span>
-	                        </a>
-	                        <a href="">
-	                           <span class="fa fa-trash user" data-id="{{ user.id }}"></span>
-	                        </a>
-	                    </td>
-	                   
-	                </tr>
-	            {% endfor %}
-	        </tbody>
-	    </table>
+    <div class="col-sm-12">
+    	<a href="{{ path('app_register') }}" class="btn btn-primary pull-right">
+        	Create <span class="fa fa-plus-circle"></span>
+    	</a>
+	    <h2 class="text-green">All Accounts ({{ pagination.getTotalItemCount }})</h2>
+	    <div class="table-responsive">
+		    <table class="table table-hover" id="list">
+		        <thead>
+		            <tr>
+		            	<th>#</th>
+		                <th>First Name</th>
+		                <th>Last Name</th>
+		                <th>E-mail</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            {% for user in pagination %}
+		                <tr>
+		                	<td>{{ user.id }}</td>
+		                    <td>{{ user.firstName }}</td>
+		                    <td>{{ user.secondName }}</td>
+		                    <td>{{ user.email }}</td>
+		                    <td>
+		                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
+		                            <span class="fa fa-pencil"></span>
+		                        </a>
+		                        <a href="">
+		                           <span class="fa fa-trash user" data-id="{{ user.id }}"></span>
+		                        </a>
+		                    </td>
+		                   
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		    </table>
 
-	</div>
-	<div class="navigation">
+		</div>
+		<div class="navigation">
 
-		{{ knp_pagination_render(pagination, null, {}, {
-			'align': 'center'
-		}) }}
-		{% include 'per_page.html.twig' %}
+			{{ knp_pagination_render(pagination, null, {}, {
+				'align': 'center'
+			}) }}
+			{% include 'per_page.html.twig' %}
+		</div>
 	</div>
 {% endblock %}
 

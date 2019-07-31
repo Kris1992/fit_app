@@ -1,0 +1,26 @@
+{% block renew_pass_form %}
+                
+                    <div class="card-body">
+                        <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+                            
+                            {{ form_start(renewPasswordForm, {
+                                'attr': {'class': 'form-signin'}
+                            }) }}
+                                {{ form_row(renewPasswordForm.plainPassword.first, {
+                                    'label' : 'New password: ',
+                                    attr: { placeholder: 'New password' }
+                                }) }}
+                                {{ form_row(renewPasswordForm.plainPassword.second, {
+                                    'label' : 'Repeat password: ',
+                                    attr: { placeholder: 'Repeat new password' }
+                                }) }}
+
+
+                                <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
+                            
+                            {{ form_end(renewPasswordForm) }}
+                    </div>
+
+{% endblock %}
+
+

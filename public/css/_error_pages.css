@@ -1,0 +1,29 @@
+.error-title
+{
+	font-size: 180px;
+	letter-spacing: 15px;
+}
+.error-body-1
+{
+	letter-spacing: 12px;
+	font-size: 4em;
+	line-height: 80%;
+}
+.error-body-2
+{
+	font-size: 20px;
+}
+.error-title span
+{
+	position: relative;
+}
+span::after
+{
+   	content: '';
+  	width: 100%;
+  	height: 8px;
+  	background: #ffffff;
+  	position: absolute;
+  	bottom: 0;
+  	left: 0;
+}

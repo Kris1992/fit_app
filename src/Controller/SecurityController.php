@@ -63,6 +63,7 @@ class SecurityController extends AbstractController
             $user->setEmail($userModel->getEmail());
             $user->setFirstName($userModel->getFirstName());
             $user->setSecondName($userModel->getSecondName());
+            $user->setRoles(['ROLE_USER']);
 
             
             $user->setPassword($passwordEncoder->encodePassword(
