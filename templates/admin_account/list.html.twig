@@ -13,10 +13,18 @@
 		    <table class="table table-hover" id="list">
 		        <thead>
 		            <tr>
-		            	<th>#</th>
-		                <th>First Name</th>
-		                <th>Last Name</th>
-		                <th>E-mail</th>
+		            	<th {% if pagination.isSorted('u.id') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, '#', 'u.id') }}
+		            	</th>
+		            	<th {% if pagination.isSorted('u.firstName') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'First Name', 'u.firstName') }}
+		            	</th>
+		                <th {% if pagination.isSorted('u.secondName') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Last Name', 'u.secondName') }}
+		            	</th>
+		               	<th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'E-mail', 'u.email') }}
+		            	</th>
 		            </tr>
 		        </thead>
 		        <tbody>

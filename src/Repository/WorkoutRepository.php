@@ -26,6 +26,10 @@ class WorkoutRepository extends ServiceEntityRepository
     public function findAllQuery()
     {
         return $this->createQueryBuilder('w')
+            ->join('w.user', 'u')
+            ->addSelect('u')
+            ->join('w.activity', 'a')
+            ->addSelect('a')
             ->getQuery()
         ;
     }

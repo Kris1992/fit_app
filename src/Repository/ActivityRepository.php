@@ -19,7 +19,7 @@ class ActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, Activity::class);
     }
 
-        /**
+    /**
     * @return Query
     */
 
@@ -27,6 +27,18 @@ class ActivityRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->getQuery()
+        ;
+    }
+
+    /**
+     * @return Activity[]
+     */
+    public function findAllNamesAlphabetical()
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->execute()
         ;
     }
 

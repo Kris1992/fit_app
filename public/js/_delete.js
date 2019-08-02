@@ -27,6 +27,16 @@ if(items)
 			});//.then(res => window.location.reload());
 			}	
 		}
+		if (ev.target.className === "fa fa-trash workout" )
+		{
+			const id = ev.target.getAttribute('data-id');
+			if(confirm("Do you want delete workout number: " + id + " ??"))
+			{
+				fetch('/admin/workout/delete/' + id, {
+				method: 'DELETE'
+			});//.then(res => window.location.reload());
+			}	
+		}
 
 	})
 }

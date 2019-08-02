@@ -42,6 +42,10 @@ input[type=text]:focus
 	background-color: #e9f3e9;
 	color: #428c42;
 }
+legend
+{
+	font-size: 17px;
+}
 .btn-green
 {
 	background-color: #36b03c;

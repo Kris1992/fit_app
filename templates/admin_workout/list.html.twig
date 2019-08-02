@@ -5,7 +5,7 @@
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
-	    <a href="{{ path('admin_activity_add') }}" class="btn btn-primary pull-right">
+	    <a href="{{ path('admin_workout_add') }}" class="btn btn-primary pull-right">
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	    <h2 class="text-green">All Workouts ({{ pagination.getTotalItemCount }})</h2>
@@ -13,10 +13,18 @@
 		    <table class="table table-hover" id="list">
 		        <thead>
 		            <tr>
-		            	<th>#</th>
-		                <th>Name</th>
-		                <th>User</th>
-		                <th>Duration</th>
+		            	<th {% if pagination.isSorted('w.id') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, '#', 'w.id') }}
+		            	</th>
+		                <th {% if pagination.isSorted('a.name') %} class="sorted" {% endif %}>
+		                	{{ knp_pagination_sortable(pagination, 'Activity', 'a.name') }}
+		            	</th>
+		                <th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
+		                	{{ knp_pagination_sortable(pagination, 'User', 'u.email') }}
+		                </th>
+		                <th {% if pagination.isSorted('w.duration') %} class="sorted" {% endif %}>
+		                	{{ knp_pagination_sortable(pagination, 'Duration', 'w.duration') }}
+		            	</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -25,10 +33,10 @@
 		                	<td>{{ workout.id }}</td>
 		                    <td>{{ workout.activity.name }}</td>
 		                    <td>{{ workout.user.email }}</td>
-		                    <td>0</td>
+		                    <td>{{ workout.duration | date('H:i:s') }}</td>
 
 		                    <td>
-		                        <a href="{{ path('admin_activity_edit', { id: workout.id }) }}">
+		                        <a href="{{ path('admin_workout_edit', { id: workout.id }) }}">
 		                            <span class="fa fa-pencil"></span>
 		                        </a>
 		                        <a href="">

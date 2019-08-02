@@ -1,0 +1,27 @@
+{% block workout_form %}
+                
+                    <div class="card-body">
+                        <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+                            
+                            {{ form_start(workoutForm, {
+                                'attr': {'class': 'form-signin'}
+                            }) }}
+                                {{ form_row(workoutForm.activity, {
+                                    'label' : 'Activity: '
+                                }) }}
+                                {{ form_row(workoutForm.user, {
+                                    'label' : 'User: '
+                                }) }}
+                                {{ form_row(workoutForm.duration, {
+                                    'label' : 'Duration: '
+                                }) }}
+
+
+                                <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
+                            
+                            {{ form_end(workoutForm) }}
+                    </div>
+
+{% endblock %}
+
+

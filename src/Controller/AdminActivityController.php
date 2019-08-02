@@ -101,12 +101,9 @@ class AdminActivityController extends AbstractController
 
     public function delete(Request $req, Activity $activity)
     {
-
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($activity);
         $entityManager->flush();
-
-        
 
         $response = new Response();
         $this->addFlash('success','Activity was deleted!!');

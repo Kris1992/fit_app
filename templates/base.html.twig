@@ -30,6 +30,15 @@
 					<div class="collapse navbar-collapse" id="main_menu">
                 
 						<ul class="navbar-nav ml-auto">
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">Workout</a>
+								<div class="dropdown-menu" aria-labelledby="submenu">
+									<a class="dropdown-item" href="#">History</a>
+									<a class="dropdown-item" href="#">Statistics</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="#">Add</a>
+								</div>
+							</li>
 							<li class="nav-item dropdown" style="margin-right: 75px;">
 								{% if is_granted('ROLE_USER') %}
 									<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">{{ app.user.username }}</a>
@@ -38,9 +47,10 @@
 								{% endif %}	
 								<div class="dropdown-menu" aria-labelledby="submenu">
 									{% if is_granted('ROLE_USER') %}
-										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
-										<a class="dropdown-item" href="{{ path('admin_dashboard') }}">Dashboard</a>
 										<a class="dropdown-item" href="{{ path('app_profile') }}">Profile</a>
+										<a class="dropdown-item" href="{{ path('app_profile') }}">Settings</a>
+										<a class="dropdown-item" href="{{ path('admin_dashboard') }}">Dashboard</a>
+										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
 									{% else %}
 										<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
 										<div class="dropdown-divider"></div>
