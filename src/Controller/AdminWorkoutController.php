@@ -40,7 +40,9 @@ class AdminWorkoutController extends AbstractController
     public function add(Request $request, EntityManagerInterface $em)
     {
 
-        $form = $this->createForm(WorkoutFormType::class);
+        $form = $this->createForm(WorkoutFormType::class, null, [
+            'is_admin' => true
+        ]);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
@@ -66,7 +68,9 @@ class AdminWorkoutController extends AbstractController
      */
     public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
     {
-        $form = $this->createForm(WorkoutFormType::class, $workout);
+        $form = $this->createForm(WorkoutFormType::class, $workout, [
+            'is_admin' => true
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) 

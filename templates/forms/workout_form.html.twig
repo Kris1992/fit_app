@@ -9,9 +9,11 @@
                                 {{ form_row(workoutForm.activity, {
                                     'label' : 'Activity: '
                                 }) }}
-                                {{ form_row(workoutForm.user, {
-                                    'label' : 'User: '
-                                }) }}
+                                {%  if workoutForm.user is defined %}
+                                    {{ form_row(workoutForm.user, {
+                                        'label' : 'User: '
+                                    }) }}
+                                {% endif %}
                                 {{ form_row(workoutForm.duration, {
                                     'label' : 'Duration: '
                                 }) }}

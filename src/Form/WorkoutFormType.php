@@ -34,9 +34,6 @@ class WorkoutFormType extends AbstractType
         $isEdit = $workout && $workout->getId();
 
         $builder
-            ->add('user', UserSelectTextType::class, [
-                'disabled' => $isEdit
-            ])
             ->add('activity', EntityType::class, [ 
                 'class' => Activity::class, 
                 'choices' => $this->activityRepository->findAllNamesAlphabetical(),
@@ -54,13 +51,22 @@ class WorkoutFormType extends AbstractType
                 ]
             ])
         ;
+
+
+        if ($options['is_admin']) {
+            $builder
+                ->add('user', UserSelectTextType::class, [
+                    'disabled' => $isEdit
+                ]);
+            }
        
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Workout::class
+            'data_class' => Workout::class,
+            'is_admin' => false
         ]);
     }
 }

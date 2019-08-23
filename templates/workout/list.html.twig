@@ -1,0 +1,78 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Workouts history{% endblock %}
+{% block content_class %}{{ parent() }} p-2{% endblock %} 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+{% endblock %}
+{% block content_body %}
+    <div class="col-sm-12">
+	    <a href="{{ path('admin_workout_add') }}" class="btn btn-primary pull-right">
+	        Create <span class="fa fa-plus-circle"></span>
+	    </a>
+	   	<h2 class="text-green">All Workouts</h2>
+	    <div class="table-responsive js-workout-table">
+		    <table class="table table-hover">
+		        <thead>
+		            <tr>
+		            	<th>#</th>
+		                <th>Activity</th>
+		                <th>Duration</th>
+		                <th>&nbsp;</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            {% for workout in workouts %}
+		                <tr>
+		                	<td>{{ workout.id }}</td>
+		                    <td>{{ workout.activity.name }}</td>
+		                    <td>{{ workout.duration | date('H:i:s') }}</td>
+
+		                    <td>
+
+		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
+
+		                           <span class="fa fa-trash"></span>
+		                        </a>
+		                    </td>
+		                   
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		        <tfoot>
+		        	<tr>
+		        		<th>Total</th>
+		        		<th class="js-total-workouts">{{ workouts|length }}</th>
+		        		<td>&nbsp;</td>
+		        		<td>&nbsp;</td>
+		        	</tr>
+		        </tfoot>
+		    </table>
+
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6">
+		<div class="card card-signin">
+		{{ include('forms/workout_form.html.twig', {
+            header_text: 'Add workout',
+            button_text: 'Add'
+        }) }}
+        </div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+<script src="{{ asset('js/_workoutApi.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var $wrapper = $('.js-workout-table');
+        var workoutApi = new WorkoutApi($wrapper);
+            
+        });
+	
+</script>
+{% endblock %}
