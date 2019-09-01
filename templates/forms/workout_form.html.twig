@@ -4,9 +4,13 @@
                         <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
                             
                             {{ form_start(workoutForm, {
-                                'attr': {'class': 'form-signin'}
+                                'attr': {'class': 'form-signin js-new-workout-form',
+                                'data-url': path('workout_add')
+                                }
+
                             }) }}
                                 {{ form_row(workoutForm.activity, {
+                                    'attr': {'class': 'form-control-lg'},
                                     'label' : 'Activity: '
                                 }) }}
                                 {%  if workoutForm.user is defined %}

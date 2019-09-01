@@ -12,6 +12,11 @@ use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\WorkoutFormType;
 
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Form\FormInterface;
+
 class WorkoutController extends AbstractController
 {
     /**
@@ -51,6 +56,7 @@ class WorkoutController extends AbstractController
         ]);
     }
 
+    
     /**
      * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
      */
@@ -61,4 +67,135 @@ class WorkoutController extends AbstractController
     
         return new Response(null, 204);
     }
+
+    /**
+     * @Route("/api/workout/add", name="workout_add", methods={"POST"})
+     */
+    public function add(Request $request, EntityManagerInterface $em)
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null)
+        {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $form = $this->createForm(WorkoutFormType::class);
+        $form->submit($data);
+
+        if (!$form->isValid()) {
+            $errors = $this->getErrorsFromForm($form);
+
+            return $this->json(
+            $errors,
+            400
+            );
+        }
+
+        $workout = new Workout();
+        $workout = $form->getData();
+        $workout->setUser($this->getUser());
+        $em->persist($workout);
+        $em->flush();
+
+        $response = new Response(null, 201);
+
+        $response->headers->set(
+            'Location',
+            $this->generateUrl('workout_get', ['id' => $workout->getId()])
+        );
+        
+        return $response;
+    }
+
+     /**
+     * @Route("/api/workout_get/{id}", name="workout_get", methods={"GET"})
+     * 
+     */
+    public function getWorkoutAction(Workout $workout)
+    {
+        $duration = $workout->getDuration();
+        $duration = date_format($duration, 'H:i');
+        $workout->setTime($duration);
+
+        $linkDelete = $this->generateUrl('workout_delete', ['id' => $workout->getId()]);
+        $linkEdit = $this->generateUrl('workout_edit', ['id' => $workout->getId()]);
+
+        $workout->setLinks('delete',$linkDelete);
+        $workout->setLinks('edit',$linkEdit);
+
+        return $this->json(
+            $workout,
+            201,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
+    }
+
+    /**
+     * @Route("/api/workout/edit/{id}", name="workout_edit", methods={"PUT"})
+     */
+    public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null)
+        {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $form = $this->createForm(WorkoutFormType::class, $workout,
+            ['csrf_protection' => false]);
+        $form->submit($data);
+
+        if (!$form->isValid()) {
+            $errors = $this->getErrorsFromForm($form);
+
+            return $this->json(
+            $errors,
+            400
+            );
+        }
+
+        $workout = $form->getData();
+        $em->persist($workout);
+        $em->flush();
+
+        $response = new Response(null, 201);
+
+        $response->headers->set(
+            'Location',
+            $this->generateUrl('workout_get', ['id' => $workout->getId()])
+        );
+
+        return $response;
+    }
+
+    
+    protected function getErrorsFromForm(FormInterface $form)
+    {
+        foreach ($form->getErrors() as $error) {
+            return $error->getMessage();
+        }
+
+        $errors = array();
+        foreach ($form->all() as $childForm) {
+            if ($childForm instanceof FormInterface) {
+                if ($childError = $this->getErrorsFromForm($childForm)) {
+                    $errors[$childForm->getName()] = $childError;
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+
+
+
+
+
 }

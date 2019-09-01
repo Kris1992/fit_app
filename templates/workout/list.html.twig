@@ -26,15 +26,16 @@
 		            {% for workout in workouts %}
 		                <tr>
 		                	<td>{{ workout.id }}</td>
-		                    <td>{{ workout.activity.name }}</td>
-		                    <td>{{ workout.duration | date('H:i:s') }}</td>
+		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
+		                    <td>{{ workout.duration | date('H:i') }}</td>
 
 		                    <td>
-
 		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
-
 		                           <span class="fa fa-trash"></span>
 		                        </a>
+                                <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
+                                   <span class="fa fa-pencil"></span>
+                                </a>
 		                    </td>
 		                   
 		                </tr>
@@ -52,8 +53,8 @@
 
 		</div>
 	</div>
-	<div class="col-sm-12 col-md-6">
-		<div class="card card-signin">
+	<div class="col-sm-12 col-md-6 js-workout-table">
+		<div class="card card-signin js-new-workout-form-wrapper">
 		{{ include('forms/workout_form.html.twig', {
             header_text: 'Add workout',
             button_text: 'Add'
@@ -65,6 +66,8 @@
 {% block javascripts %}
 {{ parent() }}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
 
 <script src="{{ asset('js/_workoutApi.js') }}"></script>
 <script type="text/javascript">
@@ -74,5 +77,27 @@
             
         });
 	
+</script>
+<script type="text/template" id="js-workout-row-template">
+        <tr>
+            <td><%= id %></td>
+            <td><%= activity.name %></td>
+            <td><%= time %></td>
+            <td>
+                <a href="#"
+                   class="js-delete-workout"
+                   data-url="<%= links.delete %>"
+                   data-id="<%= id %>"
+                >
+                    <span class="fa fa-trash"></span>
+                </a>
+                <a href="#"
+                   class="js-edit-workout"
+                   data-url="<%= links.edit %>"
+                >
+                    <span class="fa fa-pencil"></span>
+                </a>
+            </td>
+        </tr>
 </script>
 {% endblock %}

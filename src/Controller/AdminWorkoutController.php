@@ -50,6 +50,7 @@ class AdminWorkoutController extends AbstractController
             $workout = new Workout();//zakomentować
             $workout = $form->getData();
 
+            
             $em->persist($workout);
             $em->flush();
 

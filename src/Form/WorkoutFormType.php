@@ -32,6 +32,7 @@ class WorkoutFormType extends AbstractType
 
         $workout = $options['data'] ?? null;
         $isEdit = $workout && $workout->getId();
+        
 
         $builder
             ->add('activity', EntityType::class, [ 
@@ -68,5 +69,10 @@ class WorkoutFormType extends AbstractType
             'data_class' => Workout::class,
             'is_admin' => false
         ]);
+    }
+
+     public function getBlockPrefix()
+    {
+        return '';
     }
 }
