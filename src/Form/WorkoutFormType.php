@@ -47,6 +47,8 @@ class WorkoutFormType extends AbstractType
             ->add('duration', TimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'choice',
+                'model_timezone' => 'UTC',//because use timestamp
+                'view_timezone' => 'UTC',
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute'
                 ]

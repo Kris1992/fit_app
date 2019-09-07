@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Component\Form\FormInterface;
 
-class WorkoutController extends AbstractController
+class WorkoutController extends WorkoutUtilityController
 {
     /**
      * @Route("/workout/list", name="workout_list")
@@ -53,6 +52,39 @@ class WorkoutController extends AbstractController
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
             'workoutForm' => $form->createView()
+        ]);
+    }
+
+
+
+     /**
+     * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
+     */
+    public function add_n(Request $request, EntityManagerInterface $em)
+    {
+
+        $form = $this->createForm(WorkoutFormType::class);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $workout = new Workout();
+            $workout = $form->getData();
+            $workout->setUser($this->getUser());
+            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
+            $workout->setBurnoutEnergy($burnoutEnergy);
+
+            $em->persist($workout);
+            $em->flush();
+
+            $this->addFlash('success', 'Workout was added!! ');
+            
+            return $this->redirectToRoute('workout_list');
+        }
+
+
+        return $this->render('workout/add.html.twig', [
+            'workoutForm' => $form->createView(),
         ]);
     }
 
@@ -96,6 +128,10 @@ class WorkoutController extends AbstractController
         $workout = new Workout();
         $workout = $form->getData();
         $workout->setUser($this->getUser());
+
+        $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
+        $workout->setBurnoutEnergy($burnoutEnergy);
+        
         $em->persist($workout);
         $em->flush();
 
@@ -141,12 +177,15 @@ class WorkoutController extends AbstractController
     public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
     {
         $data = json_decode($request->getContent(), true);
+        //dump(date_default_timezone_get());
+        //dump($data);
 
         if($data === null)
         {
             throw new BadRequestHttpException('Invalid Json');    
         }
 
+        //dump($workout);
         $form = $this->createForm(WorkoutFormType::class, $workout,
             ['csrf_protection' => false]);
         $form->submit($data);
@@ -159,8 +198,14 @@ class WorkoutController extends AbstractController
             400
             );
         }
+        //dump($form->getData());
 
         $workout = $form->getData();
+        //dump($workout);
+
+        $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
+        $workout->setBurnoutEnergy($burnoutEnergy);
+        
         $em->persist($workout);
         $em->flush();
 

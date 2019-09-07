@@ -41,6 +41,12 @@ class Workout
      */
     private $duration;
 
+     /**
+     * @ORM\Column(type="integer")
+     * @Groups("main")
+     */
+    private $burnoutEnergy;
+
 
     /// Helper variables
     /**
@@ -51,7 +57,6 @@ class Workout
     * @Groups("main")
     */
     private $links = [];
-
 
     public function setTime(string $time): self
     {
@@ -113,6 +118,18 @@ class Workout
     public function setDuration(\DateTimeInterface $duration): self
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getBurnoutEnergy(): ?int
+    {
+        return $this->burnoutEnergy;
+    }
+
+    public function setBurnoutEnergy(int $burnoutEnergy): self
+    {
+        $this->burnoutEnergy = $burnoutEnergy;
 
         return $this;
     }

@@ -24,6 +24,12 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
 
 
+
+use App\Form\UserRegistrationFormType;
+use App\Form\Model\UserRegistrationFormModel;
+use App\Services\UploadImagesHelper;
+
+
 class AccountController extends AbstractController
 {
     /**
@@ -33,6 +39,58 @@ class AccountController extends AbstractController
     {
         return $this->render('account/profile.html.twig', [
            
+        ]);
+    }
+
+    /**
+     * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
+     */
+    public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
+    {
+        
+        //if ($user != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {//change to voter soon
+        //    throw $this->createAccessDeniedException('No access!');
+        //}
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        //transform user object to userModel object
+        $userModel->setId($user->getId());
+        $userModel->setEmail($user->getEmail());
+        $userModel->setFirstName($user->getFirstName());
+        $userModel->setSecondName($user->getSecondName());
+        $userModel->setImageFilename($user->getImageFilename());
+            
+        $form = $this->createForm(UserRegistrationFormType::class, $userModel);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) 
+        {
+
+            $userModel2 = $form->getData();
+            
+            $user->setEmail($userModel2->getEmail());
+            $user->setFirstName($userModel2->getFirstName());
+            $user->setSecondName($userModel2->getSecondName());
+
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['imageFile']->getData();
+
+            if($uploadedFile)
+            {
+                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, $user->getImageFilename());
+                $user->setImageFilename($newFilename);
+            }
+
+            $em->persist($user);
+            $em->flush();
+            $this->addFlash('success', 'Your account is updated!');
+
+            return $this->redirectToRoute('account_edit');
+        }
+        return $this->render('account/edit.html.twig', [
+            'registrationForm' => $form->createView()
         ]);
     }
 

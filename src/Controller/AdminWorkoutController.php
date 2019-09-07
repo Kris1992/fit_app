@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +12,7 @@ use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\WorkoutFormType;
 
-class AdminWorkoutController extends AbstractController
+class AdminWorkoutController extends WorkoutUtilityController
 {
  	
  	/**
@@ -50,6 +49,9 @@ class AdminWorkoutController extends AbstractController
             $workout = new Workout();//zakomentować
             $workout = $form->getData();
 
+            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
+            $workout->setBurnoutEnergy($burnoutEnergy);
+
             
             $em->persist($workout);
             $em->flush();
@@ -77,6 +79,8 @@ class AdminWorkoutController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) 
         {
             $workout = $form->getData();
+            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
+            $workout->setBurnoutEnergy($burnoutEnergy);
 
             $em->persist($workout);
             $em->flush();

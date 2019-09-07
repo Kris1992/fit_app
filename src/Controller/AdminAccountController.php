@@ -14,6 +14,8 @@ use Knp\Component\Pager\PaginatorInterface;
 
 use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
+use App\Services\UploadImagesHelper;
+
 
 class AdminAccountController extends AbstractController
 {
@@ -39,7 +41,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/edit/{id}", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel)
+    public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
     {
         
         //if ($user != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {//change to voter soon
@@ -47,10 +49,13 @@ class AdminAccountController extends AbstractController
         //}
 
         //transform user object to userModel object
+        /** @var User $user */
         $userModel->setId($user->getId());
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
+        $userModel->setImageFilename($user->getImageFilename());
+
             
         $form = $this->createForm(UserRegistrationFormType::class, $userModel);
 
@@ -62,7 +67,17 @@ class AdminAccountController extends AbstractController
             $user->setEmail($userModel2->getEmail());
             $user->setFirstName($userModel2->getFirstName());
             $user->setSecondName($userModel2->getSecondName());
-            /** @var User $user */
+
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['imageFile']->getData();
+
+            if($uploadedFile)
+            {
+                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
+
+                $user->setImageFilename($newFilename);
+            }
+            
             $em->persist($user);
             $em->flush();
             $this->addFlash('success', 'User is updated!');

@@ -11,6 +11,10 @@
 {% endblock %}
 
 {% block title %}Register Page{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/_uploadImageForm.js') }}"></script>
+{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">

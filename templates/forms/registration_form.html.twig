@@ -16,6 +16,23 @@
                                     'label' : 'E-mail : ',
                                     attr: { placeholder: 'Email' }
                                 }) }}
+
+                                {{ form_row(registrationForm.imageFile, {
+                                    'label' : 'Your image : ',
+                                    attr: {
+                                        'placeholder': 'Select an article image',
+                                        'class': 'd-none'
+
+                                    }
+                                }) }}
+
+                                {% if registrationForm.vars.data.imageFilename %}
+                                    <p>Already uploaded:</p>
+                                    <a href="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}" target="_blank">
+                                        <img class="imageForm" src="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}">
+                                    </a>
+                                {% endif %}
+                            
                                 {{ form_row(registrationForm.firstName, {
                                     'label' : 'First Name: ',
                                     attr: { placeholder: 'First Name' }

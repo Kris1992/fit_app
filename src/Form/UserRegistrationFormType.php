@@ -15,6 +15,9 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
+use Symfony\Component\Validator\Constraints\Image;
 
 
 
@@ -28,10 +31,21 @@ public function buildForm(FormBuilderInterface $builder, array $options)
         $isEdit = $user && $user->getId();
         //dd($isEdit);
 
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M'
+            ])
+        ];
+
         $builder
             ->add('email', EmailType::class)
             ->add('firstName', TextType::class)
             ->add('secondName', TextType::class)
+            ->add('imageFile', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => $imageConstraints
+            ])
             ;
 
 

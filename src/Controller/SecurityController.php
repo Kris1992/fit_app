@@ -16,6 +16,8 @@ use App\Security\LoginFormAuthenticator;
 use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
 
+use App\Services\UploadImagesHelper;
+
 
 
 
@@ -47,7 +49,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator)
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UploadImagesHelper $uploadImagesHelper)
     {
 
 
@@ -64,6 +66,16 @@ class SecurityController extends AbstractController
             $user->setFirstName($userModel->getFirstName());
             $user->setSecondName($userModel->getSecondName());
             $user->setRoles(['ROLE_USER']);
+
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['imageFile']->getData();
+
+            if($uploadedFile)
+            {
+                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
+
+                $user->setImageFilename($newFilename);
+            }
 
             
             $user->setPassword($passwordEncoder->encodePassword(

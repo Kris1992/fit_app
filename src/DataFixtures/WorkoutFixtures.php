@@ -28,11 +28,11 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
             $workout
                 ->setUser($this->getRandomReference('main_users'))
                 ->setActivity($this->getRandomReference('main_activity'))
-                ->setDuration($this->faker->dateTime);// faker->time string
+                ->setDuration($this->faker->dateTime)// faker->time string
+                ->setBurnoutEnergy($this->faker->randomNumber());// just random num not real calories
 
             return $workout;
         });
-
 
         $manager->flush();
     }

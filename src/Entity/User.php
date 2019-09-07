@@ -70,6 +70,11 @@ class User implements UserInterface
      */
     private $workouts;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageFilename;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
@@ -234,6 +239,18 @@ class User implements UserInterface
                 $workout->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
 
         return $this;
     }

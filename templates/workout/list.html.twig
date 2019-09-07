@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content_body %}
     <div class="col-sm-12">
-	    <a href="{{ path('admin_workout_add') }}" class="btn btn-primary pull-right">
+	    <a href="{{ path('workout_add_n') }}" class="btn btn-primary pull-right">
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	   	<h2 class="text-green">All Workouts</h2>
@@ -19,6 +19,7 @@
 		            	<th>#</th>
 		                <th>Activity</th>
 		                <th>Duration</th>
+                        <th>Burnout</th>
 		                <th>&nbsp;</th>
 		            </tr>
 		        </thead>
@@ -27,7 +28,8 @@
 		                <tr>
 		                	<td>{{ workout.id }}</td>
 		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
-		                    <td>{{ workout.duration | date('H:i') }}</td>
+		                    <td class="js-duration">{{ workout.duration | date('H:i') }}</td>
+                            <td class="js-energy">{{ workout.burnoutEnergy }}
 
 		                    <td>
 		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
@@ -45,8 +47,8 @@
 		        	<tr>
 		        		<th>Total</th>
 		        		<th class="js-total-workouts">{{ workouts|length }}</th>
-		        		<td>&nbsp;</td>
-		        		<td>&nbsp;</td>
+		        		<td class="js-total-duration">&nbsp;</td>
+		        		<td class="js-total-energy">&nbsp;</td>
 		        	</tr>
 		        </tfoot>
 		    </table>
@@ -81,8 +83,9 @@
 <script type="text/template" id="js-workout-row-template">
         <tr>
             <td><%= id %></td>
-            <td><%= activity.name %></td>
-            <td><%= time %></td>
+            <td data-id="<%= activity.id %>"><%= activity.name %></td>
+            <td class="js-duration"><%= time %></td>
+            <td class="js-energy"><%= burnoutEnergy %></td>
             <td>
                 <a href="#"
                    class="js-delete-workout"

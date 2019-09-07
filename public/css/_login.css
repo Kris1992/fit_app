@@ -64,6 +64,11 @@ legend
 	-moz-box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 	box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 }
+.imageForm
+{
+	width: 100px;
+	height: 100%;
+}
 
 
 

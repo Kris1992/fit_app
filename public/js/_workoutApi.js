@@ -14,6 +14,11 @@
 			CalculateHelperInstances.set(this, new CalculateHelper(this.$wrapper));
 
 			this.$wrapper.on(
+            	'click',
+            	'tbody tr',
+            	this.handleRowClick.bind(this)
+        	);
+			this.$wrapper.on(
 				'click',
 				'.js-delete-workout',
 				this.handleWorkoutDelete.bind(this)
@@ -44,6 +49,11 @@
             return {
                 newWorkoutForm: '.js-new-workout-form'
             }
+        }
+ 		
+ 		handleRowClick() {
+            console.log('row clicked!');
+
         }
 
         handleWorkoutDelete(e)
@@ -92,6 +102,8 @@
             this.$wrapper.find('.js-total-workouts').html(
             	CalculateHelperInstances.get(this).getTotalWorkouts()
             );
+            CalculateHelperInstances.get(this).getTotalEnergy();
+            CalculateHelperInstances.get(this).getTotalDuration();
         }
 
         handleNewWorkoutSubmit(e){
@@ -127,6 +139,8 @@
         		//console.log(data);
         		this._addRow(data);
         		this._clearForm();
+        		CalculateHelperInstances.get(this).getTotalEnergy();
+        		CalculateHelperInstances.get(this).getTotalDuration();
         	}).catch((errorData) => {
 
         		//console.log(errorData);
@@ -219,8 +233,9 @@
 						<input type="text" name="duration" class="form-control form-control-sm" value="${data[2]}">
 					</div>
 				</td>
+				<td>${data[3]}</td>
 				<td>
-					${data[3]}
+					${data[4]}
 					<a href="#" 
 					class="js-edit-workout-cancel"
 					data-id="${data[0]}"
@@ -268,10 +283,11 @@
 
         	const duration = $row.find('[name=duration]').val();
         	const durationArray = duration.split(':');
-        	const ex = new RegExp(/^0./);
+        	const ex = new RegExp(/^0{1}.{1}/);
         	for (var i = 0; i < 2; i++) {
         		if(durationArray[i].match(ex))
-        		{
+        		{	
+        			console.log('catch');
         			durationArray[i] = durationArray[i].substring(1);
         		}
         	}
@@ -288,6 +304,8 @@
 
         	this.updateWorkout(inputsData, url).then((data) => {
         		this._EditWorkoutToText($link, data);
+        		CalculateHelperInstances.get(this).getTotalEnergy();
+        		CalculateHelperInstances.get(this).getTotalDuration();
         	}).catch((errorData) => {
                 this._mapErrorsToForm(errorData, $row);
             })
@@ -319,8 +337,9 @@
         	var newRow = 
         	`<tr>
 				<td>${data['id']}</td>
-				<td>${data['activity']['name']}</td>
-				<td>${data['time']}</td>
+				<td data-id="${data['activity']['id']}">${data['activity']['name']}</td>
+				<td class="js-duration">${data['time']}</td>
+				<td class="js-energy">${data['burnoutEnergy']}</td>
 				<td>
 					<a href="#" 
 					class="js-delete-workout"
@@ -397,6 +416,8 @@
 		constructor($wrapper)
 		{
 			this.$wrapper = $wrapper;
+			this.getTotalEnergy();
+			this.getTotalDuration();
 		}
 
 		getTotalWorkouts() {
@@ -404,6 +425,7 @@
             
             return workouts;
         }
+
         calculateTotalWorkouts(){
         	let workouts = this.$wrapper.find('tbody tr').length;
 
@@ -411,6 +433,43 @@
 
         }
 
+        getTotalEnergy()
+        {
+        	let sum = 0;
+        	for (let energy of this.$wrapper.find('.js-energy') )
+        	{
+        		sum = sum + parseInt($(energy).html());
+        	}
+        	
+        	this.$wrapper.find('.js-total-energy').html(sum);
+        }
+
+        getTotalDuration()
+        {
+        	let sumHour = 0;
+        	let sumMin = 0;
+			
+			for (let duration of this.$wrapper.find('.js-duration') )
+        	{
+        		let durationString = $(duration).html();
+
+        		const durationArray = durationString.split(':');
+        		const ex = new RegExp(/^0./);
+        			for (var i = 0; i < 2; i++) {
+        				if(durationArray[i].match(ex))
+        				{
+        					durationArray[i] = durationArray[i].substring(1);
+        				}
+        			}
+
+        		sumHour = sumHour + parseInt(durationArray[0]);
+        		sumMin = sumMin + parseInt(durationArray[1]);
+        	}
+        	sumHour = sumHour + parseInt(sumMin/60);
+        	sumMin = sumMin%60;
+        	
+        	this.$wrapper.find('.js-total-duration').html(sumHour+'h '+sumMin+'min');
+        }
 
 	}
 

@@ -6,6 +6,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueUser;
 use App\Validator\ContainsAlphanumeric;
 
+use App\Services\UploadImagesHelper;
+
 /**
 * @UniqueUser(
 * fields={"email"},
@@ -46,6 +48,8 @@ class UserRegistrationFormModel
      * @Assert\IsTrue(message="You must agree to our terms.")
      */
     private $agreeTerms;
+
+    private $imageFilename;
 
 
 
@@ -116,6 +120,26 @@ class UserRegistrationFormModel
         $this->agreeTerms = $agreeTerms;
 
         return $this;
+    }
+
+    public function setImageFilename(string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function getImagePath()
+    {
+
+        return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();// już teraz bez uploads/ ze względu na to że możemy potem przenieść pliki do innego folderu lub na chmurę
+        //return 'uploads/article_image/'.$this->getImageFilename();
+        //return 'images/'.$this->getImageFilename(); to było tymczasowe dla fakera
     }
 
 }

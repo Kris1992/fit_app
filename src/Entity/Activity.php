@@ -18,6 +18,7 @@ class Activity
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"main"})
      */
     private $id;
 
