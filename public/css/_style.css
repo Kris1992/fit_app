@@ -49,6 +49,36 @@ h1
 {
     border-color: #C0D06F;
 } 
+.overlayed
+{
+	position: relative;
+}
+.link
+{
+    color: #fff;
+	text-decoration: none;
+}
+.link:hover
+{
+    color: #fff;
+	text-decoration: none;
+}
+.overlayed .link
+{
+	position: absolute;
+	display: block;
+	width: 100%;
+	height: 25%;
+	background-color: #111;
+	left: 0px;
+	bottom: 0px;
+	opacity: 0;
+	transition: opacity .5s ease-in-out;
+}
+.overlayed:hover .link
+{
+	opacity: 0.8;
+}
 
 /*profile page */
 .bg-profile
@@ -102,6 +132,10 @@ h1
 .sorted a
 {
 	color: #C0D06F; 
+}
+.thumbnail
+{
+	border-radius: 50%;
 }
 
 

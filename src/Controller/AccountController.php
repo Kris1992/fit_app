@@ -55,6 +55,7 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+
         //transform user object to userModel object
         $userModel->setId($user->getId());
         $userModel->setEmail($user->getEmail());

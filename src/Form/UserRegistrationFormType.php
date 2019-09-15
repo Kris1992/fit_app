@@ -33,7 +33,13 @@ public function buildForm(FormBuilderInterface $builder, array $options)
 
         $imageConstraints = [
             new Image([
-                'maxSize' => '5M'
+                'maxSize' => '5M',
+                'mimeTypes' => [
+                    'image/jpeg',
+                    'image/png',
+                    'image/gif'
+                ]
+
             ])
         ];
 

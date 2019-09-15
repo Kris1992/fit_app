@@ -136,10 +136,12 @@ class UserRegistrationFormModel
 
     public function getImagePath()
     {
+        return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
+    }
 
-        return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();// już teraz bez uploads/ ze względu na to że możemy potem przenieść pliki do innego folderu lub na chmurę
-        //return 'uploads/article_image/'.$this->getImageFilename();
-        //return 'images/'.$this->getImageFilename(); to było tymczasowe dla fakera
+    public function getThumbImagePath()
+    {
+        return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

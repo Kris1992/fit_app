@@ -29,7 +29,7 @@
                                 {% if registrationForm.vars.data.imageFilename %}
                                     <p>Already uploaded:</p>
                                     <a href="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}" target="_blank">
-                                        <img class="imageForm" src="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}">
+                                        <img class="imageForm rounded" src="{{ uploaded_asset(registrationForm.vars.data.thumbImagePath) }}">
                                     </a>
                                 {% endif %}
                             

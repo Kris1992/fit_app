@@ -41,5 +41,6 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
         return $this->container
             ->get(UploadImagesHelper::class)
             ->getPublicPath($path);
+        
     }
 }

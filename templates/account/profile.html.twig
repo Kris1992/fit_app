@@ -9,7 +9,12 @@
         <div class="row">
             <div class="col-xs-12 col-sm-2">
                 <div class="user-image">
+                    {% if app.user.imageFilename %}
+                    <img src="{{uploaded_asset(app.user.thumbImagePath)}}" class="img-responsive thumbnail" height="100" width="100">
+                    {% else %}
                     <img src="{{asset('img/users/default.png')}}" class="img-responsive thumbnail" height="100" width="100">
+                    {% endif %}
+                    
                 </div>
             </div>
             <div class="col-xs-12 col-sm-10 text-green p-3 mb-3">
