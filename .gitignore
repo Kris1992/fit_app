@@ -11,4 +11,4 @@
 ###> symfony/web-server-bundle ###
 /.web-server-pid
 ###< symfony/web-server-bundle ###
-/public/uploads/users_images
+/public/uploads/users_images/*

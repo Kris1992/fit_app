@@ -4,6 +4,8 @@
 {
 
 	let CalculateHelperInstances = new WeakMap();
+    var counter;
+    var counterPaused = false;
 
 	class WorkoutApi
 	{
@@ -139,8 +141,9 @@
         		//console.log(data);
         		this._addRow(data);
         		this._clearForm();
-        		CalculateHelperInstances.get(this).getTotalEnergy();
-        		CalculateHelperInstances.get(this).getTotalDuration();
+                // te funkcje już wywołujewmy w addRow
+        		//CalculateHelperInstances.get(this).getTotalEnergy();
+        		//CalculateHelperInstances.get(this).getTotalDuration();
         	}).catch((errorData) => {
 
         		//console.log(errorData);
@@ -287,7 +290,6 @@
         	for (var i = 0; i < 2; i++) {
         		if(durationArray[i].match(ex))
         		{	
-        			console.log('catch');
         			durationArray[i] = durationArray[i].substring(1);
         		}
         	}
@@ -376,7 +378,8 @@
            
             this._removeFormErrors($form);
             
-            for (let element of $form.find('select') && $form.find(':input')) 
+
+            for (let element of $form.find(':input')) 
                 {
                 	let fieldName = $(element).attr('name');
                 	const $wrapper = $(element).closest('.form-group');
@@ -393,7 +396,7 @@
                 	$error.html(errorData[fieldName]);
                 	$wrapper.append($error);
                 	$wrapper.addClass('has-error');
-            };
+            }
 
         }
 
@@ -401,11 +404,6 @@
             $form.find('.js-field-error').remove();
             $form.find('.form-group').removeClass('has-error');
         }
-
-
-
-
-
 
 
 	}
@@ -473,6 +471,310 @@
 
 	}
 
-	window.WorkoutApi = WorkoutApi;
+    class WorkoutNowApi
+    {
+        // włączyć to do workoutApi bo część funkcji wtedy się skroci
+
+        constructor($wrapper, $nowWrapper){
+
+            this.$wrapper = $wrapper;
+            this.$nowWrapper = $nowWrapper;
+            CalculateHelperInstances.set(this, new CalculateHelper(this.$wrapper));
+
+            $(window).on(
+                'load',
+                this.handleDocumentLoad.bind(this)
+            );
+            this.$nowWrapper.on(
+                'click',
+                '.js-start-button',
+                this.handleStartButtonClick.bind(this)
+            );
+            this.$nowWrapper.on(
+                'click',
+                '.js-pause-button',
+                this.handlePauseButtonClick.bind(this)
+            );
+            this.$nowWrapper.on(
+                'click',
+                '.js-continue-button',
+                this.handleContinueButtonClick.bind(this)
+            );
+            this.$nowWrapper.on(
+                'click',
+                '.js-stop-button',
+                this.handleStopButtonClick.bind(this)
+            );
+            this.$nowWrapper.on(
+                'click',
+                '.js-reset-button',
+                this.handleResetButtonClick.bind(this)
+            );
+        }
+        handleDocumentLoad() {
+            
+            var $options = $("#activity > option").clone();
+            var input = 
+            `
+                <h4 class="card-title text-center text-green text-uppercase">Start exercise now</h4>
+                <form method="post" class="form-signin">
+                <div class="form-group">
+                    <label class="required" for="js-workout-now-activity">Activity: </label>
+                    <select name="activity" id="js-workout-now-activity" required="required" class="form-control-lg form-control"></select>
+                </div>     
+
+                <button class="btn btn-lg btn-green btn-block text-uppercase js-start-button" type="button">Start</button>
+                            
+                </form>
+            `
+            ;
+
+            this.$nowWrapper.find('.js-workout-now-div').html(input);
+            $('#js-workout-now-activity').append($options);
+        }
+        handleStartButtonClick(){
+            
+            var $startButton = this.$nowWrapper.find('.js-start-button');
+            var $selectInput = this.$nowWrapper.find('#js-workout-now-activity');
+            var value = $selectInput.val();
+
+            this._getActivity(value).then((data) => {
+    
+                var hours = 0;
+                var minutes = 0;
+                var totalMinutes = 0;
+                var seconds = 0;
+                var durationNow;
+                var energyNow = 0 +' kcal';
+
+                this.disableSelect($selectInput);
+                counter =  setInterval(startCount, 1000);
+                function startCount(){
+                    if(!counterPaused)
+                    {
+                        seconds++;
+                        if(seconds/60 == 1 ){
+                            seconds = 0;
+                            minutes++;
+                            totalMinutes++;
+                            energyNow = ((parseInt(data['energy']) * totalMinutes)/60) +' kcal';
+                        }
+                        if(minutes/60 == 1) {
+                            minutes = 0;
+                            hours++;
+                        }
+                        durationNow = hours+' hours '+minutes+' minutes '+seconds+' seconds ';
+                    
+                        document.getElementById('js-workout-now-duration').value = durationNow;
+                        document.getElementById('js-workout-now-energy').innerHTML = energyNow;
+                    }
+                   
+                }
+
+            this.changeStartButton($startButton);
+            this._removeFieldsError($this.nowWrapper);
+
+            }).catch((errorData) => {
+                this._mapErrorsToFields(errorData);
+            })
+            
+           
+        }
+        disableSelect($selectInput){
+            $selectInput.attr('disabled', 'disabled');
+        }
+        _getActivity(value){
+            return new Promise(function(resolve, reject) {
+                const url = '/api/activity_get/'+value;
+                $.ajax({
+                    url,
+                    method: 'GET'
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    const errorData = {activity: 'Invalid activity'};//jqXHR.statusText;
+                    reject(errorData);
+                });;
+            });
+        }
+        changeStartButton($startButton){
+            var newButtons = 
+            `
+                <div class="form-group">
+                    <label class="required" for="js-workout-now-duration">Duration: </label>
+                    <input type="text" class="form-control" name="duration" id="js-workout-now-duration" disabled="disabled">
+                </div>
+                <p><span>Burnt out energy: </span><span id="js-workout-now-energy"></span></p>
+                <button class="btn btn-lg btn-green btn-block text-uppercase js-pause-button" type="button">Pause</button>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase js-stop-button" type="button">Stop/Save</button>  
+                <button class="btn btn-lg btn-danger btn-block text-uppercase js-reset-button" type="button">Reset</button>
+
+            `
+            ;
+
+            $startButton.replaceWith(newButtons);
+        }
+
+        handlePauseButtonClick(){
+            counterPaused = true;
+            var $pauseButton = this.$nowWrapper.find('.js-pause-button');
+            this.changePauseButton($pauseButton);
+        }
+        changePauseButton($pauseButton){
+             var newButtons = 
+            `
+                <button class="btn btn-lg btn-green btn-block text-uppercase js-continue-button" type="button">Continue</button> 
+
+            `
+            ;
+
+            $pauseButton.replaceWith(newButtons);
+        }
+
+        handleContinueButtonClick(){
+            counterPaused = false;
+            var $continueButton = this.$nowWrapper.find('.js-continue-button');
+            this.changeContinueButton($continueButton);
+        }
+
+        changeContinueButton($continueButton){
+            var newButtons = 
+            `
+                <button class="btn btn-lg btn-green btn-block text-uppercase js-pause-button" type="button">Pause</button> 
+
+            `
+            ;
+
+            $continueButton.replaceWith(newButtons);
+        }
+
+        handleStopButtonClick(){
+
+            counterPaused = true;
+            var $pauseButton = this.$nowWrapper.find('.js-pause-button');
+            this.changePauseButton($pauseButton);
+
+            const inputsData = {};
+            inputsData['duration'] = {};
+
+            var $selectInput = this.$nowWrapper.find('#js-workout-now-activity');
+            inputsData['activity'] = $selectInput.val();
+
+            var durationString = this.$nowWrapper.find('#js-workout-now-duration').val();
+            const durationArray = durationString.split(' ');
+
+ 
+            
+
+            inputsData['duration']['hour'] = durationArray[0];
+            inputsData['duration']['minute'] = durationArray[2];
+            inputsData['_token'] = $('#_token').val();
+
+
+            this._saveWorkoutNow(inputsData).then((data) => {
+                this._addRowNow(data);
+                clearInterval(counter);
+                counterPaused = false;
+            }).catch((errorData) => {
+                this._mapErrorsToFields(errorData);
+            })
+        }
+
+
+        _saveWorkoutNow(data) {
+            return new Promise(function(resolve, reject) {
+                const url = $('.js-workout-now').data('url');
+                $.ajax({
+                    url,
+                    method: 'POST',
+                    data: JSON.stringify(data)
+                }).then(function(data, textStatus, jqXHR) {
+                    $.ajax({
+                        url: jqXHR.getResponseHeader('Location')
+                    }).then(function(data) {
+                        resolve(data);
+                    });
+                }).catch(function(jqXHR) {
+                    const errorData = JSON.parse(jqXHR.responseText);
+                    reject(errorData);
+                });
+            });
+        }
+/// to sie skroci
+        _addRowNow(workout) {
+            const tplText = $('#js-workout-row-template').html();
+            const tpl = _.template(tplText);
+            const html = tpl(workout);
+            this.$wrapper.find('tbody').append($.parseHTML(html));
+            this.updateTotalWorkoutsNow();
+        }
+        updateTotalWorkoutsNow() {
+            this.$wrapper.find('.js-total-workouts').html(
+                CalculateHelperInstances.get(this).getTotalWorkouts()
+            );
+            CalculateHelperInstances.get(this).getTotalEnergy();
+            CalculateHelperInstances.get(this).getTotalDuration();
+        }
+        _mapErrorsToFields(errorData){
+            
+            let $fields = this.$nowWrapper;
+          
+            this._removeFieldsErrors($fields);
+            
+            for (let element of $fields.find(':input') ) 
+                {
+                    let fieldName = $(element).attr('name');
+                    const $fieldWrapper = $(element).closest('.form-group');
+
+                    if (!errorData[fieldName]) {
+                        continue;
+                    }
+                    const $error = $('<span class="js-now-error help-block text-danger"></span>');
+                    $error.html(errorData[fieldName]);
+                    $fieldWrapper.append($error);
+                    $fieldWrapper.addClass('has-error');
+            }
+
+        }
+        _removeFieldsErrors($nowWrapper){
+            $nowWrapper.find('.js-now-error').remove();
+            $nowWrapper.removeClass('has-error');
+        }
+        //
+
+
+
+        handleResetButtonClick(){
+            clearInterval(counter);
+            counterPaused = false;
+            var $options = $("#activity > option").clone();
+            var input = 
+            `
+                <h4 class="card-title text-center text-green text-uppercase">Start exercise now</h4>
+                <form method="post" class="form-signin">
+                <div class="form-group">
+                    <label class="required" for="js-workout-now-activity">Activity: </label>
+                    <select name="activity" id="js-workout-now-activity" required="required" class="form-control-lg form-control"></select>
+                </div>     
+
+                <button class="btn btn-lg btn-green btn-block text-uppercase js-start-button" type="button">Start</button>
+                            
+                </form>
+            `
+            ;
+
+            this.$nowWrapper.find('.js-workout-now-div').html(input);
+            $('#js-workout-now-activity').append($options);
+
+        }
+
+
+       
+
+    }
+
+    window.WorkoutApi = WorkoutApi;
+	window.WorkoutNowApi = WorkoutNowApi;
 
 })(window, jQuery, Swal);
+

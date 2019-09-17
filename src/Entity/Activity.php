@@ -30,6 +30,7 @@ class Activity
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"main"})
      */
     private $energy;
 

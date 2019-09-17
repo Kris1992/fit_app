@@ -54,7 +54,23 @@ class WorkoutController extends WorkoutUtilityController
             'workoutForm' => $form->createView()
         ]);
     }
+    
+    /**
+     * @Route("/workout/stats", name="workout_stats")
+     */
+    public function stats(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    {
+        $user = $this->getUser();
+        $workouts = $workoutRepository->findBy(['user' => $user ]);
 
+
+ 
+
+
+        return $this->render('workout/stats.html.twig', [
+            'workouts' => $workouts
+        ]);
+    }
 
 
      /**
