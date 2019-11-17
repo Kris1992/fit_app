@@ -92,19 +92,41 @@ class WorkoutController extends AbstractController
      */
     public function getWorkoutEnergyByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
-        $timeline = json_decode($request->getContent(), true);
+        $days = json_decode($request->getContent(), true);
 
-        if($timeline === null) {
+        if($days === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
+
+        $timeline['startDate'] = $days[0];
+        $timeline['stopDate'] = end($days);
 
         $user = $this->getUser();
         $workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
 
-        dump($workouts);
+        $energyPerDay = array();
+        $index = 0;
+
+        if(!empty($workouts)) {
+            foreach ($days as $day) {
+                if ($day == $workouts[$index]['startDate']) {
+                    $currentEnergy = $workouts[$index]['burnoutEnergy'];
+                    $index++;
+                } else {
+                    $currentEnergy = 0;
+                }
+
+                array_push($energyPerDay, $currentEnergy);
+            }
+        } else {
+            foreach ($days as $day) {
+                $currentEnergy = 0;
+                array_push($energyPerDay, $currentEnergy);
+            }
+        }
 
         return $this->json(
-            $workouts,
+            $energyPerDay,
             200,
             [],
             []

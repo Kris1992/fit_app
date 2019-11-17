@@ -34,15 +34,20 @@
     <div id="chart_pill" class="tab-pane fade">
       <div id="chartWrapper-js" data-url="{{ path('workout_energy_by_date') }}">
         <div class="text-center text-green"><h3>Chart</h3></div>
-
-        <div class="fc-right">
-          <button type="button" class="fc-today-button btn btn-primary" disabled="">today</button>
-          <div class="btn-group">
-            <button type="button" class="fc-prev-button btn btn-primary" aria-label="prev"><span class="fa fa-chevron-left"></span></button>
-            <button type="button" class="fc-next-button btn btn-primary" aria-label="next"><span class="fa fa-chevron-right"></span></button>
-          </div>
+        <!--<div class="fc-toolbar fc-header-toolbar">-->
+          <div class="fc-right">
+            <button type="button" class="fc-today-button btn btn-primary" disabled="">today</button>
+              <div class="btn-group">
+                <button type="button" class="fc-prev-button btn btn-primary" aria-label="prev">
+                  <span class="fa fa-chevron-left"></span>
+                </button>
+                <button type="button" class="fc-next-button btn btn-primary" aria-label="next">
+                  <span class="fa fa-chevron-right"></span>
+                </button>
+              </div>
             <span class="js-loading-cal fa fa-check text-green"></span>
-        </div>
+          </div>
+        <!--</div>-->  
         <div class="chart-container" style="position: relative; height:100vh; width:70vw">
           <canvas id="chart-js"></canvas>
         </div>

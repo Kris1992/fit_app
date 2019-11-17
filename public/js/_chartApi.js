@@ -6,7 +6,6 @@
 
 	class ChartApi
 	{
-
 		constructor($chartWrapper)
 		{
 			this.$chartWrapper = $chartWrapper;
@@ -26,70 +25,41 @@
                 '.fc-right > .btn-group > :button',
                 this.handleButtonClick.bind(this)
             );
-
 		}
 
-	//	function daysInMonth (month, year) { 
-     //           return new Date(year, month, 0).getDate(); 
-      //      } 
-      	handleButtonClick(){
-
-      		console.log('click');
-      		this.updateChart();
+      	handleButtonClick() {
+      		var date = new Date(2018, 11, 24, 10, 33, 30, 0);// zmienic na date
+			this.showChartByEnergy(date, true);
 		}
 
-	
-
-		handleChartPillClick(){
-
+		handleChartPillClick() {
 			var today = new Date();
-
-			//this.showLoadingIcon();
-			//var dates = this.getAllDays(today);
-			this.getWorkoutsEnergyByDates(today);
-
-			
-
-			
-
-			//this.renderChartJs(dates);
-			//console.log(dates[dates.length-1]);
-			//this.getWorkouts(timelineBounds).then((data) => {
-			//	this.mapWorkoutToCell(data);
-			//	this.removeLoadingIcon('success');
-        	//}).catch((errorData) => {
-        	//	this.removeLoadingIcon('error');
-            //})
-
+			this.showChartByEnergy(today);
 		}
-		getWorkoutsEnergyByDates(date){
-			var dates = this.getAllDays(date);
 
-			
+		showChartByEnergy(date, update = false) {
+			var dates = this.getAllDaysInCurrentMonth(date);
 
-			this.getWorkoutsInfo(dates).then((data) => {
-				console.log(data);
-
-				this.renderChartJs(dates);
+			this.getEnergyByDates(dates).then((energyList) => {
+				if (update == false ) {
+					this.renderChartJs(dates, energyList);
+				} else {
+					this.updateChartJs(dates, energyList);
+				}
+				
 			});
-
-			//console.log(dates);
-
-
-
 		}
 
-		getAllDays(date){
+		getAllDaysInCurrentMonth(date) {
 			var month = date.getMonth() + 1; 
             var year = date.getFullYear();
 
-			var numDays = this.getDaysInMonth(month, year);
+			var numDays = this.getNumDaysInMonth(month, year);
 			var dates = [];
 			
 			for (var i = 1; i <= numDays; i++) {
 				let day = i;
-				if(day < 10)
-				{
+				if(day < 10) {
 					day = '0'+ day; 
 				}
 
@@ -99,11 +69,11 @@
 			return dates;
 		}
 
-		getDaysInMonth(month, year){
-			
+		getNumDaysInMonth(month, year){
 			return new Date(year, month, 0).getDate();
 		}
-		renderChartJs(dates){
+
+		renderChartJs(dates, energyList) {
 			var ctx = document.getElementById('chart-js').getContext('2d');
   			var chartData = {
     			type: 'bar',
@@ -112,7 +82,7 @@
       				labels: dates,
         			datasets: [{
             			label: 'Burnout Energy',
-            			data: [10, 20, 30, 40, 50, 60, 70],
+            			data: energyList,
             			backgroundColor: 'rgba(255, 99, 132, 0.2)',
             			borderColor: 'rgba(255, 99, 132, 1)',
             			borderWidth: 2
@@ -154,34 +124,29 @@
     			}
 			};
 
-			//var myChart = new Chart(ctx, chartData);
 			myChart = new Chart(ctx, chartData);
 		}
 
-		getWorkoutsInfo(dates){	
+		getEnergyByDates(dates) {	
 			const url = $('#chartWrapper-js').data('url');
 
-			var timelineBounds = new Object();
-			timelineBounds.startDate = dates[0];
-			timelineBounds.stopDate = dates[dates.length-1];
 			return new Promise(function(resolve, reject){
 				$.ajax({
 					url,
 					method: 'POST',
-					data: JSON.stringify(timelineBounds)
-				}).then(function(data){
-					console.log(data);
-					console.log(dates);
-					resolve(data);
+					data: JSON.stringify(dates)
+				}).then(function(energyList){
+					resolve(energyList);
 				}).catch(function(jqXHR){
 					const errorData = JSON.parse(jqXHR.responseText);
                     reject(errorData);
 				});
 			});
 		}
-		updateChart(){
-			//myChart.data.datasets[0].data[2] = Math.random() * 100;
-			myChart.data.labels[0].data[2] = Math.random() * 100;
+
+		updateChartJs(dates, energyList) {
+			myChart.data.datasets[0].data = energyList;
+			myChart.data.labels= dates;
 			myChart.update();
 		}
 		
