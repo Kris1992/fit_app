@@ -18,10 +18,15 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
+
+    const ATTEMPTS_LIMIT = 5;
 
     use TargetPathTrait;
 
@@ -29,13 +34,15 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     private $csrfTokenManager;
     private $passwordEncoder;
     private $router;
+    private $em;
 
-    public function __construct(UserRepository $userRepository, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, RouterInterface $router)
+    public function __construct(UserRepository $userRepository, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, RouterInterface $router, EntityManagerInterface $em)
     {
         $this->userRepository = $userRepository;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->router = $router;
+        $this->em = $em;
     }
 
     public function supports(Request $request)
@@ -70,13 +77,39 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
+        if($user->getFailedAttempts() < self::ATTEMPTS_LIMIT)
+        {
+            $isPasswordValid = $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+            if(!$isPasswordValid)
+            {
 
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+                $failedAttempts = $user->increaseFailedAttempts();
+                $this->em->persist($user);
+                $this->em->flush();
+
+                throw new CustomUserMessageAuthenticationException(
+                    sprintf('It is your %d failed attempt to log on from %d available ', $failedAttempts, self::ATTEMPTS_LIMIT)
+                );
+
+            }
+            else
+            {
+                $user->resetFailedAttempts();
+                $this->em->persist($user);
+                $this->em->flush();
+            }
+            return $isPasswordValid; 
+        }
+        else{
+             
+            throw new CustomUserMessageAuthenticationException(sprintf('Account blocked due to %d failed logon attempts! Unlock by forgot password section', self::ATTEMPTS_LIMIT));
+        }
+       
     }
 
     /*public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        dd('fail');
+       
     }*/
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
@@ -99,8 +132,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     }*/
 
     protected function getLoginUrl()
-    {
-        // jesli nie ma takiego użytkownika w bazie to wywoływana jest ta metoda
+    {   
         return $this->router->generate('app_login');
     }
 }

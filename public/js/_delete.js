@@ -6,7 +6,7 @@ if(items)
 	{
 
 
-		if (ev.target.className === "fa fa-trash user" )
+		if (ev.target.className === "fa fa-trash-alt user" )
 		{
 			const id = ev.target.getAttribute('data-id');
 			if(confirm("Do you want delete user number: " + id + " ??"))
@@ -17,7 +17,7 @@ if(items)
 			});//.then(res => window.location.reload());
 			}	
 		}
-		if (ev.target.className === "fa fa-trash activity" )
+		if (ev.target.className === "fa fa-trash-alt activity" )
 		{
 			const id = ev.target.getAttribute('data-id');
 			if(confirm("Do you want delete activity number: " + id + " ??"))
@@ -27,7 +27,7 @@ if(items)
 			});//.then(res => window.location.reload());
 			}	
 		}
-		if (ev.target.className === "fa fa-trash workout" )
+		if (ev.target.className === "fa fa-trash-alt workout" )
 		{
 			const id = ev.target.getAttribute('data-id');
 			if(confirm("Do you want delete workout number: " + id + " ??"))

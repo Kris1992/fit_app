@@ -9,14 +9,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         
         <title>{% block title %}FitApp{% endblock %}</title>
-
         {% block stylesheets %}
         	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
         	<link href="{{ asset('css/_style.css') }}" rel="stylesheet" /> 
         {% endblock %}
     </head>
     <body>
-    	<div class="main_cointainer">
+    	<div class="main_cointainer"><!-- cointainer poprawić -->
 			<header>
 				<nav class="navbar navbar-dark bg-primary navbar-expand-sm {{ app.session.flashbag.peek('success')|length > 0 ? 'mb-3' : '' }}">
 					<a class="navbar-brand" href="{{ path('app_homepage') }}"><img class="d-inline-block mr-1 align-bottom" src="{{ asset('img/logo.png') }}" width="30" height="30" alt=""> FitApp </a>

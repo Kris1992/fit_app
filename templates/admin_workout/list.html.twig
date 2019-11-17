@@ -5,7 +5,7 @@
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
-	    <a href="{{ path('admin_workout_add') }}" class="btn btn-primary pull-right">
+	    <a href="{{ path('admin_workout_add') }}" class="btn btn-primary float-right">
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	    <h2 class="text-green">All Workouts ({{ pagination.getTotalItemCount }})</h2>
@@ -22,8 +22,11 @@
 		                <th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
 		                	{{ knp_pagination_sortable(pagination, 'User', 'u.email') }}
 		                </th>
-		                <th {% if pagination.isSorted('w.duration') %} class="sorted" {% endif %}>
-		                	{{ knp_pagination_sortable(pagination, 'Duration', 'w.duration') }}
+		                <th {% if pagination.isSorted('w.durationSeconds') %} class="sorted" {% endif %}>
+		                	{{ knp_pagination_sortable(pagination, 'Duration', 'w.durationSeconds') }}
+		            	</th>
+		            	<th {% if pagination.isSorted('w.startAt') %} class="sorted" {% endif %}>
+		                	{{ knp_pagination_sortable(pagination, 'Date', 'w.startAt') }}
 		            	</th>
 		            </tr>
 		        </thead>
@@ -33,14 +36,15 @@
 		                	<td>{{ workout.id }}</td>
 		                    <td>{{ workout.activity.name }}</td>
 		                    <td>{{ workout.user.email }}</td>
-		                    <td>{{ workout.duration | date('H:i:s') }}</td>
+		                    <td>{{ workout.durationSeconds | date('H:i:s') }}</td>
+		                    <td>{{ workout.startAt | date('m/d/Y') }}</td>
 
 		                    <td>
 		                        <a href="{{ path('admin_workout_edit', { id: workout.id }) }}">
-		                            <span class="fa fa-pencil"></span>
+		                            <span class="fa fa-pencil-alt"></span>
 		                        </a>
 		                        <a href="">
-		                           <span class="fa fa-trash workout" data-id="{{ workout.id }}"></span>
+		                           <span class="fa fa-trash-alt workout" data-id="{{ workout.id }}"></span>
 		                        </a>
 		                    </td>
 		                   

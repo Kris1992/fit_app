@@ -79,6 +79,20 @@ h1
 {
 	opacity: 0.8;
 }
+.oversized
+{
+	overflow: hidden;
+}
+.oversized img
+{
+	transition: all .5s ease-in-out;
+}
+.oversized:hover img
+{
+	-webkit-transform: scale(1.15);
+	-ms-transform: scale(1.15);
+	transform: scale(1.15);
+}
 
 /*profile page */
 .bg-profile

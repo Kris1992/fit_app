@@ -1,4 +1,5 @@
 <?php
+//do usunięcia było tymczasowo
 
 namespace App\Controller;
 
@@ -15,7 +16,7 @@ class WorkoutUtilityController extends AbstractController
     	$activity = $workout->getActivity();
 		$activityEnergy =  $activity->getEnergy();
 
-		$workoutDuration = $workout->getDuration()->getTimestamp();
+		$workoutDuration = $workout->getDurationSeconds();
 		$burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
 
      	return $burnoutEnergy;

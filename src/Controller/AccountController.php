@@ -55,13 +55,16 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-
         //transform user object to userModel object
         $userModel->setId($user->getId());
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
-        $userModel->setImageFilename($user->getImageFilename());
+        if($user->getImageFilename())
+        {
+            $userModel->setImageFilename($user->getImageFilename());
+        }
+        
             
         $form = $this->createForm(UserRegistrationFormType::class, $userModel);
 
@@ -170,6 +173,7 @@ class AccountController extends AbstractController
             ));
 
             $user->setPasswordToken(null);
+            $user->resetFailedAttempts();
             $em->persist($user);
             //$em->flush();
             //$em->remove($token1);

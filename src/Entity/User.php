@@ -77,6 +77,11 @@ class User implements UserInterface
      */
     private $imageFilename;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $failed_attempts = 0;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
@@ -266,6 +271,25 @@ class User implements UserInterface
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
+
+    public function increaseFailedAttempts(): ?int
+    {
+        $this->failed_attempts = $this->failed_attempts+1;
+        return $this->failed_attempts;
+    }
+
+    public function getFailedAttempts(): ?int
+    {
+        return $this->failed_attempts;
+    }
+
+    public function resetFailedAttempts(): self
+    {
+        $this->failed_attempts = 0;
+
+        return $this;
+    }
+
 
 
 }

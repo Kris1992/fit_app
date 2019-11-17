@@ -5,7 +5,7 @@
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
-    	<a href="{{ path('app_register') }}" class="btn btn-primary pull-right">
+    	<a href="{{ path('app_register') }}" class="btn btn-primary float-right">
         	Create <span class="fa fa-plus-circle"></span>
     	</a>
 	    <h2 class="text-green">All Accounts ({{ pagination.getTotalItemCount }})</h2>
@@ -36,10 +36,10 @@
 		                    <td>{{ user.email }}</td>
 		                    <td>
 		                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
-		                            <span class="fa fa-pencil"></span>
+		                            <span class="fa fa-pencil-alt"></span>
 		                        </a>
 		                        <a href="">
-		                           <span class="fa fa-trash user" data-id="{{ user.id }}"></span>
+		                           <span class="fa fa-trash-alt user" data-id="{{ user.id }}"></span>
 		                        </a>
 		                    </td>
 		                   

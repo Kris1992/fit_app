@@ -10,10 +10,8 @@ class NotZeroDurationValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        /*if(is_a($value, 'DateTime'))
-        {
-            dump('OK');
-        }*/
+
+        /* old one
         if (!$value instanceof \DateTime) {
             return;
         }
@@ -28,6 +26,23 @@ class NotZeroDurationValidator extends ConstraintValidator
         }
 
         if ($value === '00:00') {
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
+        }*/
+
+        if(!is_integer($value)) {
+            return;
+        }
+
+        if (!$constraint instanceof NotZeroDuration) {
+            throw new UnexpectedTypeException($constraint, NotZeroDuration::class);
+        }
+
+        if (null === $value || '' === $value) {
+            return;
+        }
+
+        if ($value === 0) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

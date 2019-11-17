@@ -4,3 +4,5 @@ twig:
     strict_variables: '%kernel.debug%'
     form_themes:
       - bootstrap_4_layout.html.twig
+    globals:
+      public_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'

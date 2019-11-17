@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content_body %}
     <div class="col-sm-12">
-	    <a href="{{ path('workout_add_n') }}" class="btn btn-primary pull-right">
+	    <a href="{{ path('workout_add_n') }}" class="btn btn-primary float-right">
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	   	<h2 class="text-green">All Workouts</h2>
@@ -18,8 +18,10 @@
 		            <tr>
 		            	<th>#</th>
 		                <th>Activity</th>
+		                {#<th>Duration</th>#}
 		                <th>Duration</th>
                         <th>Burnout</th>
+                        <th>Date</th>
 		                <th>&nbsp;</th>
 		            </tr>
 		        </thead>
@@ -28,15 +30,17 @@
 		                <tr>
 		                	<td>{{ workout.id }}</td>
 		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
-		                    <td class="js-duration">{{ workout.duration | date('H:i') }}</td>
-                            <td class="js-energy">{{ workout.burnoutEnergy }}
+		                   {# <td class="js-duration">{{ workout.duration | date('H:i') }}</td>#}
+		                    <td class="js-duration">{{ workout.durationSeconds | date('H:i:s') }}</td>
+                            <td class="js-energy">{{ workout.burnoutEnergy }}</td>
+                            <td>{{ workout.startAt | date('Y-m-d H:i') }}</td>
 
 		                    <td>
 		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
-		                           <span class="fa fa-trash"></span>
+		                           <span class="fa fa-trash-alt"></span>
 		                        </a>
                                 <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
-                                   <span class="fa fa-pencil"></span>
+                                   <span class="fa fa-pencil-alt"></span>
                                 </a>
 		                    </td>
 		                   
@@ -85,11 +89,13 @@
 <script src="{{ asset('js/_workoutApi.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        var $wrapper = $('.js-workout-table');
-        var workoutApi = new WorkoutApi($wrapper);
 
-        var $nowWrapper = $('.js-workout-now');
-        var workoutNowApi = new WorkoutNowApi($wrapper, $nowWrapper);
+        var $wrapper = $('.js-workout-table');
+        var $nowWorkoutWrapper = $('.js-workout-now');
+        var workoutApi = new WorkoutApi($wrapper, $nowWorkoutWrapper);
+
+//       var $nowWrapper = $('.js-workout-now');
+//        var workoutNowApi = new WorkoutNowApi($wrapper, $nowWrapper);
             
         });
 	
@@ -100,19 +106,20 @@
             <td data-id="<%= activity.id %>"><%= activity.name %></td>
             <td class="js-duration"><%= time %></td>
             <td class="js-energy"><%= burnoutEnergy %></td>
+            <td><%= startDate %></td>
             <td>
                 <a href="#"
                    class="js-delete-workout"
                    data-url="<%= links.delete %>"
                    data-id="<%= id %>"
                 >
-                    <span class="fa fa-trash"></span>
+                    <span class="fa fa-trash-alt"></span>
                 </a>
                 <a href="#"
                    class="js-edit-workout"
                    data-url="<%= links.edit %>"
                 >
-                    <span class="fa fa-pencil"></span>
+                    <span class="fa fa-pencil-alt"></span>
                 </a>
             </td>
         </tr>

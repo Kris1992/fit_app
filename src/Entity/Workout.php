@@ -47,6 +47,19 @@ class Workout
      */
     private $burnoutEnergy;
 
+    /**
+     * @ORM\Column(type="datetime")
+     * @Groups("main")
+     */
+    private $startAt;
+    
+    /**
+     * @ORM\Column(type="integer")
+     * @AcmeAssert\NotZeroDuration()
+     * @Groups({"main", "input"})
+     */
+    private $durationSeconds;
+
 
     /// Helper variables
     /**
@@ -57,6 +70,11 @@ class Workout
     * @Groups("main")
     */
     private $links = [];
+    /**
+    * @Groups("main")
+    */
+    private $startDate;
+ 
 
     public function setTime(string $time): self
     {
@@ -64,22 +82,48 @@ class Workout
 
         return $this;
     }
+
     public function getTime(): ?string
     {
         return $this->time;
     }
+
     public function setLinks(string $type,string $url): self
     {
         $this->links[$type] = $url;
 
         return $this;
     }
+
     public function getLinks(): ?array
     {
         return $this->links;
     }
 
+    public function setStartDate(string $startDate): self
+    {
+        $this->startDate = $startDate;
 
+        return $this;
+    }
+
+    public function getStartDate(): ?string
+    {
+        return $this->startDate;
+    }
+
+    public function calculateSaveBurnoutEnergy(): self
+    {
+        $activity = $this->activity;
+        $activityEnergy =  $activity->getEnergy();
+
+        $workoutDuration = $this->durationSeconds;
+        $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
+
+        $this->burnoutEnergy = $burnoutEnergy;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -127,9 +171,33 @@ class Workout
         return $this->burnoutEnergy;
     }
 
-    public function setBurnoutEnergy(int $burnoutEnergy): self
+    /*public function setBurnoutEnergy(int $burnoutEnergy): self
     {
         $this->burnoutEnergy = $burnoutEnergy;
+
+        return $this;
+    }*/
+
+    public function getStartAt(): ?\DateTimeInterface
+    {
+        return $this->startAt;
+    }
+
+    public function setStartAt(\DateTimeInterface $startAt): self
+    {
+        $this->startAt = $startAt;
+
+        return $this;
+    }
+
+    public function getDurationSeconds(): ?int
+    {
+        return $this->durationSeconds;
+    }
+
+    public function setDurationSeconds(int $durationSeconds): self
+    {
+        $this->durationSeconds = $durationSeconds;
 
         return $this;
     }

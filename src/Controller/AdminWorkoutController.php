@@ -5,6 +5,8 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 
 use App\Repository\WorkoutRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -12,7 +14,7 @@ use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\WorkoutFormType;
 
-class AdminWorkoutController extends WorkoutUtilityController
+class AdminWorkoutController extends AbstractController
 {
  	
  	/**
@@ -38,21 +40,16 @@ class AdminWorkoutController extends WorkoutUtilityController
      */
     public function add(Request $request, EntityManagerInterface $em)
     {
-
         $form = $this->createForm(WorkoutFormType::class, null, [
             'is_admin' => true
         ]);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $workout = new Workout();//zakomentować
+            $workout = new Workout();
             $workout = $form->getData();
+            $workout->calculateSaveBurnoutEnergy();
 
-            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
-            $workout->setBurnoutEnergy($burnoutEnergy);
-
-            
             $em->persist($workout);
             $em->flush();
 
@@ -76,11 +73,9 @@ class AdminWorkoutController extends WorkoutUtilityController
         ]);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) 
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $workout = $form->getData();
-            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
-            $workout->setBurnoutEnergy($burnoutEnergy);
+            $workout->calculateSaveBurnoutEnergy();
 
             $em->persist($workout);
             $em->flush();
@@ -90,11 +85,11 @@ class AdminWorkoutController extends WorkoutUtilityController
                 'id' => $workout->getId(),
             ]);
         }
+
         return $this->render('admin_workout/edit.html.twig', [
             'workoutForm' => $form->createView()
         ]);
     }
-
 
     /**
      * @Route("/admin/workout/delete/{id}", name="admin_workout_delete",  methods={"DELETE"})

@@ -18,6 +18,8 @@ use App\Form\Model\UserRegistrationFormModel;
 
 use App\Services\UploadImagesHelper;
 
+use ReCaptcha\ReCaptcha;
+
 
 
 
@@ -49,61 +51,82 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UploadImagesHelper $uploadImagesHelper)
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UploadImagesHelper $uploadImagesHelper, string $secret_key)
     {
-
 
         $form = $this->createForm(UserRegistrationFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $userModel = new UserRegistrationFormModel();
-            $userModel = $form->getData();
+                $isHuman = $this->checkCatchpa($request, $secret_key);
+                if ($isHuman->isSuccess()) {
 
-            $user = new User();
-            $user->setEmail($userModel->getEmail());
-            $user->setFirstName($userModel->getFirstName());
-            $user->setSecondName($userModel->getSecondName());
-            $user->setRoles(['ROLE_USER']);
+                    $userModel = new UserRegistrationFormModel();
+                    $userModel = $form->getData();
 
-            /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $form['imageFile']->getData();
+                    $user = new User();
+                    $user->setEmail($userModel->getEmail());
+                    $user->setFirstName($userModel->getFirstName());
+                    $user->setSecondName($userModel->getSecondName());
+                    $user->setRoles(['ROLE_USER']);
 
-            if($uploadedFile)
-            {
-                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
+                    /** @var UploadedFile $uploadedFile */
+                    $uploadedFile = $form['imageFile']->getData();
 
-                $user->setImageFilename($newFilename);
-            }
+                    if($uploadedFile)
+                    {
+                        $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
+
+                        $user->setImageFilename($newFilename);
+                    }
 
             
-            $user->setPassword($passwordEncoder->encodePassword(
-                $user,
-                $userModel->getPlainPassword()
-            ));
+                    $user->setPassword($passwordEncoder->encodePassword(
+                    $user,
+                    $userModel->getPlainPassword()
+                    ));
             
-            if (true === $userModel->getAgreeTerms())// make sure it's valid data
-            {
-            	$user->agreeToTerms();
-            }
+                    if (true === $userModel->getAgreeTerms())// make sure it's valid data
+                    {
+                        $user->agreeToTerms();
+                    }
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($user);
+                    $em->flush();
 
-            return $guardHandler->authenticateUserAndHandleSuccess(
-                $user,
-                $request,
-                $formAuthenticator,
-                'main' // firewall name
-            );
+                    return $guardHandler->authenticateUserAndHandleSuccess(
+                        $user,
+                        $request,
+                        $formAuthenticator,
+                        'main' // firewall name
+                    );
+
+                    } 
+                    else {
+                        //$errors = $isHuman->getErrorCodes();
+                        $message = 'The ReCaptcha was not entered correctly!';
+                        
+                        return $this->render('security/register.html.twig', [
+                            'registrationForm' => $form->createView(),
+                            'ReCaptchaError' => $message
+                        ]);
+                    }
         }
 
 
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+    }
+
+    private function checkCatchpa(Request $request, string $secret_key)
+    {
+        $recaptcha = new ReCaptcha($secret_key);
+        return $isHuman = $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME'])
+                ->verify($request->get('g-recaptcha-response'), $_SERVER['REMOTE_ADDR']);
+
     }
 
 }

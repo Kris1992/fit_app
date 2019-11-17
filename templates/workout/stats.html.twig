@@ -1,64 +1,111 @@
 {% extends 'content_base.html.twig' %}
 
-{% block title %}Workouts history{% endblock %}
+{% block title %}Account stats{% endblock %}
 {% block content_class %}{{ parent() }} p-2{% endblock %} 
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/_calendar.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/@fullcalendar/core@4.3.1/main.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@fullcalendar/daygrid@4.3.0/main.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@fullcalendar/list@4.3.0/main.min.css">
+
+
+
 {% endblock %}
 {% block content_body %}
+
     <div class="col-sm-12">
-	    <a href="{{ path('workout_add_n') }}" class="btn btn-primary pull-right">
-	        Create <span class="fa fa-plus-circle"></span>
-	    </a>
-	   	<h2 class="text-green">All Workouts</h2>
-	    <div class="table-responsive js-workout-table">
-		    <table class="table table-hover">
-		        <thead>
-		            <tr>
-		            	<th>#</th>
-		                <th>Activity</th>
-		                <th>Duration</th>
-                        <th>Burnout</th>
-		                <th>&nbsp;</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            {% for workout in workouts %}
-		                <tr>
-		                	<td>{{ workout.id }}</td>
-		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
-		                    <td class="js-duration">{{ workout.duration | date('H:i') }}</td>
-                            <td class="js-energy">{{ workout.burnoutEnergy }}
-
-		                    <td>
-		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
-		                           <span class="fa fa-trash"></span>
-		                        </a>
-                                <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
-                                   <span class="fa fa-pencil"></span>
-                                </a>
-		                    </td>
-		                   
-		                </tr>
-		            {% endfor %}
-		        </tbody>
-		        <tfoot>
-		        	<tr>
-		        		<th>Total</th>
-		        		<th class="js-total-workouts">{{ workouts|length }}</th>
-		        		<td class="js-total-duration">&nbsp;</td>
-		        		<td class="js-total-energy">&nbsp;</td>
-		        	</tr>
-		        </tfoot>
-		    </table>
-
-		</div>
+    	<h2 class="text-green">Statistics</h2>
+		<ul class="nav nav-pills">
+  			<li class="nav-item">
+    			<a class="nav-link active" data-toggle="pill" href="#calendar_pill">Calendar</a>
+  			</li>
+  			<li class="nav-item">
+    			<a class="nav-link" id="chart_pill-js" data-toggle="pill" href="#chart_pill">Chart</a>
+  			</li>
+		</ul>
 	</div>
+<div class="tab-content">
+    <div id="calendar_pill" class="tab-pane fade active show">
+      <div class="text-center text-green"><h3>Calendar</h3></div>
+      <div id='calendar' data-url="{{ path('workout_id_by_date') }}"></div>
+    </div>
+    <div id="chart_pill" class="tab-pane fade">
+      <div id="chartWrapper-js" data-url="{{ path('workout_energy_by_date') }}">
+        <div class="text-center text-green"><h3>Chart</h3></div>
 
+        <div class="fc-right">
+          <button type="button" class="fc-today-button btn btn-primary" disabled="">today</button>
+          <div class="btn-group">
+            <button type="button" class="fc-prev-button btn btn-primary" aria-label="prev"><span class="fa fa-chevron-left"></span></button>
+            <button type="button" class="fc-next-button btn btn-primary" aria-label="next"><span class="fa fa-chevron-right"></span></button>
+          </div>
+            <span class="js-loading-cal fa fa-check text-green"></span>
+        </div>
+        <div class="chart-container" style="position: relative; height:100vh; width:70vw">
+          <canvas id="chart-js"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
+<script src="https://unpkg.com/@fullcalendar/core@4.3.1/main.min.js"></script>
+<script src="https://unpkg.com/@fullcalendar/daygrid@4.3.0/main.min.js"></script>
+<script src="https://unpkg.com/@fullcalendar/list@4.3.0/main.min.js"></script>
+<script src="https://unpkg.com/@fullcalendar/bootstrap@4.3.0/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+
+<script src="{{ asset('js/_calendarApi.js') }}"></script>
+<script src="{{ asset('js/_chartApi.js') }}"></script>
+
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+        var calendarElement = document.getElementById('calendar');
+
+        var fullCalendar = new FullCalendar.Calendar(calendarElement, {
+        	header: {
+    			center: 'dayGridMonth, dayGridWeek'
+  			 },
+          plugins: ['dayGrid','bootstrap'],
+          themeSystem: 'bootstrap',
+  			 defaultView: 'dayGridMonth'
+        });
+
+        fullCalendar.render();
+
+       var $calendarWrapper = $('#calendar');
+       var calendarApi = new CalendarApi($calendarWrapper);
+
+
+
+
+ 
+
+/*setInterval(function(){
+myChart.data.datasets[0].data[2] = Math.random() * 100;
+myChart.update();
+}, 5000);*/
+      var $chartWrapper = $('#chartWrapper-js');
+      var chartApi = new ChartApi($chartWrapper);
+
+
+     
+
+      });
+	
+
+</script>
+
 
 {% endblock %}

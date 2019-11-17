@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 
 
@@ -47,11 +48,27 @@ class WorkoutFormType extends AbstractType
             ->add('duration', TimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'choice',
+                'required' => false,
                 'model_timezone' => 'UTC',//because use timestamp
                 'view_timezone' => 'UTC',
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute'
                 ]
+            ])
+            ->add('durationSeconds', TimeType::class, [
+                'input'  => 'timestamp',
+                'widget' => 'choice',
+                'with_seconds' => true,
+                'placeholder' => [
+                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                ]
+            ])
+            ->add('startAt', DateTimeType::class, [
+                'input'  => 'datetime',
+                'widget' => 'single_text',
+                'model_timezone' => 'UTC',
+                'view_timezone' => 'UTC',
+            
             ])
         ;
 

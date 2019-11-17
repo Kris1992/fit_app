@@ -4,10 +4,10 @@
 	<td>{{ workout.duration | date('H:i:s') }}</td>
 	<td>
 		<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
-			<span class="fa fa-trash"></span>
+			<span class="fa fa-trash-alt"></span>
 		</a>
         <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
-        	<span class="fa fa-pencil"></span>
+        	<span class="fa fa-pencil-alt"></span>
         </a>
     </td>
 </tr>

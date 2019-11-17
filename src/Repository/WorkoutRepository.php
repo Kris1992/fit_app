@@ -6,6 +6,12 @@ use App\Entity\Workout;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
+
+use Doctrine\ORM\Query\Expr\Func;
+
+//native SQL
+use Doctrine\ORM\Query\ResultSetMapping;
+
 /**
  * @method Workout|null find($id, $lockMode = null, $lockVersion = null)
  * @method Workout|null findOneBy(array $criteria, array $orderBy = null)
@@ -33,6 +39,87 @@ class WorkoutRepository extends ServiceEntityRepository
             ->getQuery()
         ;
     }
+
+
+    /**
+    * @return Array[] Returns an array 
+    */
+    
+    public function countEnergyPerDayByUserAndDateArray($user, $timeline)
+    {
+
+        return $this->createQueryBuilder('w')
+            ->select( "w.burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->andWhere('w.user = :val')
+            ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
+            ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
+            ->orderBy( 'w.startAt', 'ASC' )
+            ->getQuery()
+            ->getResult();
+    }
+    //
+
+     /**
+    * @return Array[] Returns an array 
+    */
+    
+    public function findByUserAndDateArray($user, $timeline)
+    {
+
+        return $this->createQueryBuilder('w')
+            ->select( "w.id, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->andWhere('w.user = :val')
+            ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
+            ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
+            ->orderBy( 'w.startAt', 'ASC' )
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    /**
+    * @return Arrray[] Returns an array
+    */
+    
+    public function findByUserAndDateArrayNative($user, $timeline)
+    {
+ 
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id');
+        $rsm->addScalarResult('startDate', 'startDate');
+
+        $sql = 'SELECT `id`, DATE_FORMAT(`start_at`,  "%Y-%m-%d") AS startDate  FROM `workout` WHERE (`user_id` = :val AND `start_at` BETWEEN :startVal AND :stopVal) ORDER BY `start_at` ASC';
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']));
+        
+
+        return $query->getResult();
+
+    }
+
+
+
+/*
+    
+    * @return Workout[] Returns an array of Workout objects
+    *
+    
+    public function findByUserAndDate($user, $timeline)
+    {
+
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.user = :val')
+            ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
+            ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
+            ->orderBy( 'w.startAt', 'ASC' )
+            ->getQuery()
+            ->getResult();
+    }*/
+
+  
+
+
     // /**
     //  * @return Workout[] Returns an array of Workout objects
     //  */

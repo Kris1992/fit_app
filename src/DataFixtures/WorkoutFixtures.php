@@ -21,15 +21,17 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 
     protected function loadData(ObjectManager $manager)
     {
-
-        $this->createMany(10, 'main_workout', function($i)
+        $this->createMany(10, 'main_workout', function($i) 
         {
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
                 ->setActivity($this->getRandomReference('main_activity'))
                 ->setDuration($this->faker->dateTime)// faker->time string
-                ->setBurnoutEnergy($this->faker->randomNumber());// just random num not real calories
+                ->setDurationSeconds($this->faker->randomNumber)
+                ->calculateSaveBurnoutEnergy()
+                ->setStartAt($this->faker->dateTime)
+                ;
 
             return $workout;
         });

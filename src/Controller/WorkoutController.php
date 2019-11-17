@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use App\Repository\WorkoutRepository;
 use App\Entity\Workout;
@@ -13,10 +14,9 @@ use App\Form\WorkoutFormType;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Symfony\Component\Form\FormInterface;
 
-class WorkoutController extends WorkoutUtilityController
+class WorkoutController extends AbstractController
 {
     /**
      * @Route("/workout/list", name="workout_list")
@@ -26,28 +26,24 @@ class WorkoutController extends WorkoutUtilityController
     	$user = $this->getUser();
     	$workouts = $workoutRepository->findBy(['user' => $user ]);
 
-
     	//forms
 
     	$form = $this->createForm(WorkoutFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $workout = new Workout();//zakomentować
+            $workout = new Workout();
             $workout = $form->getData();
             $workout->setUser($user);
+            $workout->calculateSaveBurnoutEnergy();
 
             $em->persist($workout);
             $em->flush();
 
-             $this->addFlash('success', 'Workout was created!! ');
+            $this->addFlash('success', 'Workout was created!! ');
             
             return $this->redirectToRoute('workout_list');
         }
-
-
-
 
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
@@ -58,37 +54,76 @@ class WorkoutController extends WorkoutUtilityController
     /**
      * @Route("/workout/stats", name="workout_stats")
      */
-    public function stats(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function stats(Request $request)
     {
-        $user = $this->getUser();
-        $workouts = $workoutRepository->findBy(['user' => $user ]);
-
-
- 
-
-
-        return $this->render('workout/stats.html.twig', [
-            'workouts' => $workouts
-        ]);
+        return $this->render('workout/stats.html.twig');
     }
 
+    /**
+     * @Route("api/workout/get_id_by_date", name="workout_id_by_date")
+     */
+    public function getWorkoutIdByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    {
+        $timeline = json_decode($request->getContent(), true);
 
+        if($timeline === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $user = $this->getUser();
+        $workouts = $workoutRepository->findByUserAndDateArray($user, $timeline);
+       // $workouts = $workoutRepository->findByUserAndDateArrayNative($user, $timeline);
+
+        //$workouts = $workoutRepository->findByUserAndDate($user, $timeline); if we want whole workout object
+
+        dump($workouts);
+        
+        return $this->json(
+            $workouts,
+            200,
+            [],
+            []
+        );
+
+    }
+
+    /**
+     * @Route("api/workout/get_energy_by_date", name="workout_energy_by_date")
+     */
+    public function getWorkoutEnergyByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    {
+        $timeline = json_decode($request->getContent(), true);
+
+        if($timeline === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $user = $this->getUser();
+        $workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
+
+        dump($workouts);
+
+        return $this->json(
+            $workouts,
+            200,
+            [],
+            []
+        );
+    }
+    
      /**
      * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
      */
     public function add_n(Request $request, EntityManagerInterface $em)
     {
-
         $form = $this->createForm(WorkoutFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
             $workout = new Workout();
             $workout = $form->getData();
             $workout->setUser($this->getUser());
-            $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
-            $workout->setBurnoutEnergy($burnoutEnergy);
+            $workout->calculateSaveBurnoutEnergy();
 
             $em->persist($workout);
             $em->flush();
@@ -98,13 +133,11 @@ class WorkoutController extends WorkoutUtilityController
             return $this->redirectToRoute('workout_list');
         }
 
-
         return $this->render('workout/add.html.twig', [
             'workoutForm' => $form->createView(),
         ]);
     }
 
-    
     /**
      * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
      */
@@ -121,11 +154,9 @@ class WorkoutController extends WorkoutUtilityController
      */
     public function add(Request $request, EntityManagerInterface $em)
     {
-
         $data = json_decode($request->getContent(), true);
 
-        if($data === null)
-        {
+        if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
 
@@ -144,9 +175,7 @@ class WorkoutController extends WorkoutUtilityController
         $workout = new Workout();
         $workout = $form->getData();
         $workout->setUser($this->getUser());
-
-        $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
-        $workout->setBurnoutEnergy($burnoutEnergy);
+        $workout->calculateSaveBurnoutEnergy();
         
         $em->persist($workout);
         $em->flush();
@@ -167,9 +196,13 @@ class WorkoutController extends WorkoutUtilityController
      */
     public function getWorkoutAction(Workout $workout)
     {
-        $duration = $workout->getDuration();
-        $duration = date_format($duration, 'H:i');
-        $workout->setTime($duration);
+        $durationSeconds = $workout->getDurationSeconds();
+        $durationSeconds = date('H:i:s', $durationSeconds);
+        $workout->setTime($durationSeconds);
+
+        $startAt = $workout->getStartAt();
+        $startAt = date_format($startAt, 'Y-m-d H:i');
+        $workout->setStartDate($startAt);
 
         $linkDelete = $this->generateUrl('workout_delete', ['id' => $workout->getId()]);
         $linkEdit = $this->generateUrl('workout_edit', ['id' => $workout->getId()]);
@@ -194,16 +227,12 @@ class WorkoutController extends WorkoutUtilityController
     {
         $data = json_decode($request->getContent(), true);
         //dump(date_default_timezone_get());
-        //dump($data);
 
-        if($data === null)
-        {
+        if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
 
-        //dump($workout);
-        $form = $this->createForm(WorkoutFormType::class, $workout,
-            ['csrf_protection' => false]);
+        $form = $this->createForm(WorkoutFormType::class, $workout);
         $form->submit($data);
 
         if (!$form->isValid()) {
@@ -215,12 +244,9 @@ class WorkoutController extends WorkoutUtilityController
             );
         }
         //dump($form->getData());
-
+        
         $workout = $form->getData();
-        //dump($workout);
-
-        $burnoutEnergy = $this->calculateBurnoutEnergy($workout);
-        $workout->setBurnoutEnergy($burnoutEnergy);
+        $workout->calculateSaveBurnoutEnergy();
         
         $em->persist($workout);
         $em->flush();
@@ -235,6 +261,21 @@ class WorkoutController extends WorkoutUtilityController
         return $response;
     }
 
+    /**
+     * @Route("/api/server_date", name="server_date_get", methods={"GET"})
+     * 
+     */
+    public function getServerDateAction()
+    {
+        $today = new \DateTime();
+
+        return $this->json(
+            $today,
+            201,
+            [],
+            []
+        );
+    }
     
     protected function getErrorsFromForm(FormInterface $form)
     {
@@ -253,10 +294,5 @@ class WorkoutController extends WorkoutUtilityController
 
         return $errors;
     }
-
-
-
-
-
 
 }

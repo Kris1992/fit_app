@@ -54,7 +54,11 @@ class AdminAccountController extends AbstractController
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
-        $userModel->setImageFilename($user->getImageFilename());
+        if($user->getImageFilename())
+        {
+            $userModel->setImageFilename($user->getImageFilename());
+        }
+        
 
             
         $form = $this->createForm(UserRegistrationFormType::class, $userModel);
