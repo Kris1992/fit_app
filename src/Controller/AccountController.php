@@ -23,18 +23,18 @@ use App\Entity\PasswordToken;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
 
-
-
 use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Services\UploadImagesHelper;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 
 class AccountController extends AbstractController
 {
     /**
      * @Route("/profile", name="app_profile")
-     */
+     * @IsGranted("ROLE_USER")
+    */
     public function profile()
     {
         return $this->render('account/profile.html.twig', [
@@ -44,14 +44,10 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
+
      */
     public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
     {
-        
-        //if ($user != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {//change to voter soon
-        //    throw $this->createAccessDeniedException('No access!');
-        //}
-
         /** @var User $user */
         $user = $this->getUser();
 

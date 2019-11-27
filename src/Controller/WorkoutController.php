@@ -15,14 +15,17 @@ use App\Form\WorkoutFormType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\FormInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class WorkoutController extends AbstractController
 {
     /**
      * @Route("/workout/list", name="workout_list")
+     * @IsGranted("ROLE_USER")
      */
     public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
+
     	$user = $this->getUser();
     	$workouts = $workoutRepository->findBy(['user' => $user ]);
 
@@ -53,6 +56,7 @@ class WorkoutController extends AbstractController
     
     /**
      * @Route("/workout/stats", name="workout_stats")
+     * @IsGranted("ROLE_USER")
      */
     public function stats(Request $request)
     {
@@ -61,6 +65,7 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("api/workout/get_id_by_date", name="workout_id_by_date")
+     * @IsGranted("ROLE_USER")
      */
     public function getWorkoutIdByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
@@ -89,6 +94,7 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("api/workout/get_energy_by_date", name="workout_energy_by_date")
+     * @IsGranted("ROLE_USER")
      */
     public function getWorkoutEnergyByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
@@ -109,7 +115,7 @@ class WorkoutController extends AbstractController
 
         if(!empty($workouts)) {
             foreach ($days as $day) {
-                if ($day == $workouts[$index]['startDate']) {
+                if (array_key_exists($index, $workouts) && $day == $workouts[$index]['startDate']) {
                     $currentEnergy = $workouts[$index]['burnoutEnergy'];
                     $index++;
                 } else {
@@ -135,6 +141,7 @@ class WorkoutController extends AbstractController
     
      /**
      * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function add_n(Request $request, EntityManagerInterface $em)
     {
@@ -162,9 +169,12 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
+
      */
     public function delete(Request $req, Workout $workout, EntityManagerInterface $em)
     {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
         $em->remove($workout);
         $em->flush();
     
@@ -173,6 +183,7 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("/api/workout/add", name="workout_add", methods={"POST"})
+     * @IsGranted("ROLE_USER")
      */
     public function add(Request $request, EntityManagerInterface $em)
     {
@@ -247,6 +258,8 @@ class WorkoutController extends AbstractController
      */
     public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
     {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
         $data = json_decode($request->getContent(), true);
         //dump(date_default_timezone_get());
 
@@ -285,6 +298,7 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("/api/server_date", name="server_date_get", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      * 
      */
     public function getServerDateAction()

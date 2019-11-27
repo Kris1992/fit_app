@@ -14,6 +14,11 @@ use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\WorkoutFormType;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+/**
+* @IsGranted("ROLE_ADMIN")
+**/
 class AdminWorkoutController extends AbstractController
 {
  	
@@ -68,6 +73,8 @@ class AdminWorkoutController extends AbstractController
      */
     public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
     {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
         $form = $this->createForm(WorkoutFormType::class, $workout, [
             'is_admin' => true
         ]);

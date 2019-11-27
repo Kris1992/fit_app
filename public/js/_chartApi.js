@@ -25,11 +25,90 @@
                 '.fc-right > .btn-group > :button',
                 this.handleButtonClick.bind(this)
             );
+            $("#today-js").on(
+                'click',
+                this.handleTodayButtonClick.bind(this)
+            );
 		}
 
-      	handleButtonClick() {
-      		var date = new Date(2018, 11, 24, 10, 33, 30, 0);// zmienic na date
+      	handleButtonClick(e) {
+      		const $button = $(e.currentTarget);
+      		const action = $button.attr('id');
+      		
+      		var date = this.getDateFromChart();
+      		date = this.changeDate(action, date);
+
+      		console.log(date);
+
 			this.showChartByEnergy(date, true);
+		}
+
+		changeDate(action, date) {
+			switch(action) {
+				case 'next-js':
+				this.enableButton('today-js');
+				date = this.getNextMonthDate(date);
+				break;
+				case 'before-js':
+				this.enableButton('today-js');
+				date = this.getPreviousMonthDate(date);
+				break;
+			}
+
+			return date;
+		}
+
+		getNextMonthDate(date){
+			var updatedDate;
+
+			if (date.getMonth() == 11) {
+    			updatedDate = new Date(date.getFullYear()+1, 0, 1);
+			} else {
+    			updatedDate = new Date(date.getFullYear(), date.getMonth()+1, 1);
+			}
+
+			return updatedDate;
+		}
+
+		getPreviousMonthDate(date){
+			var updatedDate;
+
+			if (date.getMonth() == 0) {
+    			updatedDate = new Date(date.getFullYear()-1, 11, 1);
+			} else {
+    			updatedDate = new Date(date.getFullYear(), date.getMonth()-1, 1);
+			}
+
+			return updatedDate;
+		}
+
+		handleTodayButtonClick(){
+			this.disableButton('today-js');
+			var date = new Date();
+			this.showChartByEnergy(date, true);
+		}
+
+		enableButton(id) {
+			$('#'+id).attr("disabled", false);
+		}
+
+		disableButton(id) {
+			$('#'+id).attr("disabled", true);
+		}
+
+		getDateFromChart() {
+			var stringDate = myChart.data.labels[0];
+			var dateArray = stringDate.split('-');
+			const ex = new RegExp(/^0{1}.{1}/);
+        	for (var i = 1; i < 3; i++) {
+        		if(dateArray[i].match(ex)) {	
+        			dateArray[i] = dateArray[i].substring(1);
+        		}
+        	}
+
+			var date = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
+
+			return date;
 		}
 
 		handleChartPillClick() {

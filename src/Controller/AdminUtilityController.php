@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Component\HttpFoundation\Request;
 
+
+/**
+* @IsGranted("ROLE_ADMIN")
+**/
 class AdminUtilityController extends AbstractController
 {
     /**
@@ -24,5 +28,3 @@ class AdminUtilityController extends AbstractController
         ], 200, [], ['groups' => ['main']]);
     }
 }
-
-// IsGranted("ROLE_ADMIN_ARTICLE") 

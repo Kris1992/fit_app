@@ -12,6 +12,11 @@ use App\Entity\Activity;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\ActivityFormType;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+/**
+* @IsGranted("ROLE_ADMIN")
+**/
 class AdminActivityController extends AbstractController
 {
     /**

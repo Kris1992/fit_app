@@ -16,7 +16,11 @@ use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Services\UploadImagesHelper;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+* @IsGranted("ROLE_ADMIN")
+**/
 class AdminAccountController extends AbstractController
 {
     /**
@@ -43,11 +47,6 @@ class AdminAccountController extends AbstractController
      */
     public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
     {
-        
-        //if ($user != $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {//change to voter soon
-        //    throw $this->createAccessDeniedException('No access!');
-        //}
-
         //transform user object to userModel object
         /** @var User $user */
         $userModel->setId($user->getId());
