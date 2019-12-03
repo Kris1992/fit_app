@@ -17,6 +17,12 @@
                                     attr: { placeholder: 'Email' }
                                 }) }}
 
+                                {%  if registrationForm.role is defined %}
+                                    {{ form_row(registrationForm.role, {
+                                        'label' : 'Role: '
+                                    }) }}
+                                {% endif %}
+
                                 {{ form_row(registrationForm.imageFile, {
                                     'label' : 'Your image : ',
                                     attr: {
@@ -37,15 +43,22 @@
                                     'label' : 'First Name: ',
                                     attr: { placeholder: 'First Name' }
                                 }) }}
+
                                 {{ form_row(registrationForm.secondName, {
                                     'label' : 'Second Name: ',
                                     attr: { placeholder: 'Second Name' }
                                 }) }}
+
+                                {{ form_row(registrationForm.gender, {
+                                    'label' : 'Gender: '
+                                }) }}
+
                                 {% if registrationForm.plainPassword is defined %}
                                     {{ form_row(registrationForm.plainPassword.first, {
                                        'label' : 'Password: ',
                                         attr: { placeholder: 'Password' }
                                     }) }}
+
                                     {{ form_row(registrationForm.plainPassword.second, {
                                        'label' : 'Repeat password: ',
                                         attr: { placeholder: 'Repeat password' }
@@ -53,6 +66,20 @@
                                 {% endif %}
                                 {% if registrationForm.agreeTerms is defined %}
                                     {{ form_row(registrationForm.agreeTerms) }}
+                                {% endif %}
+                                {%  if registrationForm.birthdate is defined %}
+                                    {{ form_row(registrationForm.birthdate, {
+                                        'label' : 'Birthdate: '
+                                    }) }}
+
+                                    {{ form_row(registrationForm.weight, {
+                                        'label' : 'Weight: '
+                                    }) }}
+
+                                    {{ form_row(registrationForm.height, {
+                                        'label' : 'Height: '
+                                    }) }}
+
                                 {% endif %}
 
 

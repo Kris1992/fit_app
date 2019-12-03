@@ -16,15 +16,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+
+
 
 use Symfony\Component\Validator\Constraints\Image;
 
 
-
-
 class UserRegistrationFormType extends AbstractType
 {
-public function buildForm(FormBuilderInterface $builder, array $options)
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
         $user = $options['data'] ?? null;
@@ -47,6 +51,14 @@ public function buildForm(FormBuilderInterface $builder, array $options)
             ->add('email', EmailType::class)
             ->add('firstName', TextType::class)
             ->add('secondName', TextType::class)
+            ->add('gender', ChoiceType::class, [
+                'choices'  => [
+                    'Male' => 'Male',
+                    'Female' => 'Female',
+                ],
+                'expanded' => true,
+                'multiple' => false
+            ])
             ->add('imageFile', FileType::class, [
                 'mapped' => false,
                 'required' => false,
@@ -67,7 +79,34 @@ public function buildForm(FormBuilderInterface $builder, array $options)
         }
         else
         {
-             $builder->add('id', HiddenType::class);
+            $builder
+                ->add('id', HiddenType::class)
+                ->add('birthdate', BirthdayType::class, [
+                    'required' => false,
+                    'placeholder' => [
+                        'year' => 'Year', 'month' => 'Month', 'day' => 'Day',
+                    ]
+                ])
+                ->add('weight', IntegerType::class, [
+                    'required' => false,
+                    'help' => 'Weight measured in kg.',
+                ])
+                ->add('height', IntegerType::class, [
+                    'required' => false,
+                    'help' => 'Height measured in cm.',
+                ]);
+        }
+
+        if($options['is_admin'])
+        {
+            $builder
+            ->add('role', ChoiceType::class, [
+                'choices'  => [
+                    'User' => 'ROLE_USER',
+                    'Moderator' => 'ROLE_MODERATOR',
+                    'Admin' => 'ROLE_ADMIN'
+                ],
+            ]);
         }
 
        
@@ -77,7 +116,8 @@ public function buildForm(FormBuilderInterface $builder, array $options)
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => UserRegistrationFormModel::class
+            'data_class' => UserRegistrationFormModel::class,
+            'is_admin' => false
         ]);
     }
 }

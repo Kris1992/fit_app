@@ -69,7 +69,9 @@ class SecurityController extends AbstractController
                     $user->setEmail($userModel->getEmail());
                     $user->setFirstName($userModel->getFirstName());
                     $user->setSecondName($userModel->getSecondName());
+                    $user->setGender($userModel->getGender());
                     $user->setRoles(['ROLE_USER']);
+
 
                     /** @var UploadedFile $uploadedFile */
                     $uploadedFile = $form['imageFile']->getData();
@@ -87,7 +89,7 @@ class SecurityController extends AbstractController
                     $userModel->getPlainPassword()
                     ));
             
-                    if (true === $userModel->getAgreeTerms())// make sure it's valid data
+                    if (true === $userModel->getAgreeTerms())//to make sure it's valid data
                     {
                         $user->agreeToTerms();
                     }

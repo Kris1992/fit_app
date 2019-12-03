@@ -1,70 +1,54 @@
-body
-{
+body {
 	/*	This pattern is downloaded from www.toptal.com/designers/subtlepatterns	*/
 	background-image: url("../img/funky-lines.png");
     font-family: 'Open Sans', sans-serif;
     font-size: 17px;
 }
-
-h1
-{
+h1 {
 	font-size: 36px;
 	font-weight: 400;
 	margin: 20px;
 }
-.text-green
-{
+.text-green {
 	color: #C0D06F;
 }
-.navbar
-{
+.navbar {
 	min-height: 57px;
 }
-.curiosities
-{
+.curiosities {
 	text-align: center;	
 }
-.curiosities img
-{
+.curiosities img {
 	width: 100%;
 	height: auto;
 }
-.curiosities p
-{
+.curiosities p {
 	margin-bottom: 30px;
 
 }
-.curiosities figcaption
-{
+.curiosities figcaption {
 	margin-top: 8px;
 }
-
 .list-container {
     border: 2px solid #efefee;
     border-radius: 5px;
     background: #fff;
 }
-
-.container-border-green
-{
+.container-border-green {
     border-color: #C0D06F;
 } 
-.overlayed
-{
+.overlayed {
 	position: relative;
 }
-.link
-{
+.link {
     color: #fff;
 	text-decoration: none;
 }
-.link:hover
-{
+.link:hover {
     color: #fff;
 	text-decoration: none;
 }
-.overlayed .link
-{
+.overlayed .link {
 	position: absolute;
 	display: block;
 	width: 100%;
@@ -75,33 +59,27 @@ h1
 	opacity: 0;
 	transition: opacity .5s ease-in-out;
 }
-.overlayed:hover .link
-{
+.overlayed:hover .link {
 	opacity: 0.8;
 }
-.oversized
-{
+.oversized {
 	overflow: hidden;
 }
-.oversized img
-{
+.oversized img {
 	transition: all .5s ease-in-out;
 }
-.oversized:hover img
-{
+.oversized:hover img {
 	-webkit-transform: scale(1.15);
 	-ms-transform: scale(1.15);
 	transform: scale(1.15);
 }
 
 /*profile page */
-.bg-profile
-{
+.bg-profile {
 	/*	This pattern is downloaded from www.toptal.com/designers/subtlepatterns	*/
 	background-image: url("../img/prism.png");
 }
-.user-image
-{
+.user-image {
 	position: absolute;
 	margin-top: 50px;
 }
@@ -111,12 +89,10 @@ h1
     padding: 6px 12px;
     border-radius: 3px 0 0 3px;
 }
-
 .btn-labeled {
     padding-top: 0;
     padding-bottom: 0;
 }
-
 .stretched-link::after {
     position: absolute;
     top: 0;
@@ -128,28 +104,29 @@ h1
     content: "";
     background-color: rgba(0,0,0,0);
 }
-.link-card
-{
+.link-card {
 	box-shadow: 0 0 0 1px #000;
 	background-color: rgba(255,255,255,.1);
 	border: 1px solid rgba(255,255,255,.15); 
 	border-radius: 5px;
 }
-.link-card:hover
-{
+.link-card:hover {
 	background-color: rgba(255,255,255,.35);
 }
-.link-card a:hover
-{
+.link-card a:hover {
 	text-decoration: none;
 }
-.sorted a
-{
+.sorted a {
 	color: #C0D06F; 
 }
-.thumbnail
-{
+.thumbnail {
 	border-radius: 50%;
+}
+.color-fire {
+	color: #f48159;
+}
+.color-clock {
+	color: #76a7fa;
 }
 
 

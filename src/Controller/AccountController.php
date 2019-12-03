@@ -11,6 +11,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use App\Repository\UserRepository;
 use App\Repository\PasswordTokenRepository;
+use App\Repository\WorkoutRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 use App\Services\Mailer;
@@ -35,10 +36,24 @@ class AccountController extends AbstractController
      * @Route("/profile", name="app_profile")
      * @IsGranted("ROLE_USER")
     */
-    public function profile()
+    public function profile(WorkoutRepository $workoutRepository)
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $workouts = $workoutRepository->getLastWorkoutsByUser($user, 5);
+        $totalData = $workoutRepository->getWorkoutsTimeAndNumWorkoutsByUser($user);
+
+        dump($workouts);
+        
+        
+         //$workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
+
+
+
         return $this->render('account/profile.html.twig', [
-           
+            'workouts' => $workouts,
+            'totalData' => $totalData
         ]);
     }
 
@@ -56,6 +71,10 @@ class AccountController extends AbstractController
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
+        $userModel->setGender($user->getGender());
+        $userModel->setBirthdate($user->getBirthdate());
+        $userModel->setWeight($user->getWeight());
+        $userModel->setHeight($user->getHeight());
         if($user->getImageFilename())
         {
             $userModel->setImageFilename($user->getImageFilename());
@@ -73,6 +92,10 @@ class AccountController extends AbstractController
             $user->setEmail($userModel2->getEmail());
             $user->setFirstName($userModel2->getFirstName());
             $user->setSecondName($userModel2->getSecondName());
+            $user->setGender($userModel2->getGender());
+            $user->setBirthdate($userModel2->getBirthdate());
+            $user->setWeight($userModel2->getWeight());
+            $user->setHeight($userModel2->getHeight());
 
             /** @var UploadedFile $uploadedFile */
             $uploadedFile = $form['imageFile']->getData();

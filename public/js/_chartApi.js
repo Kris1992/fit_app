@@ -32,13 +32,12 @@
 		}
 
       	handleButtonClick(e) {
+      		this.showLoadingIcon();
       		const $button = $(e.currentTarget);
       		const action = $button.attr('id');
       		
       		var date = this.getDateFromChart();
       		date = this.changeDate(action, date);
-
-      		console.log(date);
 
 			this.showChartByEnergy(date, true);
 		}
@@ -83,6 +82,7 @@
 		}
 
 		handleTodayButtonClick(){
+			this.showLoadingIcon();
 			this.disableButton('today-js');
 			var date = new Date();
 			this.showChartByEnergy(date, true);
@@ -112,6 +112,7 @@
 		}
 
 		handleChartPillClick() {
+			this.showLoadingIcon();
 			var today = new Date();
 			this.showChartByEnergy(today);
 		}
@@ -125,9 +126,12 @@
 				} else {
 					this.updateChartJs(dates, energyList);
 				}
-				
-			});
+				this.removeLoadingIcon('success');	
+			}).catch((errorData) => {
+        		this.removeLoadingIcon('error');
+        	});
 		}
+			
 
 		getAllDaysInCurrentMonth(date) {
 			var month = date.getMonth() + 1; 
@@ -227,6 +231,29 @@
 			myChart.data.datasets[0].data = energyList;
 			myChart.data.labels= dates;
 			myChart.update();
+		}
+
+		showLoadingIcon() {
+			var $loadingWrapper = this.$chartWrapper.find('.fc-right');
+			
+			if($('.js-loading-cal').length) {
+				$('.js-loading-cal').remove();
+			}
+
+			var $loadingIcon = `<span class="fas fa-spinner fa-spin js-loading-cal"></span>`;
+			$loadingWrapper.append($loadingIcon);		
+		}
+
+		removeLoadingIcon(status) {
+			var $loadingIcon = this.$chartWrapper.find('.js-loading-cal');
+
+			if(status == 'success') {
+				$loadingIcon.removeClass('fas fa-spinner fa-spin');
+				$loadingIcon.addClass('fa fa-check text-green');
+			} else {
+				$loadingIcon.removeClass('fas fa-spinner fa-spin');
+				$loadingIcon.addClass('fas fa-exclamation text-danger');
+			}
 		}
 		
 	

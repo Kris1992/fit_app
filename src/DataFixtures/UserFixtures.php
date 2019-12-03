@@ -32,6 +32,10 @@ class UserFixtures extends BaseFixture
                 $user,
                 'krakowdev01'
             ));
+            $user->setBirthdate($this->faker->date);
+            $user->setGender($this->faker->randomElement($array = array ('male','female')));
+            $user->setWeight($this->faker->numberBetween($min = 45, $max = 120));
+            $user->setHeight($this->faker->numberBetween($min = 100, $max = 200));
 
             $user->agreeToTerms(); 
 
@@ -51,6 +55,10 @@ class UserFixtures extends BaseFixture
                 $user,
                 'admin01'
             ));
+            $user->setBirthdate($this->faker->date);
+            $user->setGender($this->faker->randomElement($array = array ('male','female')));
+            $user->setWeight($this->faker->numberBetween($min = 45, $max = 120));
+            $user->setHeight($this->faker->numberBetween($min = 100, $max = 200));
             $user->agreeToTerms();
             
             return $user;

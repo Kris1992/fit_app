@@ -82,6 +82,26 @@ class User implements UserInterface
      */
     private $failed_attempts = 0;
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $birthdate;
+
+    /**
+     * @ORM\Column(type="string", length=25)
+     */
+    private $gender;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $weight;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $height;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
@@ -132,6 +152,11 @@ class User implements UserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->roles[0];
     }
 
     /**
@@ -286,6 +311,54 @@ class User implements UserInterface
     public function resetFailedAttempts(): self
     {
         $this->failed_attempts = 0;
+
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?int $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+
+    public function setHeight(?int $height): self
+    {
+        $this->height = $height;
 
         return $this;
     }

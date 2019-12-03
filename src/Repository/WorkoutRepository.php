@@ -28,7 +28,6 @@ class WorkoutRepository extends ServiceEntityRepository
     /**
     * @return Query
     */
-
     public function findAllQuery()
     {
         return $this->createQueryBuilder('w')
@@ -40,12 +39,44 @@ class WorkoutRepository extends ServiceEntityRepository
         ;
     }
 
+    
+    /**
+     * @param  $user 
+     * @param  $limit The number of workouts to return
+     * @return $workouts
+     */
+    public function getLastWorkoutsByUser($user, $limit)
+    {
+        return $this->createQueryBuilder('w')
+            ->select('w')
+            ->andWhere('w.user = :val')
+            ->setParameter('val', $user)
+            ->orderBy( 'w.startAt', 'DESC' )
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+    
+
+     /**
+     * @param User $user The user object
+     * @return Array[] Returns an array  
+     */
+    public function getWorkoutsTimeAndNumWorkoutsByUser($user)
+    {
+        return $this->createQueryBuilder('w')
+            ->select( "sum(w.durationSeconds) as totalDuration, count(w.id) as totalWorkouts")
+            ->andWhere('w.user = :val')
+            ->setParameter('val', $user)
+            ->getQuery()
+            ->getSingleResult();
+    }
 
     /**
     * @return Array[] Returns an array 
     */
     
-    public function countEnergyPerDayByUserAndDateArray($user, $timeline)
+    public function countEnergyPerDayByUserAndDateArray($user, $timeline)//wtf?
     {
 
         return $this->createQueryBuilder('w')

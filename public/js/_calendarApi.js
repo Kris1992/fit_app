@@ -122,7 +122,7 @@
 			}
 		}
 
-		showLoadingIcon() {// przeniesc do implements??
+		showLoadingIcon() {
 			var $loadingWrapper = this.$calendarWrapper.find('.fc-right');
 			
 			if($('.js-loading-cal').length) {

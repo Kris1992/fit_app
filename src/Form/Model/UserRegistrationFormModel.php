@@ -14,8 +14,6 @@ use App\Services\UploadImagesHelper;
 * errorPath="email"
 *)
 */
-
-
 class UserRegistrationFormModel
 {
 
@@ -30,11 +28,21 @@ class UserRegistrationFormModel
 
      /**
      * @Assert\NotBlank(message="Please enter your first name!")
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Your name cannot contain a number"
+     * )
      */
     private $firstName;
 
     /**
      * @Assert\NotBlank(message="Please enter your second name!")
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Your second name cannot contain a number"
+     * )
      */
     private $secondName;
 
@@ -44,6 +52,13 @@ class UserRegistrationFormModel
      */
     private $plainPassword;
 
+    private $role;
+
+    /**
+     * @Assert\NotNull(message="Choose a gender!")
+     */
+    private $gender;
+
     /**
      * @Assert\IsTrue(message="You must agree to our terms.")
      */
@@ -51,12 +66,37 @@ class UserRegistrationFormModel
 
     private $imageFilename;
 
+    //additional options
+
+
+    private $birthdate;
+
+    /**
+     * @Assert\Range(
+     *      min = 30,
+     *      max = 200,
+     *      minMessage = "The minimal value is set to: {{ limit }} kg",
+     *      maxMessage = "The maximal value is set to: {{ limit }} kg"
+     * )
+     */
+    private $weight;
+
+     /**
+     * @Assert\Range(
+     *      min = 120,
+     *      max = 220,
+     *      minMessage = "You must be at least {{ limit }} cm tall to enter",
+     *      maxMessage = "You cannot be taller than {{ limit }} cm to enter"
+     * )
+     */
+    private $height;
 
 
     public function getId(): ?int
     {
         return $this->id;
     }
+    
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -75,6 +115,7 @@ class UserRegistrationFormModel
 
         return $this;
     }
+    
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -111,10 +152,72 @@ class UserRegistrationFormModel
         return $this;
     }
 
+    public function setRole(string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    //additional options
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
+
+        return $this;
+    }
+    
+    public function getWeight(): ?int
+    {
+        return $this->weight;
+    }
+    
+    public function setWeight(?int $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+    
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+    
+    public function setHeight(?int $height): self
+    {
+        $this->height = $height;
+
+        return $this;
+    }
+
     public function getAgreeTerms(): ?bool
     {
         return $this->agreeTerms;
     }
+    
     public function setAgreeTerms(bool $agreeTerms): self
     {
         $this->agreeTerms = $agreeTerms;
@@ -145,5 +248,3 @@ class UserRegistrationFormModel
     }
 
 }
-
-?>

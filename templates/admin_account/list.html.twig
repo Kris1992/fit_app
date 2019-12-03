@@ -25,6 +25,12 @@
 		               	<th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
 		            		{{ knp_pagination_sortable(pagination, 'E-mail', 'u.email') }}
 		            	</th>
+		            	<th {% if pagination.isSorted('u.roles') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Role', 'u.roles') }}
+		            	</th>
+		           		<th {% if pagination.isSorted('u.gender') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Gender', 'u.gender') }}
+		            	</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -34,6 +40,8 @@
 		                    <td>{{ user.firstName }}</td>
 		                    <td>{{ user.secondName }}</td>
 		                    <td>{{ user.email }}</td>
+		                    <td>{{ user.roles[0] }}</td>
+		                    <td>{{ user.gender }}</td>
 		                    <td>
 		                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
 		                            <span class="fa fa-pencil-alt"></span>

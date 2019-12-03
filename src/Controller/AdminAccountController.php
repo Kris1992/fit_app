@@ -53,6 +53,12 @@ class AdminAccountController extends AbstractController
         $userModel->setEmail($user->getEmail());
         $userModel->setFirstName($user->getFirstName());
         $userModel->setSecondName($user->getSecondName());
+        $userModel->setGender($user->getGender());
+        $userModel->setBirthdate($user->getBirthdate());
+        $userModel->setWeight($user->getWeight());
+        $userModel->setHeight($user->getHeight());
+        $userModel->setRole($user->getRole());
+
         if($user->getImageFilename())
         {
             $userModel->setImageFilename($user->getImageFilename());
@@ -60,7 +66,9 @@ class AdminAccountController extends AbstractController
         
 
             
-        $form = $this->createForm(UserRegistrationFormType::class, $userModel);
+        $form = $this->createForm(UserRegistrationFormType::class, $userModel, [
+            'is_admin' => true
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) 
@@ -70,6 +78,11 @@ class AdminAccountController extends AbstractController
             $user->setEmail($userModel2->getEmail());
             $user->setFirstName($userModel2->getFirstName());
             $user->setSecondName($userModel2->getSecondName());
+            $user->setGender($userModel2->getGender());
+            $user->setBirthdate($userModel2->getBirthdate());
+            $user->setWeight($userModel2->getWeight());
+            $user->setHeight($userModel2->getHeight());
+            $user->setRoles([$userModel2->getRole()]);
 
             /** @var UploadedFile $uploadedFile */
             $uploadedFile = $form['imageFile']->getData();
