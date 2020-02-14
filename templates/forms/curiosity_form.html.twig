@@ -1,0 +1,28 @@
+{% block curiosity_form %}
+                
+                    <div class="card-body">
+                        <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+                            
+                            {{ form_start(curiosityForm, {
+                                'attr': {'class': 'form-larger',
+                                'data-url': path('workout_add')
+                                }
+
+                            }) }}
+
+                                {{ form_row(curiosityForm.title, {
+                                    'label' : 'Title: '
+                                }) }}
+
+                                {{ form_row(curiosityForm.content, {
+                                    'label' : 'Content: '
+                                }) }}
+
+                                <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
+                            
+                            {{ form_end(curiosityForm) }}
+                    </div>
+
+{% endblock %}
+
+

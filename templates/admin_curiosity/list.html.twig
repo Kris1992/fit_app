@@ -1,0 +1,56 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Curiosity list{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
+{% block content_body %}
+    <div class="col-sm-12">
+    	<a href="{{ path('admin_curiosity_add') }}" class="btn btn-primary float-right">
+        	Create <span class="fa fa-plus-circle"></span>
+    	</a>
+	    <h2 class="text-green">All Curiosities ({{ pagination.getTotalItemCount }})</h2>
+	    <div class="table-responsive">
+		    <table class="table table-hover" id="list">
+		        <thead>
+		            <tr>
+		            	<th {% if pagination.isSorted('c.id') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, '#', 'c.id') }}
+		            	</th>
+		            	<th {% if pagination.isSorted('c.title') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Title', 'c.title') }}
+		            	</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            {% for curiosity in pagination %}
+		                <tr>
+		                	<td>{{ curiosity.id }}</td>
+		                    <td>{{ curiosity.title }}</td>
+		                    <td>
+		                        <a href="{{ path('admin_account_edit', { id: curiosity.id }) }}">
+		                            <span class="fa fa-pencil-alt"></span>
+		                        </a>
+		                        <a href="">
+		                           <span class="fa fa-trash-alt curiosity" data-id="{{ curiosity.id }}"></span>
+		                        </a>
+		                    </td>
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		    </table>
+
+		</div>
+		<div class="navigation">
+
+			{{ knp_pagination_render(pagination, null, {}, {
+				'align': 'center'
+			}) }}
+			{% include 'per_page.html.twig' %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript" src="{{ asset('js/_delete.js') }}"></script>
+{% endblock %}

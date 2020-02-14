@@ -102,9 +102,15 @@ class User implements UserInterface
      */
     private $height;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Curiosity", mappedBy="author", orphanRemoval=true)
+     */
+    private $curiosities;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
+        $this->curiosities = new ArrayCollection();
     }
     
 
@@ -359,6 +365,37 @@ class User implements UserInterface
     public function setHeight(?int $height): self
     {
         $this->height = $height;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Curiosity[]
+     */
+    public function getCuriosities(): Collection
+    {
+        return $this->curiosities;
+    }
+
+    public function addCuriosity(Curiosity $curiosity): self
+    {
+        if (!$this->curiosities->contains($curiosity)) {
+            $this->curiosities[] = $curiosity;
+            $curiosity->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCuriosity(Curiosity $curiosity): self
+    {
+        if ($this->curiosities->contains($curiosity)) {
+            $this->curiosities->removeElement($curiosity);
+            // set the owning side to null (unless already changed)
+            if ($curiosity->getAuthor() === $this) {
+                $curiosity->setAuthor(null);
+            }
+        }
 
         return $this;
     }
