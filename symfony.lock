@@ -1,6 +1,39 @@
 {
+    "behat/behat": {
+        "version": "3.6.x-dev"
+    },
+    "behat/gherkin": {
+        "version": "v4.6.0"
+    },
+    "behat/mink": {
+        "version": "1.7.x-dev"
+    },
+    "behat/mink-extension": {
+        "version": "2.1.x-dev"
+    },
+    "behat/mink-selenium2-driver": {
+        "version": "v1.3.1"
+    },
+    "behat/symfony2-extension": {
+        "version": "2.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "2.1",
+            "ref": "af4f8fa93b1fee9e6f15d1e208ce743bb31cb2b2"
+        },
+        "files": [
+            "behat.yml.dist",
+            "features/bootstrap/FeatureContext.php",
+            "features/bootstrap/bootstrap.php",
+            "features/demo.feature"
+        ]
+    },
     "behat/transliterator": {
         "version": "v1.2.0"
+    },
+    "container-interop/container-interop": {
+        "version": "1.2.0"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -111,6 +144,21 @@
     "egulias/email-validator": {
         "version": "2.1.10"
     },
+    "friends-of-behat/symfony-extension": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "3d21344765fd3440a85bdd27d4cada186ec628bd"
+        },
+        "files": [
+            "behat.yml.dist",
+            "config/services_test.yaml",
+            "features/demo.feature",
+            "tests/Behat/DemoContext.php"
+        ]
+    },
     "fzaninotto/faker": {
         "version": "v1.8.0"
     },
@@ -128,6 +176,9 @@
         "files": [
             "./config/packages/google_recaptcha.yaml"
         ]
+    },
+    "instaclick/php-webdriver": {
+        "version": "1.4.7"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -164,6 +215,9 @@
         "files": [
             "./config/packages/oneup_flysystem.yaml"
         ]
+    },
+    "php": {
+        "version": "7.2"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -204,6 +258,9 @@
     "symfony/asset": {
         "version": "v4.3.2"
     },
+    "symfony/browser-kit": {
+        "version": "v4.3.11"
+    },
     "symfony/cache": {
         "version": "v4.3.2"
     },
@@ -225,6 +282,9 @@
             "./bin/console",
             "./config/bootstrap.php"
         ]
+    },
+    "symfony/css-selector": {
+        "version": "v4.3.11"
     },
     "symfony/debug": {
         "version": "v4.3.2"
@@ -249,6 +309,9 @@
     },
     "symfony/doctrine-bridge": {
         "version": "v4.3.2"
+    },
+    "symfony/dom-crawler": {
+        "version": "v4.3.11"
     },
     "symfony/dotenv": {
         "version": "v4.3.2"
@@ -352,6 +415,22 @@
     "symfony/orm-pack": {
         "version": "v1.0.6"
     },
+    "symfony/phpunit-bridge": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "3f8a8c93cd47061999316f8d56edd6c2abca9308"
+        },
+        "files": [
+            ".env.test",
+            "bin/phpunit",
+            "config/services_test.yaml",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.11.0"
     },
@@ -375,6 +454,9 @@
     },
     "symfony/property-access": {
         "version": "v4.3.2"
+    },
+    "symfony/proxy-manager-bridge": {
+        "version": "v4.3.11"
     },
     "symfony/routing": {
         "version": "4.2",
@@ -437,6 +519,9 @@
             "./config/packages/swiftmailer.yaml",
             "./config/packages/test/swiftmailer.yaml"
         ]
+    },
+    "symfony/test-pack": {
+        "version": "v1.0.6"
     },
     "symfony/translation": {
         "version": "3.3",
