@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
@@ -28,11 +29,16 @@ class ContainsAlphanumericValidator extends ConstraintValidator
             // throw new UnexpectedValueException($value, 'string|int');
         }
 
-        if (!preg_match('/^[a-zA-Z]{3,}+[0-9]{2,}$/D', $value, $matches)) {
+        preg_match_all('/[a-zA-Z]/', $value, $letterMatches);
+        preg_match_all('/[0-9]/', $value, $numberMatches);
+
+        if(
+            sizeof($letterMatches[0]) < 3 || 
+            sizeof($numberMatches[0]) < 2
+        ) {
+            /* @var $constraint \App\Validator\ContainsAlphanumeric */
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
     }
 }
-
-?>
