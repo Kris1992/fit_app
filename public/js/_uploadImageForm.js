@@ -48,7 +48,7 @@ $('#delete-image').on('click', function(event) {
 
 
         console.log('clicked');
-        //$("#uploaded_image").fadeOut(1000);
+        $("#uploaded_image").fadeOut(1000);
     }
 });
 

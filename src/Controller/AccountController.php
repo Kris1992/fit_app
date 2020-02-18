@@ -15,23 +15,21 @@ use App\Repository\UserRepository;
 use App\Repository\PasswordTokenRepository;
 use App\Repository\WorkoutRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
 use App\Services\Mailer;
-
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\RenewPasswordFormType;
 use App\Form\Model\RenewPasswordFormModel;
-
 use App\Entity\PasswordToken;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
-
 use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Services\UploadImagesHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Command\DeleteUserImage;
 
 class AccountController extends AbstractController
 {
@@ -223,7 +221,7 @@ class AccountController extends AbstractController
      * methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
-    public function deleteUserImageAction(Request $request, ImagesManagerInterface $ImagesManager): Response
+    public function deleteUserImageAction(Request $request, ImagesManagerInterface $ImagesManager, MessageBusInterface $messageBus): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -233,13 +231,15 @@ class AccountController extends AbstractController
             throw new BadRequestHttpException('Invalid Json');    
         }
 
-        if($user->getId() == $data['userId']) {
+        $userId = $user->getId();
+
+        if($userId == $data['userId']) {
             $imageFilename = $user->getImageFilename();
-            dump($imageFilename);
-            //$result = $ImagesManager->deleteUserImage($imageFilename);
-            //if($result) {
+            if(!empty($imageFilename)) {
+                dump('kurwa?');
+                $messageBus->dispatch(new DeleteUserImage($userId));
                 return new JsonResponse(Response::HTTP_OK);
-            //}
+            }
         }
         return new JsonResponse(null,Response::HTTP_BAD_REQUEST);
     }
