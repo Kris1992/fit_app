@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
@@ -29,6 +31,7 @@ use App\Form\Model\UserRegistrationFormModel;
 use App\Services\UploadImagesHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 class AccountController extends AbstractController
 {
@@ -61,7 +64,7 @@ class AccountController extends AbstractController
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
 
      */
-    public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
+    public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, ImagesManagerInterface $ImagesManager)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -102,7 +105,7 @@ class AccountController extends AbstractController
 
             if($uploadedFile)
             {
-                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, $user->getImageFilename());
+                $newFilename = $ImagesManager->uploadUserImage($uploadedFile, $user->getImageFilename());
                 $user->setImageFilename($newFilename);
             }
 
@@ -112,6 +115,7 @@ class AccountController extends AbstractController
 
             return $this->redirectToRoute('account_edit');
         }
+
         return $this->render('account/edit.html.twig', [
             'registrationForm' => $form->createView()
         ]);
@@ -210,6 +214,34 @@ class AccountController extends AbstractController
         return $this->render('account/renew_password.html.twig', [
             'renewPasswordForm' => $form->createView(),
         ]);
+    }
+
+    //API
+
+    /**
+     * @Route("/api/account/delete_user_image", name="api_delete_user_image",
+     * methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function deleteUserImageAction(Request $request, ImagesManagerInterface $ImagesManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        if($user->getId() == $data['userId']) {
+            $imageFilename = $user->getImageFilename();
+            dump($imageFilename);
+            //$result = $ImagesManager->deleteUserImage($imageFilename);
+            //if($result) {
+                return new JsonResponse(Response::HTTP_OK);
+            //}
+        }
+        return new JsonResponse(null,Response::HTTP_BAD_REQUEST);
     }
 
 }

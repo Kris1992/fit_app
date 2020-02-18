@@ -33,7 +33,7 @@ class UserFixtures extends BaseFixture
                 'krakowdev01'
             ));
             $user->setBirthdate($this->faker->dateTime);//$this->faker->date);
-            $user->setGender($this->faker->randomElement($array = array ('male','female')));
+            $user->setGender($this->faker->randomElement($array = array ('Male','Female')));
             $user->setWeight($this->faker->numberBetween($min = 45, $max = 120));
             $user->setHeight($this->faker->numberBetween($min = 100, $max = 200));
 
@@ -56,7 +56,7 @@ class UserFixtures extends BaseFixture
                 'admin01'
             ));
             $user->setBirthdate($this->faker->dateTime);//$this->faker->date);
-            $user->setGender($this->faker->randomElement($array = array ('male','female')));
+            $user->setGender($this->faker->randomElement($array = array ('Male','Female')));
             $user->setWeight($this->faker->numberBetween($min = 45, $max = 120));
             $user->setHeight($this->faker->numberBetween($min = 100, $max = 200));
             $user->agreeToTerms();

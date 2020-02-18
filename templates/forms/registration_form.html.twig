@@ -1,5 +1,4 @@
 {% block registration_form %}
-                
                     <div class="card-body">
                         <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
                             
@@ -33,10 +32,21 @@
                                 }) }}
 
                                 {% if registrationForm.vars.data.imageFilename is defined and registrationForm.vars.data.imageFilename is not null %}
-                                    <p>Already uploaded:</p>
-                                    <a href="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}" target="_blank">
-                                        <img class="imageForm rounded" src="{{ uploaded_asset(registrationForm.vars.data.thumbImagePath) }}">
-                                    </a>
+                                    <div id="uploaded_image">
+                                        <p>Already uploaded:</p>
+                                        <div class="imageForm-container position-relative">
+                                            <img class="imageForm rounded" src="{{ uploaded_asset(registrationForm.vars.data.thumbImagePath) }}" alt="User image">
+                                            <div class="image-toolbar">
+                                                <a href="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}" target="_blank">
+                                                    <span class="fa fa-search-plus position-absolute link-show"></span>
+                                                </a>
+                                                <a href="{{ path('api_delete_user_image') }}" id="delete-image">
+                                                    <span class="fa fa-trash position-absolute link-delete"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                 {% endif %}
                             
                                 {{ form_row(registrationForm.firstName, {

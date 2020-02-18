@@ -189,6 +189,8 @@ class WorkoutController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+        dump($data);
+
         if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
@@ -204,7 +206,8 @@ class WorkoutController extends AbstractController
             400
             );
         }
-
+        dump($form->getData());
+        
         $workout = new Workout();
         $workout = $form->getData();
         $workout->setUser($this->getUser());

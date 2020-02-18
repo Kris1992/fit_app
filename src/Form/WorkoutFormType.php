@@ -63,6 +63,7 @@ class WorkoutFormType extends AbstractType
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
                 ]
             ])
+            
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'single_text',
