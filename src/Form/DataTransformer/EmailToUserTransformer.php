@@ -45,4 +45,3 @@ class EmailToUserTransformer implements DataTransformerInterface
     }
 }
 
-?>

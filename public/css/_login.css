@@ -84,11 +84,36 @@ legend
 	-moz-box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 	box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 }
+.imageForm-container
+{
+    width: 120px;
+    height: 100%;
+
+}
+.image-toolbar .link-show
+{
+    right: 0px;
+    top: 0px;
+}
+.image-toolbar .link-delete
+{
+    right: 0px;
+    bottom: 0px;
+}
+.image-toolbar .link-delete:hover
+{
+    color: #f48159;
+}
 .imageForm
 {
 	width: 100px;
 	height: 100%;
 }
+.image-toolbar a.disabled
+{
+    color: #dddddd;
+}
+
 
 
 

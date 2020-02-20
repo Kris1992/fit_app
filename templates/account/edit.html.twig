@@ -4,11 +4,13 @@
 {% block title %}Edit Account{% endblock %}
 {% block javascripts %}
     {{ parent() }}
+    <script src="{{ asset('js/_apiHelper.js') }}"></script>
     <script src="{{ asset('js/_uploadImageForm.js') }}"></script>
 {% endblock %}
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/all.css') }}">
 {% endblock %}
 {% block content %}
 

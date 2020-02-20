@@ -66,6 +66,17 @@ Have fun!
 
 TO DO
 
+## TO DO 
+
+- Remove unused duration field in workout
+- Rebuild Activities:
+    +Add Activity type field (give posibility to build few different workouts e.g weight training needs another type fields than running or cycling)
+    +Creating activities by abstract factory pattern
+- Add tests
+- Introduce to curiosity system
+
+And a lot of more
+
 ## Have Ideas, Feedback or an Issue?
 
 If you have suggestions or questions, please feel free to

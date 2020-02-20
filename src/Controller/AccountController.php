@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
@@ -13,21 +15,21 @@ use App\Repository\UserRepository;
 use App\Repository\PasswordTokenRepository;
 use App\Repository\WorkoutRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
 use App\Services\Mailer;
-
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\RenewPasswordFormType;
 use App\Form\Model\RenewPasswordFormModel;
-
 use App\Entity\PasswordToken;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
-
 use App\Form\UserRegistrationFormType;
 use App\Form\Model\UserRegistrationFormModel;
 use App\Services\UploadImagesHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Command\DeleteUserImage;
 
 
 class AccountController extends AbstractController
@@ -59,9 +61,9 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
-
+     * @IsGranted("ROLE_USER")
      */
-    public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
+    public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, ImagesManagerInterface $ImagesManager)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -102,7 +104,7 @@ class AccountController extends AbstractController
 
             if($uploadedFile)
             {
-                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, $user->getImageFilename());
+                $newFilename = $ImagesManager->uploadUserImage($uploadedFile, $user->getImageFilename());
                 $user->setImageFilename($newFilename);
             }
 
@@ -112,6 +114,7 @@ class AccountController extends AbstractController
 
             return $this->redirectToRoute('account_edit');
         }
+
         return $this->render('account/edit.html.twig', [
             'registrationForm' => $form->createView()
         ]);
@@ -210,6 +213,43 @@ class AccountController extends AbstractController
         return $this->render('account/renew_password.html.twig', [
             'renewPasswordForm' => $form->createView(),
         ]);
+    }
+
+    //API
+
+    /**
+     *
+     * @Route("/api/account/delete_user_image", name="api_delete_user_image",
+     * methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function deleteUserImageAction(Request $request, ImagesManagerInterface $ImagesManager, MessageBusInterface $messageBus): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+
+        $userId = $user->getId();
+
+        if($userId == $data['userId']) {
+            $imageFilename = $user->getImageFilename();
+            if(!empty($imageFilename)) {
+                $messageBus->dispatch(new DeleteUserImage($userId));
+                return new JsonResponse(Response::HTTP_OK);
+            }
+        }
+
+        $responseMessage = [
+            'errorMessage' => 'Image not found!'
+        ];
+
+        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
     }
 
 }

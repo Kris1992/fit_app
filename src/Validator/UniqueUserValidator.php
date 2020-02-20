@@ -19,9 +19,6 @@ class UniqueUserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint)
     {
-
-        
-        
         $existingUser = $this->userRepository->findOneBy([
             'email' => $value->getEmail()
         ]);

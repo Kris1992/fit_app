@@ -12,7 +12,8 @@ use Psr\Log\LoggerInterface;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
 
-//Do usprawnienia
+
+//To complete rebuild
 
 class UploadImagesHelper
 {
@@ -56,6 +57,14 @@ class UploadImagesHelper
         }
 
         return $newFilename;
+    }
+
+    public function deleteUserImage(string $existingFilename): void
+    {
+        dump($existingFilename);
+        if ($existingFilename) {
+           $this->deleteOldImage($existingFilename);
+        }
     }
 
     private function uploadFile(File $file, string $directory, int $newWidth): string
@@ -106,15 +115,19 @@ class UploadImagesHelper
     private function compressImage($filename, $extension, $newWidth)
    {
     
-    if(!$this->libraryLoaded())
-    {
+    if(!$this->libraryLoaded()) {
         $this->logger->alert('Could not load GD library');
         throw new \Exception('Server library not found');
     }
-        
+
     $filePath = $this->uploadsDirectory.'/'.self::USERS_IMAGES.'/';
     $source = $filePath.$filename.'.'.$extension;
-    $destination = $filePath.self::THUMB_IMAGES.'/'.$filename.'.'.$extension;
+    $destinationFolder = $filePath.self::THUMB_IMAGES;
+
+    $this->createFolder($destinationFolder);
+
+    $destination = $destinationFolder.'/'.$filename.'.'.$extension;
+    //$destination = $filePath.self::THUMB_IMAGES.'/'.$filename.'.'.$extension;
 
     try{
         //used only GD library
@@ -293,6 +306,13 @@ class UploadImagesHelper
         return $this->requestStackContext
             ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
 
+    }
+
+    private function createFolder(string $folderPath): void
+    {
+        if(!is_dir($folderPath)) {
+         mkdir($folderPath);
+        }
     }
 
 }
