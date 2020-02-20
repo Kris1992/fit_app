@@ -1,25 +1,53 @@
+//TO DO
+
 const items = document.getElementById('list');
 
-if(items)
-{
-	items.addEventListener('click', ev =>
-	{
+
+if(items) {
+	items.addEventListener('click', event => {
+
+    /*switch (event.target.className) {
+        case 'fa fa-trash-alt user':
+            const id = event.target.getAttribute('data-id');
+            if(confirm("Do you want delete user number: " + id + " ??")) {           
+                fetch('/admin/account/delete/' + id, {
+                    method: 'DELETE'
+                });
+            }
+            break;
+        case 'fa fa-trash-alt activity':
+            const id = event.target.getAttribute('data-id');
+            if(confirm("Do you want delete activity number: " + id + " ??")) {
+                fetch('/admin/activity/delete/' + id, {
+                    method: 'DELETE'
+                });
+            }   
+            break;
+        case 'fa fa-trash-alt workout':
+            const id = event.target.getAttribute('data-id');
+            if(confirm("Do you want delete workout number: " + id + " ??")) {
+                fetch('/admin/workout/delete/' + id, {
+                    method: 'DELETE'
+                });
+            }   
+            break;*/
 
 
-		if (ev.target.className === "fa fa-trash-alt user" )
-		{
-			const id = ev.target.getAttribute('data-id');
-			if(confirm("Do you want delete user number: " + id + " ??"))
-			{
+
+
+
+
+		if (event.target.className === "fa fa-trash-alt user" ) {
+			const id = event.target.getAttribute('data-id');
+			if(confirm("Do you want delete user number: " + id + " ??")) {
 				
 				fetch('/admin/account/delete/' + id, {
 				method: 'DELETE'
 			});//.then(res => window.location.reload());
 			}	
-		}
-		if (ev.target.className === "fa fa-trash-alt activity" )
+		} if (event.target.className === "fa fa-trash-alt activity" )
 		{
-			const id = ev.target.getAttribute('data-id');
+			const id = event.target.getAttribute('data-id');
 			if(confirm("Do you want delete activity number: " + id + " ??"))
 			{
 				fetch('/admin/activity/delete/' + id, {
@@ -27,9 +55,9 @@ if(items)
 			});//.then(res => window.location.reload());
 			}	
 		}
-		if (ev.target.className === "fa fa-trash-alt workout" )
+		if (event.target.className === "fa fa-trash-alt workout" )
 		{
-			const id = ev.target.getAttribute('data-id');
+			const id = event.target.getAttribute('data-id');
 			if(confirm("Do you want delete workout number: " + id + " ??"))
 			{
 				fetch('/admin/workout/delete/' + id, {

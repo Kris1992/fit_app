@@ -31,6 +31,7 @@ use App\Services\ImagesManager\ImagesManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 
+
 class AccountController extends AbstractController
 {
     /**
@@ -60,7 +61,7 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
-
+     * @IsGranted("ROLE_USER")
      */
     public function edit(Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, ImagesManagerInterface $ImagesManager)
     {
@@ -217,12 +218,14 @@ class AccountController extends AbstractController
     //API
 
     /**
+     *
      * @Route("/api/account/delete_user_image", name="api_delete_user_image",
      * methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
     public function deleteUserImageAction(Request $request, ImagesManagerInterface $ImagesManager, MessageBusInterface $messageBus): Response
     {
+
         /** @var User $user */
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
@@ -231,17 +234,22 @@ class AccountController extends AbstractController
             throw new BadRequestHttpException('Invalid Json');    
         }
 
+
         $userId = $user->getId();
 
         if($userId == $data['userId']) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
-                dump('kurwa?');
                 $messageBus->dispatch(new DeleteUserImage($userId));
                 return new JsonResponse(Response::HTTP_OK);
             }
         }
-        return new JsonResponse(null,Response::HTTP_BAD_REQUEST);
+
+        $responseMessage = [
+            'errorMessage' => 'Image not found!'
+        ];
+
+        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
     }
 
 }

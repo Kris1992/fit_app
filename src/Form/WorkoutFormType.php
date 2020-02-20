@@ -55,21 +55,30 @@ class WorkoutFormType extends AbstractType
                     'hour' => 'Hour', 'minute' => 'Minute'
                 ]
             ])
-            ->add('durationSeconds', TimeType::class, [
+            /*->add('durationSeconds', TimeType::class, [
                 'input'  => 'timestamp',
                 'widget' => 'choice',
                 'with_seconds' => true,
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
                 ]
-            ])
+            ])*/
             
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'single_text',
                 'model_timezone' => 'UTC',
                 'view_timezone' => 'UTC',
-            
+            ])
+
+            ->add('durationSeconds', CustomTimeType::class, [
+                //'mapped' => false,
+                'placeholder' => [
+                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                ],
+                'attr' => [
+                    'class'=>'form-inline'
+                ]
             ])
         ;
 

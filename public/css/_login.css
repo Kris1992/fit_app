@@ -100,6 +100,10 @@ legend
     right: 0px;
     bottom: 0px;
 }
+.image-toolbar .link-delete:hover
+{
+    color: #f48159;
+}
 .imageForm
 {
 	width: 100px;
@@ -109,6 +113,7 @@ legend
 {
     color: #dddddd;
 }
+
 
 
 
