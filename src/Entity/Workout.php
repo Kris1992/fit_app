@@ -75,7 +75,45 @@ class Workout
     */
     private $startDate;
  
+    /**
+     * transformSaveTimeToString Transform time from seconds to string format H:i:s
+     * @return self 
+     */
+    public function transformSaveTimeToString(): self
+    {
+        $seconds = $this->getDurationSeconds();
+        $array['hour'] = (int)($seconds / (60 * 60));
+        $array['minute'] = (int)(($seconds / 60) % 60);
+        $array['second'] = (int)($seconds % 60);
 
+        foreach ($array as $key => $value) {
+            $array[$key] = $this->transformToTimeString($value);
+        }
+
+        $format = '%s:%s:%s';
+        $timeString = sprintf($format, $array['hour'], $array['minute'], $array['second']);
+
+        $this->time = $timeString;
+
+        return $this;
+    }
+
+    /**
+     * transformToTimeString Transform time value(hour, minute etc.) to string format 01,11 etc.
+     * @param  int    $value Time value to transform 
+     * @return string
+     */
+    private function transformToTimeString(int $value):string
+    {
+        $value = str_pad((string)$value, 2, '0', STR_PAD_LEFT);
+
+        return $value;
+    }
+
+
+
+
+    //setTime to delete
     public function setTime(string $time): self
     {
         $this->time = $time;

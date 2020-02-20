@@ -34,9 +34,9 @@
 		                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
 		                            <span class="fa fa-pencil-alt"></span>
 		                        </a>
-		                        <a href="">
-		                           <span class="fa fa-trash-alt activity" data-id="{{ activity.id }}"></span>
-		                        </a>
+                                <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                   <span class="fa fa-trash-alt"></span>
+                                </a>
 		                    </td>
 		                   
 		                </tr>
@@ -62,5 +62,5 @@
 
 {% block javascripts %}
 {{ parent() }}
-<script type="text/javascript" src="{{ asset('js/_delete.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
 {% endblock %}

@@ -129,6 +129,19 @@ h1 {
 	color: #76a7fa;
 }
 
+/* List */
+#list a:hover {
+    text-decoration: none;
+}
+.delete-item:hover {
+    
+    color: #f48159;
+}
+.delete-item.disabled
+{
+    color: #dddddd;
+}
+
 
 
 

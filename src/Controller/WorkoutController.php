@@ -232,9 +232,11 @@ class WorkoutController extends AbstractController
      */
     public function getWorkoutAction(Workout $workout)
     {
-        $durationSeconds = $workout->getDurationSeconds();
-        $durationSeconds = date('H:i:s', $durationSeconds);
-        $workout->setTime($durationSeconds);
+        //$durationSeconds = $workout->getDurationSeconds();
+        //change date to own function
+        //$durationSeconds = date('H:i:s', $durationSeconds);
+        //$workout->setTime($durationSeconds);
+        $workout->transformSaveTimeToString();
 
         $startAt = $workout->getStartAt();
         $startAt = date_format($startAt, 'Y-m-d H:i');
