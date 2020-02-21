@@ -36,16 +36,21 @@
 		                	<td>{{ workout.id }}</td>
 		                    <td>{{ workout.activity.name }}</td>
 		                    <td>{{ workout.user.email }}</td>
-		                    <td>{{ workout.durationSeconds | date('H:i:s') }}</td>
+		                    <td>{{ workout.durationSeconds | time }}</td>
+                            {# | date('H:i:s', '+00:00 GMT') #}
 		                    <td>{{ workout.startAt | date('m/d/Y') }}</td>
 
-		                    <td>
-		                        <a href="{{ path('admin_workout_edit', { id: workout.id }) }}">
-		                            <span class="fa fa-pencil-alt"></span>
-		                        </a>
-		                        <a href="{{ path('admin_workout_delete', { id: workout.id }) }}" class="delete-item" data-name="workout" data-id="{{ workout.id }}">
-		                           <span class="fa fa-trash-alt"></span>
-		                        </a>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_workout_edit', { id: workout.id }) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_workout_delete', { id: workout.id }) }}" class="delete-item" data-name="workout" data-id="{{ workout.id }}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
 		                    </td>
 		                   
 		                </tr>

@@ -30,13 +30,17 @@
 		                	<td>{{ activity.id }}</td>
 		                    <td>{{ activity.name }}</td>
 		                    <td>{{ activity.energy }}</td>
-		                    <td>
-		                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
-		                            <span class="fa fa-pencil-alt"></span>
-		                        </a>
-                                <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
-                                   <span class="fa fa-trash-alt"></span>
-                                </a>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
 		                    </td>
 		                   
 		                </tr>

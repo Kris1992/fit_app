@@ -130,7 +130,11 @@ h1 {
 }
 
 /* List */
-#list a:hover {
+/*#list a:hover {
+    text-decoration: none;
+}*/
+
+.links-table a:hover {
     text-decoration: none;
 }
 .delete-item:hover {
@@ -141,6 +145,11 @@ h1 {
 {
     color: #dddddd;
 }
+
+
+
+
+
 
 
 

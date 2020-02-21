@@ -1,5 +1,4 @@
 {% block workout_form %}
-                
                     <div class="card-body">
                         <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
                             
@@ -7,7 +6,6 @@
                                 'attr': {'class': 'form-signin js-new-workout-form',
                                 'data-url': path('workout_add')
                                 }
-
                             }) }}
                                 {{ form_row(workoutForm.activity, {
                                     'attr': {'class': 'form-control-lg'},
@@ -18,22 +16,16 @@
                                         'label' : 'User: '
                                     }) }}
                                 {% endif %}
-                                {{ form_row(workoutForm.duration, {
-                                    'label' : 'Duration: '
-                                }) }}
                                 {{ form_row(workoutForm.durationSeconds, {
                                     'label' : 'Duration sec: '
                                 }) }}
                                 {{ form_row(workoutForm.startAt, {
                                     'label' : 'Date: '
                                 }) }}
-
-
                                 <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
                             
                             {{ form_end(workoutForm) }}
                     </div>
-
 {% endblock %}
 
 

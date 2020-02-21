@@ -18,7 +18,6 @@
 		            <tr>
 		            	<th>#</th>
 		                <th>Activity</th>
-		                {#<th>Duration</th>#}
 		                <th>Duration</th>
                         <th>Burnout</th>
                         <th>Date</th>
@@ -30,18 +29,21 @@
 		                <tr>
 		                	<td>{{ workout.id }}</td>
 		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
-		                   {# <td class="js-duration">{{ workout.duration | date('H:i') }}</td>#}
-		                    <td class="js-duration">{{ workout.durationSeconds | date('H:i:s') }}</td>
+		                    <td class="js-duration">{{ workout.durationSeconds | time }}</td>
                             <td class="js-energy">{{ workout.burnoutEnergy }}</td>
                             <td>{{ workout.startAt | date('Y-m-d H:i') }}</td>
 
-		                    <td>
-		                       	<a href="#" class="js-delete-workout" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
-		                           <span class="fa fa-trash-alt"></span>
-		                        </a>
-                                <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
-                                   <span class="fa fa-pencil-alt"></span>
-                                </a>
+		                    <td class="links-table">
+		                       	<div class="link-wrapper">
+                                    <a href="#" class="js-delete-workout delete-item" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
 		                    </td>
 		                   
 		                </tr>
@@ -89,16 +91,10 @@
 <script src="{{ asset('js/_workoutApi.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-
         var $wrapper = $('.js-workout-table');
         var $nowWorkoutWrapper = $('.js-workout-now');
         var workoutApi = new WorkoutApi($wrapper, $nowWorkoutWrapper);
-
-//       var $nowWrapper = $('.js-workout-now');
-//        var workoutNowApi = new WorkoutNowApi($wrapper, $nowWrapper);
-            
-        });
-	
+    });
 </script>
 <script type="text/template" id="js-workout-row-template">
         <tr>
@@ -107,20 +103,24 @@
             <td class="js-duration"><%= time %></td>
             <td class="js-energy"><%= burnoutEnergy %></td>
             <td><%= startDate %></td>
-            <td>
-                <a href="#"
-                   class="js-delete-workout"
-                   data-url="<%= links.delete %>"
-                   data-id="<%= id %>"
-                >
-                    <span class="fa fa-trash-alt"></span>
-                </a>
-                <a href="#"
-                   class="js-edit-workout"
-                   data-url="<%= links.edit %>"
-                >
-                    <span class="fa fa-pencil-alt"></span>
-                </a>
+            <td class="links-table">
+                <div class="link-wrapper">
+                    <a href="#"
+                        class="js-delete-workout delete-item"
+                        data-url="<%= links.delete %>"
+                        data-id="<%= id %>"
+                    >
+                        <span class="fa fa-trash-alt"></span>
+                    </a>
+                </div>
+                <div class="link-wrapper">
+                    <a href="#"
+                        class="js-edit-workout"
+                        data-url="<%= links.edit %>"
+                    >
+                        <span class="fa fa-pencil-alt"></span>
+                    </a>
+                </div>
             </td>
         </tr>
 </script>

@@ -34,13 +34,6 @@ class Workout
      */
     private $activity;
 
-    /**
-     * @ORM\Column(type="time")
-     * @AcmeAssert\NotZeroDuration()
-     * @Groups({"main", "input"})
-     */
-    private $duration;
-
      /**
      * @ORM\Column(type="integer")
      * @Groups("main")
@@ -153,7 +146,7 @@ class Workout
     public function calculateSaveBurnoutEnergy(): self
     {
         $activity = $this->activity;
-        $activityEnergy =  $activity->getEnergy();
+        $activityEnergy = $activity->getEnergy();
 
         $workoutDuration = $this->durationSeconds;
         $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
@@ -192,29 +185,10 @@ class Workout
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeInterface
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(\DateTimeInterface $duration): self
-    {
-        $this->duration = $duration;
-
-        return $this;
-    }
-
     public function getBurnoutEnergy(): ?int
     {
         return $this->burnoutEnergy;
     }
-
-    /*public function setBurnoutEnergy(int $burnoutEnergy): self
-    {
-        $this->burnoutEnergy = $burnoutEnergy;
-
-        return $this;
-    }*/
 
     public function getStartAt(): ?\DateTimeInterface
     {
