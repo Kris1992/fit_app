@@ -1,3 +1,5 @@
+import { getStatusError } from './_apiHelper.js';
+
 'use strict';
 
 (function(window, $, Swal)
@@ -34,10 +36,17 @@
                 '.js-cal-event',
                 this.handleEventButtonClick.bind(this)
             );
+            $("#calendar_pill-js").on(
+                'click',
+                this.handleDocumentLoadOrClick.bind(this, true)
+            );
 		}
 
-		handleDocumentLoadOrClick() {
+		handleDocumentLoadOrClick(refresh = false) {            
 			this.showLoadingIcon();
+            if(refresh) {
+                this.clearCells();
+            }
 			var timelineBounds = this.getTimeline();
 			this.getWorkouts(timelineBounds).then((data) => {
 				this.mapWorkoutToCell(data);
@@ -47,12 +56,11 @@
             });
 		}
 
-		handleEventButtonClick(e) {
-			var eventElement = e.target.closest('button');
+		handleEventButtonClick(event) {
+			var eventElement = event.target.closest('button');
 			var id = eventElement.dataset.id; 
 
 			this._getWorkoutInfo(id).then((data) => {
-				console.log(data);
         		Swal.fire({
   					title: `${data['activity']['name']}`,
   					html: `<strong>Duration: </strong> ${data['time']}
@@ -62,18 +70,32 @@
  		 			confirmButtonText: '<i class="fa fa-thumbs-up"></i> OK!',
   					confirmButtonAriaLabel: 'OK!'
 				});
-        	})
-			//console.log(eventElement.dataset.id);
+        	}).catch((errorData) => {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: `${errorData.errorMessage}`,
+                });
+            });
 		}
 
 		_getWorkoutInfo(id) {
-        	return new Promise(function(resolve) {
+        	return new Promise(function(resolve, reject) {
                 const url = '/api/workout_get/'+id;
                 $.ajax({
                     url,
                     method: 'GET'
                 }).then(function(data) {
                     resolve(data);
+                }).catch(function(jqXHR){
+                    let statusError = [];
+                    statusError = getStatusError(jqXHR);
+                    if(statusError != null) {
+                        reject(statusError);
+                    } else {
+                        const errorData = JSON.parse(jqXHR.responseText);
+                        reject(errorData);
+                    }
                 });
             });
         }
@@ -99,8 +121,14 @@
 				}).then(function(data){
 					resolve(data);
 				}).catch(function(jqXHR){
-					const errorData = JSON.parse(jqXHR.responseText);
-                    reject(errorData);
+                    let statusError = [];
+                    statusError = getStatusError(jqXHR);
+                    if(statusError != null) {
+                        reject(statusError);
+                    } else {
+                        const errorData = JSON.parse(jqXHR.responseText);
+                        reject(errorData);
+                    }
 				});
 			});
 		}
@@ -144,6 +172,12 @@
 				$loadingIcon.addClass('fas fa-exclamation text-danger');
 			}
 		}
+
+        clearCells() {
+            $(".cal-container").map((i, element) => {
+                $(element).empty();
+            });
+        }
 	}
 
 	window.CalendarApi = CalendarApi;

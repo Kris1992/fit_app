@@ -41,11 +41,11 @@ class WorkoutRepository extends ServiceEntityRepository
 
     
     /**
-     * @param  $user 
-     * @param  $limit The number of workouts to return
+     * @param  User $user 
+     * @param  int $limit The number of workouts to return
      * @return $workouts
      */
-    public function getLastWorkoutsByUser($user, $limit)
+    public function getLastWorkoutsByUser($user,int $limit)
     {
         return $this->createQueryBuilder('w')
             ->select('w')
@@ -60,7 +60,7 @@ class WorkoutRepository extends ServiceEntityRepository
 
      /**
      * @param User $user The user object
-     * @return Array[] Returns an array  
+     * @return Array[]  
      */
     public function getWorkoutsTimeAndNumWorkoutsByUser($user)
     {
@@ -72,24 +72,30 @@ class WorkoutRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
-    /**
-    * @return Array[] Returns an array 
-    */
+     
     
-    public function countEnergyPerDayByUserAndDateArray($user, $timeline)//wtf?
+    /**
+     * countEnergyPerDayByUserAndDateArray Gives sum of energy per day in specific time 
+     * @param  User   $user     User whose is owner of workouts
+     * @param  array  $timeline Array with start and end date
+     * @return Array[]          
+     */
+    public function countEnergyPerDayByUserAndDateArray($user, array $timeline)
     {
-
         return $this->createQueryBuilder('w')
-            ->select( "w.burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->select( "SUM(w.burnoutEnergy) AS burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->groupby('startDate')
             ->andWhere('w.user = :val')
             ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
             ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
-            ->orderBy( 'w.startAt', 'ASC' )
+            ->orderBy( 'startDate', 'ASC')
             ->getQuery()
             ->getResult();
     }
-    //
 
+
+
+//
      /**
     * @return Array[] Returns an array 
     */

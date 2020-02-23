@@ -107,6 +107,9 @@ class WorkoutController extends AbstractController
         $timeline['startDate'] = $days[0];
         $timeline['stopDate'] = end($days);
 
+        /**
+         * @var User $user
+         */
         $user = $this->getUser();
         $workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
 
