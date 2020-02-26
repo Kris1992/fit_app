@@ -1,0 +1,25 @@
+{# Movement #}
+{%  if activityForm.speedAverage is defined %}
+    {{ form_row(activityForm.speedAverage, {
+        'label' : 'Average speed: '
+    }) }}
+{% endif %}
+{%  if activityForm.intensity is defined %}
+    {{ form_row(activityForm.intensity, {
+        'attr': {'class': 'form-control-lg'},
+        'label' : 'Intensity: ',
+    }) }}
+{% endif %}
+
+{# Weight #}
+
+{%  if activityForm.repetitions is defined %}
+    {{ form_row(activityForm.repetitions, {
+        'label' : 'Number of repetitions: '
+    }) }}
+{% endif %}
+{%  if activityForm.weight is defined %}
+    {{ form_row(activityForm.weight, {
+        'label' : 'Weight: '
+    }) }}
+{% endif %}

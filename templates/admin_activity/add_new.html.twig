@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add Activity{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+{% endblock %}
+{% block content %}
+
+<section class="addActivity">
+		
+	<div class="container">
+		
+		<div class="row">
+	      	<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+		        <div class="card card-signin my-5 shadow-box">
+		          	
+                    {{ include('forms/activity_new_form.html.twig', {
+                        header_text: 'Create new Activity',
+                        button_text: 'Create'
+                    }) }}
+		        </div>
+	      	</div>
+	    </div>
+    </div>
+</section>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('js/_activityForm.js') }}"></script>
+{% endblock %}

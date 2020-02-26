@@ -7,8 +7,6 @@ use App\Form\Model\UserRegistrationFormModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -107,10 +105,7 @@ class UserRegistrationFormType extends AbstractType
                     'Admin' => 'ROLE_ADMIN'
                 ],
             ]);
-        }
-
-       
-            
+        }   
     }
 
     public function configureOptions(OptionsResolver $resolver)

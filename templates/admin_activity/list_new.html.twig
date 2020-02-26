@@ -1,0 +1,70 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Activity list{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
+{% block content_body %}
+    <div class="col-sm-12">
+	    <a href="{{ path('admin_activity_add_new') }}" class="btn btn-primary float-right">
+	        Create <span class="fa fa-plus-circle"></span>
+	    </a>
+	    <h2 class="text-green">All Activities ({{ pagination.getTotalItemCount }})</h2>
+	    <div class="table-responsive">
+		    <table class="table table-hover" id="list">
+		        <thead>
+		            <tr>
+		            	<th {% if pagination.isSorted('a.id') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, '#', 'a.id') }}
+		            	</th>
+		            	<th {% if pagination.isSorted('a.name') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Name', 'a.name') }}
+		            	</th>
+		            	<th {% if pagination.isSorted('a.energy') %} class="sorted" {% endif %}>
+		            		{{ knp_pagination_sortable(pagination, 'Energy', 'a.energy') }}
+		            	</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            {% for activity in pagination %}
+		                <tr>
+		                	<td>{{ activity.id }}</td>
+		                    <td>{{ activity.name }}</td>
+		                    <td>{{ activity.energy }}</td>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
+		                    </td>
+		                   
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		    </table>
+
+		</div>
+		<div class="navigation">
+
+			{{ knp_pagination_render(pagination, null, {}, {
+				'align': 'center'
+			}) }}
+			{% include 'per_page.html.twig' %}
+			{#
+			{{ knp_pagination_filter(pagination, {
+        		'a.name': 'Name',
+    		}) }}
+				#}
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
+{% endblock %}
