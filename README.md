@@ -68,10 +68,9 @@ TO DO
 
 ## TO DO 
 
-- Remove unused duration field in workout
-- Rebuild Activities:
-    +Add Activity type field (give posibility to build few different workouts e.g weight training needs another type fields than running or cycling)
-    +Creating activities by abstract factory pattern
+- import activities from file
+- add tracking system to registry workout
+- take care about profile
 - Add tests
 - Introduce to curiosity system
 

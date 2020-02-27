@@ -2,12 +2,9 @@
 
 namespace App\DataFixtures;
 
-
 use App\Entity\Workout;
 use Doctrine\Common\Persistence\ObjectManager;
-
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-
 
 class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 {
@@ -15,20 +12,20 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
-            ActivityFixtures::class
+            MovementActivityFixtures::class
         ];
     }
 
     protected function loadData(ObjectManager $manager)
     {
-        $this->createMany(10, 'main_workout', function($i) 
+        $this->createMany(10, 'movement_workout', function($i) 
         {
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
-                ->setActivity($this->getRandomReference('main_activity'))
-                ->setDuration($this->faker->dateTime)// faker->time string
-                ->setDurationSeconds($this->faker->randomNumber)
+                ->setActivity($this->getRandomReference('movement_activity'))
+                ->setDurationSeconds($this->faker->numberBetween($min = 1, $max = 86399))
+                /* max time -> 23:59:59 */ 
                 ->calculateSaveBurnoutEnergy()
                 ->setStartAt($this->faker->dateTime)
                 ;

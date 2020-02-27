@@ -42,13 +42,17 @@
 		                    <td>{{ user.email }}</td>
 		                    <td>{{ user.roles[0] }}</td>
 		                    <td>{{ user.gender }}</td>
-		                    <td>
-		                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
-		                            <span class="fa fa-pencil-alt"></span>
-		                        </a>
-                                <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}">
-                                   <span class="fa fa-trash-alt"></span>
-                                </a>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_account_edit', { id: user.id }) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
 		                    </td>
 		                   
 		                </tr>

@@ -3,6 +3,7 @@
 {% block title %}Add Workout{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
 {% endblock %}
 {% block content %}
@@ -24,4 +25,16 @@
 	    </div>
     </div>
 </section>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        
+        $('.js-datepicker').datetimepicker({
+            format:'Y-m-d H:i'
+        });
+    });
+    </script>
 {% endblock %}

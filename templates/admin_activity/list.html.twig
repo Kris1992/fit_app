@@ -16,9 +16,15 @@
 		            	<th {% if pagination.isSorted('a.id') %} class="sorted" {% endif %}>
 		            		{{ knp_pagination_sortable(pagination, '#', 'a.id') }}
 		            	</th>
+                        <th {% if pagination.isSorted('a.type') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Type', 'a.type') }}
+                        </th>
 		            	<th {% if pagination.isSorted('a.name') %} class="sorted" {% endif %}>
 		            		{{ knp_pagination_sortable(pagination, 'Name', 'a.name') }}
 		            	</th>
+                        <th>
+                            Intensity
+                        </th>
 		            	<th {% if pagination.isSorted('a.energy') %} class="sorted" {% endif %}>
 		            		{{ knp_pagination_sortable(pagination, 'Energy', 'a.energy') }}
 		            	</th>
@@ -28,15 +34,25 @@
 		            {% for activity in pagination %}
 		                <tr>
 		                	<td>{{ activity.id }}</td>
+                            <td>{{ activity.type }}</td>
 		                    <td>{{ activity.name }}</td>
+                            <td>
+                                {% if activity.intensity is defined %}
+                                    {{ activity.intensity }}
+                                {% endif %}
+                            </td>
 		                    <td>{{ activity.energy }}</td>
-		                    <td>
-		                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
-		                            <span class="fa fa-pencil-alt"></span>
-		                        </a>
-                                <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
-                                   <span class="fa fa-trash-alt"></span>
-                                </a>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+                                        <span class="fa fa-pencil-alt"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                        <span class="fa fa-trash-alt"></span>
+                                    </a>
+                                </div>
 		                    </td>
 		                   
 		                </tr>

@@ -1,3 +1,5 @@
+import { getStatusError } from './_apiHelper.js';
+
 'use strict';
 
 (function(window, $)
@@ -31,9 +33,9 @@
             );
 		}
 
-      	handleButtonClick(e) {
+      	handleButtonClick(event) {
       		this.showLoadingIcon();
-      		const $button = $(e.currentTarget);
+      		const $button = $(event.currentTarget);
       		const action = $button.attr('id');
       		
       		var date = this.getDateFromChart();
@@ -45,13 +47,13 @@
 		changeDate(action, date) {
 			switch(action) {
 				case 'next-js':
-				this.enableButton('today-js');
-				date = this.getNextMonthDate(date);
-				break;
+				    this.enableButton('today-js');
+				    date = this.getNextMonthDate(date);
+				    break;
 				case 'before-js':
-				this.enableButton('today-js');
-				date = this.getPreviousMonthDate(date);
-				break;
+				    this.enableButton('today-js');
+				    date = this.getPreviousMonthDate(date);
+				    break;
 			}
 
 			return date;
@@ -139,6 +141,8 @@
 
 			var numDays = this.getNumDaysInMonth(month, year);
 			var dates = [];
+
+            month = month.toString().padStart(2, '0');
 			
 			for (var i = 1; i <= numDays; i++) {
 				let day = i;
@@ -221,8 +225,14 @@
 				}).then(function(energyList){
 					resolve(energyList);
 				}).catch(function(jqXHR){
-					const errorData = JSON.parse(jqXHR.responseText);
-                    reject(errorData);
+                    let statusError = [];
+                    statusError = getStatusError(jqXHR);
+                    if(statusError != null) {
+                        reject(statusError);
+                    } else {
+                        const errorData = JSON.parse(jqXHR.responseText);
+                        reject(errorData);
+                    }
 				});
 			});
 		}
@@ -260,6 +270,4 @@
 	}
 
 	window.ChartApi = ChartApi;
-		
-
 })(window, jQuery);

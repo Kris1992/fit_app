@@ -1,12 +1,17 @@
 {% block activity_form %}
-                
+
                     <div class="card-body">
                         <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
-                            
                             {{ form_start(activityForm, {
                                 'attr': {'class': 'form-signin'}
                             }) }}
-                            
+                                {{ form_row(activityForm.type, {
+                                    'label' : 'Type: ',
+                                    attr: { 
+                                    'data-specific-activity-url': path('admin_activity_specific_form'),
+                                    'class': 'js-activity-form-type form-control-lg'
+                                }
+                                }) }}
                                 {{ form_row(activityForm.name, {
                                     'label' : 'Name: ',
                                     attr: { placeholder: 'Name' }
@@ -16,11 +21,14 @@
                                     attr: { placeholder: 'Energy per hour' }
                                 }) }}
 
+                                <div class="js-specific-activity-form">
+                                    {% include './forms/activity_specific_form.html.twig' %}
+                                </div>
+
                                 <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
                             
                             {{ form_end(activityForm) }}
                     </div>
-
 {% endblock %}
 
 

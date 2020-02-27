@@ -107,6 +107,9 @@ class WorkoutController extends AbstractController
         $timeline['startDate'] = $days[0];
         $timeline['stopDate'] = end($days);
 
+        /**
+         * @var User $user
+         */
         $user = $this->getUser();
         $workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
 
@@ -138,7 +141,23 @@ class WorkoutController extends AbstractController
             []
         );
     }
-    
+
+    /**
+     * @Route("/workout/choose_add", name="workout_choose_add", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function addPanel(Request $request)
+    {
+        
+
+        return $this->render('workout/addPanel.html.twig', [
+            
+        ]);
+    }
+
+
+
+
      /**
      * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
@@ -169,7 +188,6 @@ class WorkoutController extends AbstractController
 
     /**
      * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
-
      */
     public function delete(Request $req, Workout $workout, EntityManagerInterface $em)
     {
@@ -304,7 +322,6 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/api/server_date", name="server_date_get", methods={"GET"})
      * @IsGranted("ROLE_USER")
-     * 
      */
     public function getServerDateAction()
     {

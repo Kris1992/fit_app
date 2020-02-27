@@ -28,18 +28,11 @@ class Workout
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Activity", inversedBy="workouts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\AbstractActivity", inversedBy="workouts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"main", "input"})
      */
     private $activity;
-
-    /**
-     * @ORM\Column(type="time")
-     * @AcmeAssert\NotZeroDuration()
-     * @Groups({"main", "input"})
-     */
-    private $duration;
 
      /**
      * @ORM\Column(type="integer")
@@ -153,7 +146,7 @@ class Workout
     public function calculateSaveBurnoutEnergy(): self
     {
         $activity = $this->activity;
-        $activityEnergy =  $activity->getEnergy();
+        $activityEnergy = $activity->getEnergy();
 
         $workoutDuration = $this->durationSeconds;
         $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
@@ -180,26 +173,14 @@ class Workout
         return $this;
     }
 
-    public function getActivity(): ?Activity
+    public function getActivity(): ?AbstractActivity
     {
         return $this->activity;
     }
 
-    public function setActivity(?Activity $activity): self
+    public function setActivity(?AbstractActivity $activity): self
     {
         $this->activity = $activity;
-
-        return $this;
-    }
-
-    public function getDuration(): ?\DateTimeInterface
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(\DateTimeInterface $duration): self
-    {
-        $this->duration = $duration;
 
         return $this;
     }
@@ -208,13 +189,6 @@ class Workout
     {
         return $this->burnoutEnergy;
     }
-
-    /*public function setBurnoutEnergy(int $burnoutEnergy): self
-    {
-        $this->burnoutEnergy = $burnoutEnergy;
-
-        return $this;
-    }*/
 
     public function getStartAt(): ?\DateTimeInterface
     {

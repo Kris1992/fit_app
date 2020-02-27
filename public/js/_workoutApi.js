@@ -107,9 +107,9 @@
             $('#js-workout-now-activity').append($options);
         }
 
-        handleWorkoutDelete(e) {
-        	e.preventDefault();
-            const $link = $(e.currentTarget);
+        handleWorkoutDelete(event) {
+        	event.preventDefault();
+            const $link = $(event.currentTarget);
             const id = $link.data('id');
             Swal.fire({
   				title: 'Delete workout??',
@@ -152,12 +152,11 @@
             CalculateHelperInstances.get(this).getTotalDuration();
         }
 
-        handleNewWorkoutSubmit(e){
-        	e.preventDefault();
-        	const $form = $(e.currentTarget);
+        handleNewWorkoutSubmit(event){
+        	event.preventDefault();
+        	const $form = $(event.currentTarget);
         	const formData = {};
             formData['durationSeconds'] = {};
-        	formData['duration'] = {};// tymczasowo
 
         	for(let fieldData of $form.serializeArray()){
         		
@@ -167,18 +166,7 @@
         			formData['durationSeconds']['minute'] = fieldData.value;
         		} else if(fieldData.name == 'durationSeconds[second]') {
                     formData['durationSeconds']['second'] = fieldData.value;
-                } 
-                /// tymczasowo
-
-                else if(fieldData.name == 'duration[hour]'){
-                    formData['duration']['hour'] = fieldData.value;
-                } else if(fieldData.name == 'duration[minute]') {
-                    formData['duration']['minute'] = fieldData.value;
-                }
-///
-
-
-                else {
+                } else {
         			formData[fieldData.name] = fieldData.value;
         		}
         	}
@@ -228,9 +216,9 @@
 			$form[0].reset();
         }
 
-        handleEditWorkout(e) {
-        	e.preventDefault();
-        	const $link = $(e.currentTarget);
+        handleEditWorkout(event) {
+        	event.preventDefault();
+        	const $link = $(event.currentTarget);
         	this._editWorkoutToForm($link);
         }
 
@@ -274,15 +262,17 @@
 					</div>
 				</td>
 				<td>${data[3]}</td>
-                <td><input type="datetime-local" name="startAt" required="required" class="form-control" value="${data[4]}"></td>
-				<td>
+                <td>
+                    <div class="form-group">
+                        <input type="datetime-local" name="startAt" required="required" class="form-control" value="${data[4]}"></td>
+				    </div>
+                <td class="links-table">
 					${data[5]}
-					<a href="#" 
-					class="js-edit-workout-cancel"
-					data-id="${data[0]}"
-                	>
-                    	<span class="fa fa-times"></span>
-                	</a>
+                    <div class="link-wrapper">
+                        <a href="#" class="js-edit-workout-cancel" data-id="${data[0]}">
+                            <span class="fa fa-times"></span>
+                	   </a>
+                    </div>
 				</td>
 			</tr>`
         	;
@@ -291,9 +281,9 @@
 			$('#'+data[0]).append($options);
         }
 
-        handleEditWorkoutCancel(e) {
-        	e.preventDefault();
-        	const $link = $(e.currentTarget);
+        handleEditWorkoutCancel(event) {
+        	event.preventDefault();
+        	const $link = $(event.currentTarget);
 
         	this._getWorkout($link).then((data) => {
         		this._EditWorkoutToText($link, data);
@@ -315,9 +305,9 @@
             });
         }
 
-        handleEditWorkoutSubmit(e) {
-        	e.preventDefault();
-        	const $link = $(e.currentTarget);
+        handleEditWorkoutSubmit(event) {
+        	event.preventDefault();
+        	const $link = $(event.currentTarget);
         	const $row = $link.closest('tr');
         	const url = $row.find('.js-submit-edit-workout').data('url');
 
@@ -332,10 +322,6 @@
 
         	const inputsData = {};
             inputsData['durationSeconds'] = {};
-        	            //tymczasowo
-                        inputsData['duration'] = {};
-                        //
-
 
             inputsData['activity'] = $row.find('[name=activity]').children("option:selected").val();
         	inputsData['startAt'] = $row.find('[name=startAt]').val();
@@ -343,10 +329,6 @@
             inputsData['durationSeconds']['minute'] = durationArray[1];
         	inputsData['durationSeconds']['second'] = durationArray[2];
 
-            //tymczasowo
-            inputsData['duration']['hour'] = durationArray[0];
-            inputsData['duration']['minute'] = durationArray[1];
-            //
             inputsData['_token'] = $('#_token').val();
         	
             this.updateWorkout(inputsData, url).then((data) => {
@@ -386,20 +368,18 @@
 				<td class="js-duration">${data['time']}</td>
 				<td class="js-energy">${data['burnoutEnergy']}</td>
                 <td>${data['startDate']}</td>
-				<td>
-					<a href="#" 
-					class="js-delete-workout"
-                	data-url="${data['links']['delete']}"
-                	data-id="${data['id']}"
-                	>
-                    	<span class="fa fa-trash-alt"></span>
-                	</a>
-                	<a href="#"
-                	class="js-edit-workout"
-                	data-url="${data['links']['edit']}"
-                	>
-                    	<span class="fa fa-pencil-alt"></span>
-                	</a>
+				<td class="links-table">
+                    <div class="link-wrapper">
+                        <a href="#" class="js-delete-workout delete-item" data-url="${data['links']['delete']}"
+                        data-id="${data['id']}">
+                    	   <span class="fa fa-trash-alt"></span>
+                        </a>
+                    </div>
+                	<div class="link-wrapper">
+                        <a href="#" class="js-edit-workout" data-url="${data['links']['edit']}">
+                    	   <span class="fa fa-pencil-alt"></span>
+                        </a>
+                    </div>
 				</td>
 			</tr>`
         	;
@@ -424,12 +404,6 @@
                 	let fieldName = $(element).attr('name');
                 	const $fieldWrapper = $(element).closest('.form-group');
 
-                    //tymczasowo
-                	if(fieldName == 'duration[hour]')
-                	{
-                		fieldName = 'duration';
-                	}
-                    //
                     if(fieldName == 'durationSeconds[hour]') {
                         fieldName = 'durationSeconds';
                     }
@@ -437,6 +411,7 @@
                 	if (!errorData[fieldName]) {
                     	continue;
                 	}
+
                 	const $error = $('<span class="js-field-error help-block text-danger"></span>');
                 	$error.html(errorData[fieldName]);
                 	$fieldWrapper.append($error);
@@ -445,14 +420,12 @@
         }
 
         _removeFormErrors($form) {
-            console.log('loaded');
             $form.find('.js-field-error').remove();
             $form.find('.form-group').removeClass('has-error');
         }
 
             //  nowWorkoutWrapper
-        handleStartButtonClick() {
-            
+        handleStartButtonClick() {           
             var $startButton = this.$nowWorkoutWrapper.find('.js-start-button');
             var $selectInput = this.$nowWorkoutWrapper.find('#js-workout-now-activity');
             var value = $selectInput.val();
@@ -581,8 +554,6 @@
         _getDataFromFields(today) {
             const inputsData = {};
             inputsData['durationSeconds'] = {};
-            //tymczasowo
-            inputsData['duration'] = {};
 
             var $selectInput = this.$nowWorkoutWrapper.find('#js-workout-now-activity');
             inputsData['activity'] = $selectInput.val();
@@ -596,10 +567,6 @@
             inputsData['startAt'] = today;
 
             inputsData['_token'] = $('#_token').val();
-
-            //tymczasowo
-            inputsData['duration']['hour'] = durationArray[0];
-            inputsData['duration']['minute'] = durationArray[2];
 
             this._saveWorkoutNow(inputsData).then((data) => {
                 this._addRow(data);
@@ -616,8 +583,7 @@
                 $.ajax({
                     url,
                     method: 'GET'
-                }).then(function(today)
-                {
+                }).then(function(today) {
                     resolve(today);
                 });
                 });
