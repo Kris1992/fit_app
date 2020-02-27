@@ -28,7 +28,7 @@ class Workout
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Activity", inversedBy="workouts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\AbstractActivity", inversedBy="workouts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"main", "input"})
      */
@@ -173,12 +173,12 @@ class Workout
         return $this;
     }
 
-    public function getActivity(): ?Activity
+    public function getActivity(): ?AbstractActivity
     {
         return $this->activity;
     }
 
-    public function setActivity(?Activity $activity): self
+    public function setActivity(?AbstractActivity $activity): self
     {
         $this->activity = $activity;
 

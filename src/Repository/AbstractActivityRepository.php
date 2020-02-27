@@ -29,6 +29,18 @@ class AbstractActivityRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return AbstractActivity[]
+     */
+    public function findAllNamesAlphabetical()
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->execute()
+        ;
+    }
+
 
     // /**
     //  * @return AbstractActivity[] Returns an array of AbstractActivity objects

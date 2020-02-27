@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
 	{{ parent() }}
-    {#<link rel="stylesheet" type="text/css" href="{{ asset('css/font-awesome.css') }}">#}
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/all.css') }}">
 {% endblock %}
 {% block content %}
@@ -11,9 +10,11 @@
 				{% include 'flash_messages.html.twig' %} 
             </div>
         </div>
-        <div class="row {% block content_class %} list-container my-4{% endblock %}"> <!-- p-2 -->
-            {% block content_body %}{% endblock %}
-        </div>
+        <section class="{% block section_class %}{% endblock %}">
+            <div class="row {% block content_class %} list-container my-4{% endblock %}"> <!-- p-2 -->
+                {% block content_body %}{% endblock %}
+            </div>
+        </section>
     </div>
 {% endblock %}
 

@@ -1,5 +1,5 @@
 <?php
-
+//TO DELETE
 namespace App\Repository;
 
 use App\Entity\Activity;

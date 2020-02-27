@@ -37,6 +37,9 @@ h1 {
 .container-border-green {
     border-color: #C0D06F;
 } 
+.container-border-blue {
+    border-color: #00BFFF;
+} 
 .overlayed {
 	position: relative;
 }
@@ -128,12 +131,12 @@ h1 {
 .color-clock {
 	color: #76a7fa;
 }
+.title-style {
+    font-size: 1em;
+    font-weight: bold;
+}
 
 /* List */
-/*#list a:hover {
-    text-decoration: none;
-}*/
-
 .links-table a:hover {
     text-decoration: none;
 }
@@ -145,7 +148,6 @@ h1 {
 {
     color: #dddddd;
 }
-
 
 
 

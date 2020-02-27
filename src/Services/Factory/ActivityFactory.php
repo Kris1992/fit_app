@@ -9,7 +9,7 @@ class ActivityFactory
 {   
 
     const MOVEMENT_FACTORY="Movement";
-    const WEIGHT_FACTORY="WEIGHT";
+    const WEIGHT_FACTORY="Weight";
  
     public static function chooseFactory($factoryName) {
         switch($factoryName) {

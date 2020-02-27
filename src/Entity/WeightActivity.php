@@ -13,12 +13,12 @@ class WeightActivity extends AbstractActivity
     /**
      * @ORM\Column(type="integer")
      */
-    private $repetitions;
+    protected $repetitions;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $weight;
+    protected $weight;
 
     public function getRepetitions(): ?int
     {

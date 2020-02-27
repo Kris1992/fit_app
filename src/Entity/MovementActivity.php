@@ -13,12 +13,12 @@ class MovementActivity extends AbstractActivity
     /**
      * @ORM\Column(type="float")
      */
-    private $speedAverage;
+    protected $speedAverage;
 
     /**
      * @ORM\Column(type="string", length=25)
      */
-    private $intensity;
+    protected $intensity;
 
     public function getSpeedAverage(): ?float
     {
