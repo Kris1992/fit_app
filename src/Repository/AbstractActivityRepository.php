@@ -20,14 +20,51 @@ class AbstractActivityRepository extends ServiceEntityRepository
     }
 
     /**
-    * @return Query
-    */
-    public function findAllQuery()
-    {
+     * findAllQuery Find all activities or if searchTerms are not empty find all activities with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function findAllQuery(string $searchTerms)
+    {   
+        if ($searchTerms) {
+            return $this->searchByTermsQuery($searchTerms);
+            //return $this->searchByTermsQueryLike($searchTerms);
+        }
         return $this->createQueryBuilder('a')
             ->getQuery()
         ;
+        
     }
+
+    /**
+     * searchByTermsQuery Find all activities with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function searchByTermsQuery(string $searchTerms)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('MATCH_AGAINST(a.type, a.name) AGAINST(:searchTerms boolean)>0')
+            ->setParameter('searchTerms', $searchTerms.'*')
+            ->getQuery()
+        ;
+    }
+
+    /**
+     * searchByTermsQueryLike Find all activities with following data using LIKE
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function searchByTermsQueryLike(string $searchTerms)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.type LIKE :searchTerms')
+            ->orWhere('a.name LIKE :searchTerms')
+            ->setParameter('searchTerms', '%'.$searchTerms.'%')
+            ->getQuery()
+        ;
+    }
+
 
     /**
      * @return AbstractActivity[]
@@ -40,6 +77,22 @@ class AbstractActivityRepository extends ServiceEntityRepository
             ->execute()
         ;
     }
+
+    /**
+     * findAllByIds Find all activities with given ids
+     * @param  array  $arrayIds Array with at least one id
+     * @return AbstractActivity[]
+     */
+    public function findAllByIds(array $arrayIds)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.id IN(:ids)')
+            ->setParameter('ids', $arrayIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 
 
     // /**

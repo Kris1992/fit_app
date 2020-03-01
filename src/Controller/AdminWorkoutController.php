@@ -6,8 +6,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
 use App\Repository\WorkoutRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Entity\Workout;
@@ -27,7 +25,8 @@ class AdminWorkoutController extends AbstractController
      */
     public function list(WorkoutRepository $workoutRepository, Request $request, PaginatorInterface $paginator)
     {
-    	$workoutQuery = $workoutRepository->findAllQuery();
+        $searchTerms = $request->query->getAlnum('filterValue');
+        $workoutQuery = $workoutRepository->findAllQuery($searchTerms);
 
         $pagination = $paginator->paginate(
             $workoutQuery, /* query NOT result */
@@ -110,6 +109,50 @@ class AdminWorkoutController extends AbstractController
         $this->addFlash('success','Workout was deleted!!');
         $response->send();
         return $response;
+    }
+
+    /**
+     * @Route("/admin/workout/delete_selected", name="admin_workout_delete_selected",  methods={"POST", "DELETE"})
+     */
+    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository)
+    {
+        $submittedToken = $request->request->get('token');
+        if($request->request->has('deleteId')){
+            if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
+                $ids = $request->request->get('deleteId');
+                $workouts = $workoutRepository->findAllByIds($ids);
+                if($workouts){
+                    foreach ($workouts as $workout) {
+                        $entityManager->remove($workout);
+                    }
+                    $entityManager->flush();
+
+                    $this->addFlash('success','Workouts were deleted!!');
+                    return $this->redirectToRoute('admin_workout_list');
+                }
+
+                /* For now its not neccessary (admin can delete only 15 positions in one time)
+                $batchSize = 10;
+                $i = 1;
+                foreach ($workouts as $workout) {
+                    $entityManager->remove($workout);
+                    if (($i % $batchSize) === 0) {
+                        $entityManager->flush();
+                        $entityManager->clear();
+                    }
+                ++$i;
+                }
+                $entityManager->flush();
+                */
+               
+            } else {
+                $this->addFlash('danger','Wrong token');
+                return $this->redirectToRoute('admin_workout_list');
+            }
+        }
+
+        $this->addFlash('warning','Nothing to do');
+        return $this->redirectToRoute('admin_workout_list');
     }
 
 }

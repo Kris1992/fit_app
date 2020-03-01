@@ -27,8 +27,9 @@ class AdminAccountController extends AbstractController
      * @Route("/admin/account", name="admin_account_list", methods={"GET"})
      */
     public function list(UserRepository $userRepository, PaginatorInterface $paginator, Request $request)
-    {
-    	$userQuery = $userRepository->findAllQuery();
+    {   
+        $searchTerms = $request->query->getAlnum('filterValue');
+    	$userQuery = $userRepository->findAllQuery($searchTerms);
 
         $pagination = $paginator->paginate(
             $userQuery, /* query NOT result */
@@ -110,8 +111,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete/{id}", name="admin_account_delete",  methods={"DELETE"})
      */
-
-    public function delete(Request $req, User $user)//$id)
+    public function delete(Request $request, User $user)//$id)
     {
         //$userRepository = $this->getDoctrine()->getRepository(User::class);
         //$user = $user_rep->find($id);
@@ -126,8 +126,51 @@ class AdminAccountController extends AbstractController
         $this->addFlash('success','User was deleted!!');
         $response->send();
         return $response;
-
     }
 
+    /**
+     * @Route("/admin/account/delete_selected", name="admin_account_delete_selected",  methods={"POST", "DELETE"})
+     */
+    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository)
+    {
+        $submittedToken = $request->request->get('token');
+        if($request->request->has('deleteId')){
+            if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
+                $ids = $request->request->get('deleteId');
+                $users = $userRepository->findAllByIds($ids);
+                if($users){
+                    foreach ($users as $user) {
+                        $entityManager->remove($user);
+                    }
+                    $entityManager->flush();
 
+                    $this->addFlash('success','Users were deleted!!');
+                    return $this->redirectToRoute('admin_account_list');
+                }
+
+        /* For now its not neccessary (admin can delete only 15 positions in one time)
+        $batchSize = 10;
+        $i = 1;
+        foreach ($users as $user) {
+            $entityManager->remove($user);
+            if (($i % $batchSize) === 0) {
+                $entityManager->flush();
+                $entityManager->clear();
+            }
+        ++$i;
+        }
+        $entityManager->flush();
+        */
+
+
+            } else {
+                $this->addFlash('danger','Wrong token');
+                return $this->redirectToRoute('admin_account_list');
+            }
+        }
+
+        $this->addFlash('warning','Nothing to do');
+        return $this->redirectToRoute('admin_account_list');
+    }
+    
 }

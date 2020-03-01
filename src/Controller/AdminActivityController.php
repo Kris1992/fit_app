@@ -26,7 +26,9 @@ class AdminActivityController extends AbstractController
      */
     public function list(AbstractActivityRepository $activityRepository, PaginatorInterface $paginator, Request $request)
     {
-        $activityQuery = $activityRepository->findAllQuery();
+
+        $searchTerms = $request->query->getAlnum('filterValue');
+        $activityQuery = $activityRepository->findAllQuery($searchTerms);
 
         $pagination = $paginator->paginate(
             $activityQuery, /* query NOT result */
@@ -107,6 +109,50 @@ class AdminActivityController extends AbstractController
         $this->addFlash('success','Activity was deleted!!');
         $response->send();
         return $response;
+    }
+
+    /**
+     * @Route("/admin/activity/delete_selected", name="admin_activity_delete_selected",  methods={"POST", "DELETE"})
+     */
+    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
+    {
+        $submittedToken = $request->request->get('token');
+        if($request->request->has('deleteId')){
+            if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
+                $ids = $request->request->get('deleteId');
+                $activities = $activityRepository->findAllByIds($ids);
+                if($activities){
+                    foreach ($activities as $activity) {
+                        $entityManager->remove($activity);
+                    }
+                    $entityManager->flush();
+
+                    $this->addFlash('success','Activities were deleted!!');
+                    return $this->redirectToRoute('admin_activity_list');
+                }
+
+                /* For now its not neccessary (admin can delete only 15 positions in one time)
+                $batchSize = 10;
+                $i = 1;
+                foreach ($activities as $activity) {
+                    $entityManager->remove($activity);
+                    if (($i % $batchSize) === 0) {
+                        $entityManager->flush();
+                        $entityManager->clear();
+                    }
+                ++$i;
+                }
+                $entityManager->flush();
+                */
+               
+            } else {
+                $this->addFlash('danger','Wrong token');
+                return $this->redirectToRoute('admin_activity_list');
+            }
+        }
+
+        $this->addFlash('warning','Nothing to do');
+        return $this->redirectToRoute('admin_activity_list');
     }
 
     /**

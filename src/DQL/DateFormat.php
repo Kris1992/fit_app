@@ -26,6 +26,4 @@ class DateFormat extends FunctionNode {
             $this->patternExpression->dispatch($sqlWalker) .
         ')';
     }
-
 }
-?>

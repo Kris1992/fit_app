@@ -9,57 +9,64 @@
         	Create <span class="fa fa-plus-circle"></span>
     	</a>
 	    <h2 class="text-green">All Accounts ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-4 mx-auto">
+                    {{ knp_pagination_filter(pagination, {}) }}
+        </div>
 	    <div class="table-responsive">
-		    <table class="table table-hover" id="list">
-		        <thead>
-		            <tr>
-		            	<th {% if pagination.isSorted('u.id') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, '#', 'u.id') }}
-		            	</th>
-		            	<th {% if pagination.isSorted('u.firstName') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'First Name', 'u.firstName') }}
-		            	</th>
-		                <th {% if pagination.isSorted('u.secondName') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Last Name', 'u.secondName') }}
-		            	</th>
-		               	<th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'E-mail', 'u.email') }}
-		            	</th>
-		            	<th {% if pagination.isSorted('u.roles') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Role', 'u.roles') }}
-		            	</th>
-		           		<th {% if pagination.isSorted('u.gender') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Gender', 'u.gender') }}
-		            	</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            {% for user in pagination %}
-		                <tr>
-		                	<td>{{ user.id }}</td>
-		                    <td>{{ user.firstName }}</td>
-		                    <td>{{ user.secondName }}</td>
-		                    <td>{{ user.email }}</td>
-		                    <td>{{ user.roles[0] }}</td>
-		                    <td>{{ user.gender }}</td>
-                            <td class="links-table">
-                                <div class="link-wrapper">
-                                    <a href="{{ path('admin_account_edit', { id: user.id }) }}">
-                                        <span class="fa fa-pencil-alt"></span>
-                                    </a>
-                                </div>
-                                <div class="link-wrapper">
-                                    <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}">
-                                        <span class="fa fa-trash-alt"></span>
-                                    </a>
-                                </div>
-		                    </td>
-		                   
-		                </tr>
-		            {% endfor %}
-		        </tbody>
-		    </table>
-
+            <form action="{{ path('admin_account_delete_selected') }}" method="POST">
+                <table class="table table-hover" id="list">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th {% if pagination.isSorted('u.id') %} class="sorted" {% endif %}>
+		            		    {{ knp_pagination_sortable(pagination, '#', 'u.id') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.firstName') %} class="sorted" {% endif %}>
+		            		    {{ knp_pagination_sortable(pagination, 'First Name', 'u.firstName') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.secondName') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Last Name', 'u.secondName') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
+		            		    {{ knp_pagination_sortable(pagination, 'E-mail', 'u.email') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.roles') %} class="sorted" {% endif %}>
+		            		    {{ knp_pagination_sortable(pagination, 'Role', 'u.roles') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.gender') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Gender', 'u.gender') }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    		            {% for user in pagination %}
+    		                <tr>
+                                <td><input type="checkbox" name="deleteId[]" value="{{ user.id }}"></td>
+    		                	<td>{{ user.id }}</td>
+    		                    <td>{{ user.firstName }}</td>
+    		                    <td>{{ user.secondName }}</td>
+    		                    <td>{{ user.email }}</td>
+    		                    <td>{{ user.roles[0] }}</td>
+    		                    <td>{{ user.gender }}</td>
+                                <td class="links-table">
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
+                                            <span class="fa fa-pencil-alt"></span>
+                                        </a>
+                                    </div>
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}">
+                                            <span class="fa fa-trash-alt"></span>
+                                        </a>
+                                    </div>
+    		                    </td>           
+    		                </tr>
+    		            {% endfor %}
+    		        </tbody>
+    		    </table>
+                <input type="hidden" name="token" value="{{ csrf_token('delete_multiple') }}"/>
+                <button type="submit" class="btn btn-danger">Delete checked</button>
+            </form>
 		</div>
 		<div class="navigation">
 
@@ -74,4 +81,5 @@
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
+
 {% endblock %}

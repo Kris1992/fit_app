@@ -25,3 +25,5 @@ doctrine:
         dql:
             datetime_functions:
                 date_format: App\DQL\DateFormat
+            string_functions:
+                MATCH_AGAINST: App\DQL\MatchAgainst

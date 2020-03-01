@@ -19,6 +19,8 @@ use App\Services\UploadImagesHelper;
  *     fields={"email"},
  *     message= "This e-mail address is already registered!"
  * )
+ * @ORM\Table(name="user", indexes={@ORM\Index(columns={"first_name", "second_name"}, 
+ * flags={"fulltext"})})
  */
 class User implements UserInterface
 {

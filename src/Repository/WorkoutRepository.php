@@ -25,11 +25,16 @@ class WorkoutRepository extends ServiceEntityRepository
         parent::__construct($registry, Workout::class);
     }
 
-    /**
-    * @return Query
-    */
-    public function findAllQuery()
-    {
+     /**
+     * findAllQuery Find all workouts or if searchTerms are not empty find all workouts with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function findAllQuery(string $searchTerms)
+    {   
+        if ($searchTerms) {
+            return $this->searchByTermsQueryLike($searchTerms);
+        }
         return $this->createQueryBuilder('w')
             ->join('w.user', 'u')
             ->addSelect('u')
@@ -37,8 +42,27 @@ class WorkoutRepository extends ServiceEntityRepository
             ->addSelect('a')
             ->getQuery()
         ;
+        
     }
 
+    /**
+     * searchByTermsQuery Find all workouts with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function searchByTermsQueryLike(string $searchTerms)
+    {
+        return $this->createQueryBuilder('w')
+            ->join('w.user', 'u')
+            ->addSelect('u')
+            ->join('w.activity', 'a')
+            ->addSelect('a')
+            ->andWhere('u.email LIKE :searchTerms')
+            ->orWhere('a.name LIKE :searchTerms')
+            ->setParameter('searchTerms', '%'.$searchTerms.'%')
+            ->getQuery()
+        ;
+    }
     
     /**
      * @param  User $user 
@@ -134,6 +158,21 @@ class WorkoutRepository extends ServiceEntityRepository
         return $query->getResult();
 
     }
+
+    /**
+     * findAllByIds Find all workouts with given ids
+     * @param  array  $arrayIds Array with at least one id
+     * @return Workout[]
+     */
+    public function findAllByIds(array $arrayIds)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.id IN(:ids)')
+            ->setParameter('ids', $arrayIds)
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
 
