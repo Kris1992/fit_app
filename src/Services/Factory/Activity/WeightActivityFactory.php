@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Factory;
+namespace App\Services\Factory\Activity;
 
 use App\Entity\WeightActivity;
 use App\Entity\AbstractActivity;

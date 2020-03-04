@@ -15,6 +15,8 @@ use Symfony\Component\Form\FormEvents;
 
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Positive;
 
 
 class ActivityFormType extends AbstractType
@@ -80,15 +82,8 @@ class ActivityFormType extends AbstractType
                         'placeholder' => 'Choose intensity',
                         'choices' => $this->getChoices('movement_instensity'),
                     ])
-                    ->add('speedAverage', NumberType::class, [
-                        'constraints' => [
-                            new NotBlank(),
-                            new Range([
-                                'min' => 1,
-                                'max' => 20
-                            ]),
-                        ],
-                    ])
+                    ->add('speedAverageMin', NumberType::class)
+                    ->add('speedAverageMax', NumberType::class)
                 ;
                 break;
             case 'Weight':

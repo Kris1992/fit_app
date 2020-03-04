@@ -92,6 +92,21 @@ class AbstractActivityRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return string
+     */
+    public function findUniqueNamesAlphabetical()
+    {
+        return $this->createQueryBuilder('a')
+            ->select('DISTINCT a.name' )
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+   
+
 
 
 

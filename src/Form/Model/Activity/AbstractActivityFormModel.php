@@ -1,10 +1,10 @@
 <?php
-//TO DELETE
+
 namespace App\Form\Model\Activity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-abstract class AbstractActivityFormModel implements \ArrayAccess
+abstract class AbstractActivityFormModel // implements \ArrayAccess //
 {
 
     protected $id;
@@ -14,18 +14,21 @@ abstract class AbstractActivityFormModel implements \ArrayAccess
      */
     protected $type;
 
-    //unique name
     /**
      * @Assert\NotBlank(message="Please enter name")
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Your name cannot contain a number"
+     * )
      */
     protected $name;
 
     /**
      * @Assert\NotBlank(message="Please enter energy")
+     * @Assert\Positive()
      */
     protected $energy;
-
-
 
     public function getId(): ?int
     {
@@ -71,24 +74,25 @@ abstract class AbstractActivityFormModel implements \ArrayAccess
 
 
     //arrayAccess methods
-    public function offsetExists($offset)
+    /*public function offsetExists($offset)
     {
-        return property_exists($this, $offset);
+        $value = $this->{"get$offset"}();
+        return $value !== null;
     }
 
     public function offsetGet($offset)
     {
-        return $this->$offset;
+        return $this->{"get$offset"}();
     }
 
     public function offsetSet($offset, $value)
     {
-        $this->$offset = $value;
+        $this->{"set$offset"}($value);
     }
 
     public function offsetUnset($offset)
     {
-        unset($this->$offset);
-    }
+        $this->{"set$offset"}(null);
+    }*/
 
 }

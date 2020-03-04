@@ -125,6 +125,7 @@ class SecurityController extends AbstractController
 
     private function checkCatchpa(Request $request, string $secret_key)
     {
+        //If you run in localhost by symfony serve it will not work because of port
         $recaptcha = new ReCaptcha($secret_key);
         return $isHuman = $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME'])
                 ->verify($request->get('g-recaptcha-response'), $_SERVER['REMOTE_ADDR']);

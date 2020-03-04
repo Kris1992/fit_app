@@ -8,11 +8,7 @@ use Symfony\Component\Validator\Constraint;
  * @Annotation
  * @Target({"CLASS", "ANNOTATION"})
  */
-
-/*Target tells the annotation system where your annotation is allowed to be used.
-What if you instead want your annotation to be put above a class? Open the UniqueEntity class as an example. Yep, you would use the CLASS target.*/
-
-class UniqueUser extends Constraint
+class UniqueRangeSpeed extends Constraint
 {
     /*
      * Any public properties become valid options for the annotation.
@@ -20,11 +16,12 @@ class UniqueUser extends Constraint
      */
 
     public $errorPath;
-    public $field;
+    public $fields = [];
 	
+    //rebuild
 	public function getRequiredOptions()
 	{
-		return ['field', 'errorPath'];
+		return ['fields', 'errorPath'];
 	}
 
 	/**
@@ -35,5 +32,6 @@ class UniqueUser extends Constraint
 		return self::CLASS_CONSTRAINT;
 	}
 
-    public $message = 'This e-mail address is already registered!';
+    //rebuild it to be more universal
+    public $message = 'The activity with the same name and speed range already exist';
 }

@@ -1,13 +1,20 @@
 {# Movement #}
-{%  if activityForm.speedAverage is defined %}
-    {{ form_row(activityForm.speedAverage, {
-        'label' : 'Average speed: '
-    }) }}
-{% endif %}
 {%  if activityForm.intensity is defined %}
     {{ form_row(activityForm.intensity, {
         'attr': {'class': 'form-control-lg'},
         'label' : 'Intensity: ',
+    }) }}
+{% endif %}
+
+{%  if activityForm.speedAverageMin is defined %}
+    {{ form_row(activityForm.speedAverageMin, {
+        'label' : 'Lowest average speed [km/h]: '
+    }) }}
+{% endif %}
+
+{%  if activityForm.speedAverageMax is defined %}
+    {{ form_row(activityForm.speedAverageMax, {
+        'label' : 'Largest average speed [km/h]: '
     }) }}
 {% endif %}
 

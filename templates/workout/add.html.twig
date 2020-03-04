@@ -9,17 +9,32 @@
 {% block content %}
 
 <section class="addWorkout">
-		
 	<div class="container">
-		
 		<div class="row">
 	      	<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
 		        <div class="card card-signin my-5 shadow-box">
-		          	
-                    {{ include('forms/workout_form.html.twig', {
-                        header_text: 'Add new Workout',
-                        button_text: 'Add'
-                    }) }}
+                    <ul class="nav nav-pills nav-fill">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#average_data_form">Average data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#specific_data_form">Specific data</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="average_data_form" class="tab-pane fade active show">
+                            {{ include('forms/workout_form.html.twig', {
+                                header_text: 'Add new Workout',
+                                button_text: 'Add'
+                            }) }}
+                        </div>
+                        <div id="specific_data_form" class="tab-pane fade">
+                            {{ include('forms/workout_specific_data_form.html.twig', {
+                                header_text: 'Add new Workout',
+                                button_text: 'Add'
+                            }) }}
+                        </div>
+                    </div>
 		        </div>
 	      	</div>
 	    </div>

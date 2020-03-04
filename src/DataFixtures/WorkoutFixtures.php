@@ -8,6 +8,12 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 {
+
+    private static $activities = [
+        'running_activity',
+        'cycling_activity'
+    ];
+
     public function getDependencies()
     {
         return [
@@ -23,7 +29,7 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
-                ->setActivity($this->getRandomReference('movement_activity'))
+                ->setActivity($this->getRandomReference($this->faker->randomElement(self::$activities)))
                 ->setDurationSeconds($this->faker->numberBetween($min = 1, $max = 86399))
                 /* max time -> 23:59:59 */ 
                 ->calculateSaveBurnoutEnergy()

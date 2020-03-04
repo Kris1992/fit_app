@@ -19,6 +19,22 @@ class MovementActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, MovementActivity::class);
     }
 
+    public function findOneActivityWithSpeedInRange(string $activityName,int $speedAverageMin, int $speedAverageMax)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.name LIKE :activityName')
+            ->andWhere('(a.speedAverageMin BETWEEN :speedAverageMin AND :speedAverageMax) OR (a.speedAverageMax BETWEEN :speedAverageMin AND :speedAverageMax)')
+            ->setParameters([
+                'activityName' => $activityName,
+                'speedAverageMin' => $speedAverageMin,
+                'speedAverageMax' => $speedAverageMax
+            ])
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return MovementActivity[] Returns an array of MovementActivity objects
     //  */

@@ -1,32 +1,35 @@
-{% block workout_form %}
+{% block workout_specific_data_form %}
 
                     <div class="card-body">
                         <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
                             
-                            {{ form_start(workoutForm, {
+                            {{ form_start(workoutSpecificDataForm, {
                                 'attr': {'class': 'form-signin js-new-workout-form',
                                 'data-url': path('workout_add'),
-                                'name': 'workout_average_data_form'
+                                'name': 'workout_specific_data_form'
                                 }
                             }) }}
-                                {{ form_row(workoutForm.activity, {
+                                {{ form_row(workoutSpecificDataForm.activityName, {
                                     'attr': {'class': 'form-control-lg'},
                                     'label' : 'Activity: '
                                 }) }}
-                                {%  if workoutForm.user is defined %}
-                                    {{ form_row(workoutForm.user, {
+                                {%  if workoutSpecificDataForm.user is defined %}
+                                    {{ form_row(workoutSpecificDataForm.user, {
                                         'label' : 'User: '
                                     }) }}
                                 {% endif %}
-                                {{ form_row(workoutForm.durationSeconds, {
+                                {{ form_row(workoutSpecificDataForm.durationSeconds, {
                                     'label' : 'Duration: '
                                 }) }}
-                                {{ form_row(workoutForm.startAt, {
+                                {{ form_row(workoutSpecificDataForm.startAt, {
                                     'label' : 'Date: '
                                 }) }}
+                                <div class="js-additional-data-workout-data-form">
+                                    {% include './forms/workout_additional_data_form.html.twig' %}
+                                </div>
                                 <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
                             
-                            {{ form_end(workoutForm) }}
+                            {{ form_end(workoutSpecificDataForm) }}
                     </div>
 {% endblock %}
 

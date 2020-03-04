@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Factory;
+namespace App\Services\Factory\Activity;
 
 /**
  *  Manage ConcreteFactory
@@ -15,10 +15,10 @@ class ActivityFactory
         switch($factoryName) {
             case self::MOVEMENT_FACTORY:
                 return new MovementActivityFactory();
-                break;
+                //break;
             case self::WEIGHT_FACTORY:
                 return new WeightActivityFactory();
-                break;
+                //break;
         }
     }
 }

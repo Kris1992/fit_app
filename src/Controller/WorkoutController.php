@@ -11,6 +11,7 @@ use App\Repository\WorkoutRepository;
 use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\WorkoutFormType;
+use App\Form\WorkoutSpecificDataFormType;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -148,8 +149,7 @@ class WorkoutController extends AbstractController
      */
     public function addPanel(Request $request)
     {
-        
-
+    
         return $this->render('workout/addPanel.html.twig', [
             
         ]);
@@ -164,25 +164,49 @@ class WorkoutController extends AbstractController
      */
     public function add_n(Request $request, EntityManagerInterface $em)
     {
-        $form = $this->createForm(WorkoutFormType::class);
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $workout = new Workout();
-            $workout = $form->getData();
-            $workout->setUser($this->getUser());
-            $workout->calculateSaveBurnoutEnergy();
 
-            $em->persist($workout);
-            $em->flush();
+        $formAverage = $this->createForm(WorkoutFormType::class);
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+        if ($request->isMethod('POST')) {
 
-            $this->addFlash('success', 'Workout was added!! ');
+                $formAverage->handleRequest($request);
+                   
+                if ($formAverage->isSubmitted() && $formAverage->isValid()) {
+                    dd('ups-average');
+                    $workout = new Workout();
+                    $workout = $formAverage->getData();
+                    $workout->setUser($this->getUser());
+                    $workout->calculateSaveBurnoutEnergy();
+
+                    $em->persist($workout);
+                    $em->flush();
+
+                    $this->addFlash('success', 'Workout was added!! ');
+                    return $this->redirectToRoute('workout_list');
+                }
             
-            return $this->redirectToRoute('workout_list');
+                $formSpecific->handleRequest($request);
+                   
+                if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
+                    dump($formSpecific->getData());
+                    dd('ups specific');
+                    $workout = new Workout();
+                    $workout = $formSpecific->getData();
+                    $workout->setUser($this->getUser());
+                    $workout->calculateSaveBurnoutEnergy();
+
+                    $em->persist($workout);
+                    $em->flush();
+
+                    $this->addFlash('success', 'Workout was added!! ');
+                    return $this->redirectToRoute('workout_list');
+                }
+            
         }
 
         return $this->render('workout/add.html.twig', [
-            'workoutForm' => $form->createView(),
+            'workoutForm' => $formAverage->createView(),
+            'workoutSpecificDataForm' => $formSpecific->createView(),
         ]);
     }
 

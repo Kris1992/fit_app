@@ -67,6 +67,25 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
+
+    //Form helper variables
+
+    private $activityName;// to delete 
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $distance;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $repetitions;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $sets;
  
     /**
      * transformSaveTimeToString Transform time from seconds to string format H:i:s
@@ -101,6 +120,21 @@ class Workout
         $value = str_pad((string)$value, 2, '0', STR_PAD_LEFT);
 
         return $value;
+    }
+
+
+
+//to delete
+    public function setActivityName(string $activityName): self
+    {
+        $this->activityName = $activityName;
+
+        return $this;
+    }
+
+    public function getActivityName(): ?string
+    {
+        return $this->activityName;
     }
 
 
@@ -210,6 +244,42 @@ class Workout
     public function setDurationSeconds(int $durationSeconds): self
     {
         $this->durationSeconds = $durationSeconds;
+
+        return $this;
+    }
+
+    public function getDistance(): ?float
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(?float $distance): self
+    {
+        $this->distance = $distance;
+
+        return $this;
+    }
+
+    public function getRepetitions(): ?int
+    {
+        return $this->repetitions;
+    }
+
+    public function setRepetitions(?int $repetitions): self
+    {
+        $this->repetitions = $repetitions;
+
+        return $this;
+    }
+
+    public function getSets(): ?int
+    {
+        return $this->sets;
+    }
+
+    public function setSets(?int $sets): self
+    {
+        $this->sets = $sets;
 
         return $this;
     }

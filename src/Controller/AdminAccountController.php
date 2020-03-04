@@ -120,8 +120,6 @@ class AdminAccountController extends AbstractController
         $entityManager->remove($user);
         $entityManager->flush();
 
-        
-
         $response = new Response();
         $this->addFlash('success','User was deleted!!');
         $response->send();

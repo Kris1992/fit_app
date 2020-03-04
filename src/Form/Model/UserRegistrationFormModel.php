@@ -10,13 +10,12 @@ use App\Services\UploadImagesHelper;
 
 /**
 * @UniqueUser(
-* fields={"email"},
-* errorPath="email"
+*     field="email",
+*     errorPath="email"
 *)
 */
 class UserRegistrationFormModel
 {
-
     
     private $id;
 

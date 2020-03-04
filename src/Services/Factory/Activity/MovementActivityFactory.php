@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Factory;
+namespace App\Services\Factory\Activity;
 
 use App\Entity\MovementActivity;
 use App\Entity\AbstractActivity;
@@ -13,7 +13,8 @@ class MovementActivityFactory implements ActivityAbstractFactory {
         $movementActivity->setType($activityArray['type']);
         $movementActivity->setName($activityArray['name']);
         $movementActivity->setEnergy($activityArray['energy']);
-        $movementActivity->setSpeedAverage($activityArray['speedAverage']);
+        $movementActivity->setSpeedAverageMin($activityArray['speedAverageMin']);
+        $movementActivity->setSpeedAverageMax($activityArray['speedAverageMax']);
         $movementActivity->setIntensity($activityArray['intensity']);
 
         return $movementActivity;

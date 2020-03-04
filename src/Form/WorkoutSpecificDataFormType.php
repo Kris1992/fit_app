@@ -6,7 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use App\Entity\Workout;
+//use App\Entity\Workout;
+use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Entity\AbstractActivity;
 
 use App\Entity\MovementActivity;
@@ -16,12 +17,15 @@ use App\Repository\AbstractActivityRepository;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
+//nowe
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 
-class WorkoutFormType extends AbstractType
+class WorkoutSpecificDataFormType extends AbstractType
 {
     private $activityRepository;
 
@@ -37,26 +41,15 @@ class WorkoutFormType extends AbstractType
         $isEdit = $workout && $workout->getId();
         
         $builder
-            ->add('activity', EntityType::class, [ 
-                'class' => AbstractActivity::class, 
-                'choices' => $this->activityRepository->findAllNamesAlphabetical(),
+        //datatransformer zamiast zapisywać do workout name?
+        //zrobić kolejną tabele workoutdata i tam wrzucić do abstract duration, startAt, energy?
+        //chyba nie ma to sensu trzeba tylko weight jeszcze dodać i raczej więcej pól nie będzie 
+        //potrzebnych
+            ->add('activityName', ChoiceType::class, [ 
+                'choices' => $this->getActivityUniqueName(),
                 'placeholder' => 'Choose an activity',
                 'invalid_message' => 'Invalid activity!',
-                'choice_label' => 
-                function(AbstractActivity $activity) {
-                    return $this->getActivityName($activity);
-                }
             ])
-            /*->add('duration', TimeType::class, [
-                'input'  => 'datetime',
-                'widget' => 'choice',
-                'required' => false,
-                'model_timezone' => 'UTC',//because use timestamp
-                'view_timezone' => 'UTC',
-                'placeholder' => [
-                    'hour' => 'Hour', 'minute' => 'Minute'
-                ]
-            ])*/
             ->add('durationSeconds', CustomTimeType::class, [
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
@@ -64,6 +57,9 @@ class WorkoutFormType extends AbstractType
                 'attr' => [
                     'class'=>'form-inline'
                 ]
+            ])
+            ->add('distance', NumberType::class, [
+
             ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
@@ -88,7 +84,7 @@ class WorkoutFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Workout::class,
+            'data_class' => WorkoutSpecificFormModel::class,//Workout::class,
             'is_admin' => false
         ]);
     }
@@ -98,23 +94,18 @@ class WorkoutFormType extends AbstractType
         return '';
     }
 
-    /**
-     * getActivityName  Function which returns string for choice activity with specific
-     * for this activity data (e.g running [fast 10km/h]) 
-     * @param  AbstractActivity $activity Activity to sprintf name
-     * @return string
-     */
-    private function getActivityName(AbstractActivity $activity): string
+    private function getActivityUniqueName()
     {
-        if($activity instanceof MovementActivity){
-            return sprintf('%s [%s (%d - %d km/h)]',
-                $activity->getName(), 
-                $activity->getIntensity(), 
-                $activity->getSpeedAverageMin(),
-                $activity->getSpeedAverageMax()
-            );
-        } 
+        $uniqueNamesArray = $this->activityRepository->findUniqueNamesAlphabetical();
+        if ($uniqueNamesArray) {
+            foreach ($uniqueNamesArray as $key => $value) {
+                $uniqueName = $uniqueNamesArray[$key]['name'];
+                $uniqueNames[$uniqueName] = $uniqueName;
+            }
+            return $uniqueNames;
+        }
         
-        return sprintf('(%d) %s', $activity->getId(), $activity->getName());
+        return null;
     }
+
 }

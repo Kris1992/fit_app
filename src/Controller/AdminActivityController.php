@@ -10,11 +10,20 @@ use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\ActivityFormType;
 use App\Entity\AbstractActivity;
-use App\Services\Factory\ActivityFactory;
+use App\Services\Factory\Activity\ActivityFactory;
 use App\Form\Model\Activity\BasicActivityFormModel;
 use App\Repository\AbstractActivityRepository;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+use App\Form\Model\Activity\AbstractActivityFormModel;
+use App\Form\Model\Activity\MovementActivityFormModel;
+use App\Form\Model\Activity\WeightActivityFormModel;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Form\FormError;
+
+use App\Services\Converter\ArrayConverter;
+
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -44,14 +53,38 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/add", name="admin_activity_add", methods={"POST", "GET"})
      */
-    public function add(Request $request, EntityManagerInterface $em)
+    public function add(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
     {
+
         $form = $this->createForm(ActivityFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
 
             $data = $form->getData();
+
+            switch ($data['type']) {
+                case 'Movement':
+                    $dataModel = ArrayConverter::toObject($data, new MovementActivityFormModel());
+                    break;
+                case 'Weight':
+                    $dataModel = ArrayConverter::toObject($data, new WeightActivityFormModel());
+                    break;
+            }
+
+            $errors = $validator->validate($dataModel);
+
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $formError = new FormError($error->getMessage());
+                    $form->get($error->getPropertyPath())->addError($formError);
+                }
+                
+                return $this->render('admin_activity/add.html.twig', [
+                    'activityForm' => $form->createView(),
+                ]);
+            }
+
             $activityFactory = ActivityFactory::chooseFactory($data['type']);
             $activity = $activityFactory->createActivity($data);
 
@@ -81,7 +114,6 @@ class AdminActivityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) 
         {
             $activity = $form->getData();
-
 
             $em->persist($activity);
             $em->flush();
@@ -161,6 +193,7 @@ class AdminActivityController extends AbstractController
     public function getSpecificActivityForm(Request $request)
     {
         $type = $request->query->get('type');
+
         $activity = new BasicActivityFormModel();
         $activity->setType($type);
         $form = $this->createForm(ActivityFormType::class, $activity);

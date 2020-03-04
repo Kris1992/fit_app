@@ -12,4 +12,3 @@ class NotZeroDuration extends Constraint
 {
     public $message = 'Duration cannot be zero';
 }
-?>
