@@ -29,6 +29,11 @@ class UniqueUserValidator extends ConstraintValidator
         $method .= ucfirst($field);
         
         $array[$field] = $object->$method();
+
+        //property cannot be null live it to notBlank assert
+        if ($array[$field] === null || $array[$field] === '') {
+            return;
+        }
         
         $existingUser = $this->userRepository->findOneBy($array);
 

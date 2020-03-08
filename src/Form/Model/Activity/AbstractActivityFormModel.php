@@ -4,7 +4,7 @@ namespace App\Form\Model\Activity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-abstract class AbstractActivityFormModel // implements \ArrayAccess //
+abstract class AbstractActivityFormModel implements \ArrayAccess
 {
 
     protected $id;
@@ -35,12 +35,19 @@ abstract class AbstractActivityFormModel // implements \ArrayAccess //
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getType(): ?string
     {
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
@@ -52,7 +59,7 @@ abstract class AbstractActivityFormModel // implements \ArrayAccess //
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -64,7 +71,7 @@ abstract class AbstractActivityFormModel // implements \ArrayAccess //
         return $this->energy;
     }
 
-    public function setEnergy(int $energy): self
+    public function setEnergy(?int $energy): self
     {
         $this->energy = $energy;
 
@@ -74,7 +81,7 @@ abstract class AbstractActivityFormModel // implements \ArrayAccess //
 
 
     //arrayAccess methods
-    /*public function offsetExists($offset)
+    public function offsetExists($offset)
     {
         $value = $this->{"get$offset"}();
         return $value !== null;
@@ -93,6 +100,6 @@ abstract class AbstractActivityFormModel // implements \ArrayAccess //
     public function offsetUnset($offset)
     {
         $this->{"set$offset"}(null);
-    }*/
+    }
 
 }

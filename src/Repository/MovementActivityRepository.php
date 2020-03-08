@@ -35,6 +35,21 @@ class MovementActivityRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findOneActivityBySpeedAverageAndName(string $activityName,int $speedAverage)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.name LIKE :activityName')
+            ->andWhere('(a.speedAverageMin <= :speedAverage) AND (a.speedAverageMax >= :speedAverage)')
+            ->setParameters([
+                'activityName' => $activityName,
+                'speedAverage' => $speedAverage,
+            ])
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return MovementActivity[] Returns an array of MovementActivity objects
     //  */

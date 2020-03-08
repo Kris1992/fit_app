@@ -23,6 +23,10 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 //nowe
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 
 class WorkoutSpecificDataFormType extends AbstractType
@@ -50,16 +54,13 @@ class WorkoutSpecificDataFormType extends AbstractType
                 'placeholder' => 'Choose an activity',
                 'invalid_message' => 'Invalid activity!',
             ])
-            ->add('durationSeconds', CustomTimeType::class, [
+            ->add('durationSecondsTotal', CustomTimeType::class, [
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
                 ],
                 'attr' => [
                     'class'=>'form-inline'
                 ]
-            ])
-            ->add('distance', NumberType::class, [
-
             ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
@@ -70,6 +71,54 @@ class WorkoutSpecificDataFormType extends AbstractType
                 'view_timezone' => 'UTC',
             ])
         ;
+
+
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) {
+                /** @var WorkoutSpecificFormModel|null $data */
+                $data = $event->getData();
+
+                if (!$data) {
+                    return;
+                }
+
+                $this->setupSpecificActivityField(
+                    $event->getForm(),
+                    $data->getType()
+                );
+            }
+        );
+        
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function(FormEvent $event) {
+                $form = $event->getForm();
+                $data = $event->getData();
+                $this->setupSpecificActivityField(
+                    $form,
+                    $data['type']
+                );
+            }
+        );
+
+        /* If we wanna do calculations here we can 
+        $builder->addEventListener(
+            FormEvents::SUBMIT,
+            function(FormEvent $event) {
+                //$form = $event->getForm();
+                $data = $event->getData();
+                //$data->calculateSaveBurnoutEnergy();
+                if($data->getDistance() != null) {
+                    $data->calculateSaveAverageSpeed();
+                }
+                /*$this->setupSpecificActivityField(
+                    $form,
+                    $data['type']
+                );*
+            }
+        );*/
+        
 
 
         if ($options['is_admin']) {
@@ -85,13 +134,53 @@ class WorkoutSpecificDataFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => WorkoutSpecificFormModel::class,//Workout::class,
-            'is_admin' => false
+            'is_admin' => false,
+            'validation_groups' => function (FormInterface $form) {
+                $data = $form->getData();
+
+                switch ($data->getType()) {
+                    case 'Movement':
+                        return ['Default','movement'];         
+                    default:
+                        # code...
+                        break;
+                }
+            },
         ]);
     }
 
     public function getBlockPrefix()
     {
         return '';
+    }
+
+    private function setupSpecificActivityField(FormInterface $form, ?string $type)
+    {
+        $hinted = true;
+
+        switch ($type) {
+            case 'Movement':
+                $form
+                    ->add('distanceTotal', NumberType::class)
+                ;
+                break;
+            case 'Weight':
+                $form
+                    ->add('repetitions', IntegerType::class)
+                    ->add('weight', NumberType::class)   
+                ;
+                break;
+            default:
+                $hinted = false;
+                break;
+        }
+
+        if($hinted){
+            $form
+                ->add('type', HiddenType::class)
+                ;
+        }
+
     }
 
     private function getActivityUniqueName()

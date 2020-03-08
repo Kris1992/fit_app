@@ -23,7 +23,7 @@
                     </ul>
                     <div class="tab-content">
                         <div id="average_data_form" class="tab-pane fade active show">
-                            {{ include('forms/workout_form.html.twig', {
+                            {{ include('forms/workout_average_data_form.html.twig', {
                                 header_text: 'Add new Workout',
                                 button_text: 'Add'
                             }) }}
@@ -44,6 +44,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="{{ asset('js/_workoutSpecificForm.js') }}"></script>
     <script>
     $(document).ready(function() {
         

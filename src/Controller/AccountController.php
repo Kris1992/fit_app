@@ -157,7 +157,6 @@ class AccountController extends AbstractController
             	$em->flush();
 
         		$mail->sendPassword($user->getFirstName(), $formData['email'], $passToken->getToken()); 
-
         		$this->addFlash('success', 'Check your email! I send message to you');
         	}
     	}
@@ -233,7 +232,6 @@ class AccountController extends AbstractController
         if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
-
 
         $userId = $user->getId();
 

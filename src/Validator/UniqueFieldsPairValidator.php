@@ -29,15 +29,20 @@ class UniqueFieldsPairValidator extends ConstraintValidator
         if (count($constraint->fields) < 2) {
             throw new InvalidOptionsException('Expected array got string', $constraint->fields);
         }
-
-        $repository = $this->entityManager->getRepository('App\Entity\\'.$constraint->entityClass);
         
         foreach ($constraint->fields as $key => $field) {
             $method = 'get';
             $method .= ucfirst($field);
         
             $array[$field] = $object->$method();
+            
+            //property cannot be null live it to notBlank assert
+            if (null === $array[$field] || '' === $array[$field]) {
+                return;
+            }
         }
+
+        $repository = $this->entityManager->getRepository('App\Entity\\'.$constraint->entityClass);
 
         $fieldsPairExist = $repository->findOneBy($array);
 

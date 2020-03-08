@@ -33,5 +33,5 @@ class UniqueFieldsPair extends Constraint
 		return self::CLASS_CONSTRAINT;
 	}
 
-    public $message = 'The activity with the same name and speed range already exist';
+    public $message = 'Record in database with the same name and intensity already exist';
 }

@@ -8,15 +8,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use App\Repository\WorkoutRepository;
+use App\Repository\AbstractActivityRepository;
 use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Form\WorkoutFormType;
+use App\Form\WorkoutFormType;//To Delete
 use App\Form\WorkoutSpecificDataFormType;
-
+use App\Form\WorkoutAverageDataFormType;
+use App\Form\Model\Workout\WorkoutSpecificFormModel;
+use App\Form\Model\Workout\WorkoutAverageFormModel;
+use App\Services\ModelExtender\WorkoutSpecificExtender;
+use App\Services\ModelExtender\WorkoutAverageExtender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\FormInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\Factory\Workout\WorkoutFactory;
 
 class WorkoutController extends AbstractController
 {
@@ -27,10 +34,10 @@ class WorkoutController extends AbstractController
     public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
 
+//TO DO
     	$user = $this->getUser();
     	$workouts = $workoutRepository->findBy(['user' => $user ]);
 
-    	//forms
 
     	$form = $this->createForm(WorkoutFormType::class);
         $form->handleRequest($request);
@@ -162,44 +169,69 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function add_n(Request $request, EntityManagerInterface $em)
+    public function add_n(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
 
-        $formAverage = $this->createForm(WorkoutFormType::class);
+        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+
         if ($request->isMethod('POST')) {
 
                 $formAverage->handleRequest($request);
                    
                 if ($formAverage->isSubmitted() && $formAverage->isValid()) {
-                    dd('ups-average');
-                    $workout = new Workout();
-                    $workout = $formAverage->getData();
-                    $workout->setUser($this->getUser());
-                    $workout->calculateSaveBurnoutEnergy();
+                    $workoutAverageFormModel = $formAverage->getData();
+                    $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
+                
+                    //Validation Model data
+                    $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+                    
+                    if ($isValid) {
+                        $activity = $workoutAverageFormModel->getActivity();
+                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                        $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
 
-                    $em->persist($workout);
-                    $em->flush();
+                        $em->persist($workout);
+                        $em->flush();
 
-                    $this->addFlash('success', 'Workout was added!! ');
-                    return $this->redirectToRoute('workout_list');
+                        $this->addFlash('success', 'Workout was added!! ');
+                        return $this->redirectToRoute('workout_list');
+                    } else {
+                        $errors = $modelValidator->getErrors();
+                        return $this->render('workout/add.html.twig', [
+                            'workoutForm' => $formAverage->createView(),
+                            'workoutSpecificDataForm' => $formSpecific->createView(),
+                            'errors' => $errors,
+                        ]);
+                    }
                 }
             
                 $formSpecific->handleRequest($request);
                    
                 if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
-                    dump($formSpecific->getData());
-                    dd('ups specific');
-                    $workout = new Workout();
-                    $workout = $formSpecific->getData();
-                    $workout->setUser($this->getUser());
-                    $workout->calculateSaveBurnoutEnergy();
+                    $workoutSpecificModel = $formSpecific->getData();
+                    
+                    $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
 
-                    $em->persist($workout);
-                    $em->flush();
+                    //Validation Model data
+                    $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
+                    if ($isValid) {
+                        $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
+                        $workout = $workoutFactory->createWorkoutFromSpecific($workoutSpecificModel);
 
-                    $this->addFlash('success', 'Workout was added!! ');
-                    return $this->redirectToRoute('workout_list');
+                        $em->persist($workout);
+                        $em->flush();
+
+                        $this->addFlash('success', 'Workout was added!! ');
+                        return $this->redirectToRoute('workout_list');
+                    } else {
+                        $errors = $modelValidator->getErrors();
+                        return $this->render('workout/add.html.twig', [
+                            'workoutForm' => $formAverage->createView(),
+                            'workoutSpecificDataForm' => $formSpecific->createView(),
+                            'errors' => $errors,
+                        ]);
+                    }
                 }
             
         }
@@ -207,6 +239,20 @@ class WorkoutController extends AbstractController
         return $this->render('workout/add.html.twig', [
             'workoutForm' => $formAverage->createView(),
             'workoutSpecificDataForm' => $formSpecific->createView(),
+        ]);
+    }
+
+     /**
+     * @Route("/workout/add_drawed", name="workout_add_drawed", methods={"POST", "GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function addDrawed(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    {
+
+
+        return $this->render('workout/add_drawed.html.twig', [
+            //'workoutForm' => $formAverage->createView(),
+            //'workoutSpecificDataForm' => $formSpecific->createView(),
         ]);
     }
 
@@ -343,6 +389,25 @@ class WorkoutController extends AbstractController
         return $response;
     }
 
+     /**
+     * @Route("/api/specific_workout_form", name="api_workout_specific_form")
+     */
+    public function getSpecificWorkoutFormAction(Request $request, AbstractActivityRepository $activityRepository)
+    {
+        $name = $request->query->get('activityName');
+
+        $activity = $activityRepository->findOneBy(['name' => $name]);
+        $type = $activity->getType();
+
+        $workout = new WorkoutSpecificFormModel();
+        $workout->setType($type);
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class, $workout);
+        
+        return $this->render('forms/workout_specific_additional_data_form.html.twig', [
+            'workoutSpecificDataForm' => $formSpecific->createView(),
+        ]);
+    }
+
     /**
      * @Route("/api/server_date", name="server_date_get", methods={"GET"})
      * @IsGranted("ROLE_USER")
@@ -359,6 +424,7 @@ class WorkoutController extends AbstractController
         );
     }
     
+    //bind it to service
     protected function getErrorsFromForm(FormInterface $form)
     {
         foreach ($form->getErrors() as $error) {

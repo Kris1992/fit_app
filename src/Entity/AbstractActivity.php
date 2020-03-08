@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Table(name="abstract_activity", indexes={@ORM\Index(columns={"name", "type"}, 
  * flags={"fulltext"})})
  */
-abstract class AbstractActivity implements \ArrayAccess
+abstract class AbstractActivity implements \ArrayAccess // ArrayAccess to delete? 
 {
     /**
      * @ORM\Id()

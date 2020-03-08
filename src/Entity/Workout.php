@@ -38,7 +38,7 @@ class Workout
      * @ORM\Column(type="integer")
      * @Groups("main")
      */
-    private $burnoutEnergy;
+    private $burnoutEnergy;//total
 
     /**
      * @ORM\Column(type="datetime")
@@ -51,7 +51,22 @@ class Workout
      * @AcmeAssert\NotZeroDuration()
      * @Groups({"main", "input"})
      */
-    private $durationSeconds;
+    private $durationSeconds;//total
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $distance;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $repetitions;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $sets;
 
 
     /// Helper variables
@@ -68,24 +83,8 @@ class Workout
     */
     private $startDate;
 
-    //Form helper variables
 
-    private $activityName;// to delete 
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $distance;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $repetitions;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $sets;
  
     /**
      * transformSaveTimeToString Transform time from seconds to string format H:i:s
@@ -121,23 +120,6 @@ class Workout
 
         return $value;
     }
-
-
-
-//to delete
-    public function setActivityName(string $activityName): self
-    {
-        $this->activityName = $activityName;
-
-        return $this;
-    }
-
-    public function getActivityName(): ?string
-    {
-        return $this->activityName;
-    }
-
-
 
 
     //setTime to delete
@@ -177,6 +159,16 @@ class Workout
         return $this->startDate;
     }
 
+    public function setBurnoutEnergyTotal(int $burnoutEnergyTotal): self
+    {
+        $this->burnoutEnergy = $burnoutEnergyTotal;
+
+        return $this;   
+    }
+
+
+
+    // to refactor i usunąć
     public function calculateSaveBurnoutEnergy(): self
     {
         $activity = $this->activity;
@@ -200,7 +192,7 @@ class Workout
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -212,7 +204,7 @@ class Workout
         return $this->activity;
     }
 
-    public function setActivity(?AbstractActivity $activity): self
+    public function setActivity(AbstractActivity $activity): self
     {
         $this->activity = $activity;
 

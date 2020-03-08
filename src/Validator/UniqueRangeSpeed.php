@@ -17,11 +17,11 @@ class UniqueRangeSpeed extends Constraint
 
     public $errorPath;
     public $fields = [];
+    public $entityClass = null;
 	
-    //rebuild
 	public function getRequiredOptions()
 	{
-		return ['fields', 'errorPath'];
+		return ['fields', 'errorPath', 'entityClass'];
 	}
 
 	/**
@@ -32,6 +32,5 @@ class UniqueRangeSpeed extends Constraint
 		return self::CLASS_CONSTRAINT;
 	}
 
-    //rebuild it to be more universal
     public $message = 'The activity with the same name and speed range already exist';
 }

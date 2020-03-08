@@ -1,0 +1,11 @@
+{# Movement #}
+{%  if workoutSpecificDataForm.distanceTotal is defined %}
+    {{ form_row(workoutSpecificDataForm.distanceTotal, {
+        'label' : 'Distance: '
+    }) }}
+{% endif %}
+
+
+{%  if workoutSpecificDataForm.type is defined %}
+    {{ form_row(workoutSpecificDataForm.type) }}
+{% endif %}

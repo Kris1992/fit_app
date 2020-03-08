@@ -19,11 +19,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Form\Model\Activity\AbstractActivityFormModel;
 use App\Form\Model\Activity\MovementActivityFormModel;
 use App\Form\Model\Activity\WeightActivityFormModel;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Form\FormError;
 
-use App\Services\Converter\ArrayConverter;
-
+use App\Services\Transformer\Activity\ActivityTransformer;
+use App\Services\ModelValidator\ModelValidatorInterface;
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -53,7 +51,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/add", name="admin_activity_add", methods={"POST", "GET"})
      */
-    public function add(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
+    public function add(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
     {
 
         $form = $this->createForm(ActivityFormType::class);
@@ -63,37 +61,34 @@ class AdminActivityController extends AbstractController
 
             $data = $form->getData();
 
-            switch ($data['type']) {
+            $activityTransformer = ActivityTransformer::chooseTransformer($data['type']);
+            $activityModel = $activityTransformer->transformArrayToModel($data);
+            
+           /* switch ($data['type']) {
                 case 'Movement':
                     $dataModel = ArrayConverter::toObject($data, new MovementActivityFormModel());
                     break;
                 case 'Weight':
                     $dataModel = ArrayConverter::toObject($data, new WeightActivityFormModel());
                     break;
-            }
+            }*/
 
-            $errors = $validator->validate($dataModel);
-
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    $formError = new FormError($error->getMessage());
-                    $form->get($error->getPropertyPath())->addError($formError);
-                }
-                
-                return $this->render('admin_activity/add.html.twig', [
-                    'activityForm' => $form->createView(),
-                ]);
-            }
-
-            $activityFactory = ActivityFactory::chooseFactory($data['type']);
-            $activity = $activityFactory->createActivity($data);
-
-            $em->persist($activity);
-            $em->flush();
-
-            $this->addFlash('success', 'Activity was created!! ');
+            //Validation Model data
+            $isValid = $modelValidator->isValid($activityModel);
             
-            return $this->redirectToRoute('admin_activity_list');
+            if($isValid) {
+                $activityFactory = ActivityFactory::chooseFactory($data['type']);
+                $activity = $activityFactory->createActivity($data);
+
+                $em->persist($activity);
+                $em->flush();
+
+                $this->addFlash('success', 'Activity was created!! ');
+            
+                return $this->redirectToRoute('admin_activity_list');
+            }
+
+            $modelValidator->mapErrorsToForm($form);
         }
 
 
@@ -105,15 +100,32 @@ class AdminActivityController extends AbstractController
      /**
      * @Route("/admin/activity/edit/{id}", name="admin_activity_edit", methods={"POST", "GET"})
      */
-    public function edit(AbstractActivity $activity, Request $request, EntityManagerInterface $em)
+    public function edit(AbstractActivity $activity, Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
     {            
+        //An entity should be always valid !! so I dont wanna bind to form activity object
+        //$form = $this->createForm(ActivityFormType::class, $activity);
 
-        $form = $this->createForm(ActivityFormType::class, $activity);
+        $activityTransformer = ActivityTransformer::chooseTransformer($activity->getType());
+        $activityModel = $activityTransformer->transformToModel($activity);
+
+        $form = $this->createForm(ActivityFormType::class, $activityModel);
 
         $form->handleRequest($request);
+        if($request->isMethod('POST')) {
+            //Validation Model data
+            $isValid = $modelValidator->isValid($activityModel);
+            if(!$isValid) {
+                $modelValidator->mapErrorsToForm($form);
+            }
+
+        }
+
         if ($form->isSubmitted() && $form->isValid()) 
         {
-            $activity = $form->getData();
+            //It is not necessary in this case
+            //$activityModel = $form->getData();
+            
+            $activity = $activityTransformer->transformToActivity($activityModel, $activity);
 
             $em->persist($activity);
             $em->flush();
@@ -123,9 +135,11 @@ class AdminActivityController extends AbstractController
                 'id' => $activity->getId(),
             ]);
         }
+
         return $this->render('admin_activity/edit.html.twig', [
             'activityForm' => $form->createView()
         ]);
+
     }
 
     /**

@@ -9,13 +9,15 @@ use App\Validator\UniqueFieldsPair;
 /**
 * @UniqueRangeSpeed(
 *     fields={"speedAverageMin", "speedAverageMax"},
-*     errorPath="name"
+*     errorPath="name",
+*     entityClass="MovementActivity"
 *)
 *
 * @UniqueFieldsPair(
 *     fields={"intensity", "name"},
 *     errorPath="name",
-*     entityClass="MovementActivity"
+*     entityClass="MovementActivity",
+*     message="The activity with the same name and intensity already exist"
 * )
 */
 class MovementActivityFormModel extends AbstractActivityFormModel
@@ -57,7 +59,7 @@ class MovementActivityFormModel extends AbstractActivityFormModel
         return $this->speedAverageMin;
     }
 
-    public function setSpeedAverageMin(float $speedAverageMin): self
+    public function setSpeedAverageMin(?float $speedAverageMin): self
     {
         $this->speedAverageMin = $speedAverageMin;
 
@@ -69,9 +71,8 @@ class MovementActivityFormModel extends AbstractActivityFormModel
         return $this->speedAverageMax;
     }
 
-    public function setSpeedAverageMax(float $speedAverageMax): self
+    public function setSpeedAverageMax(?float $speedAverageMax): self
     {
-        
         $this->speedAverageMax = $speedAverageMax;
 
         return $this;
@@ -82,7 +83,7 @@ class MovementActivityFormModel extends AbstractActivityFormModel
         return $this->intensity;
     }
 
-    public function setIntensity(string $intensity): self
+    public function setIntensity(?string $intensity): self
     {
         $this->intensity = $intensity;
 
