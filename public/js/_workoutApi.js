@@ -156,16 +156,16 @@
         	event.preventDefault();
         	const $form = $(event.currentTarget);
         	const formData = {};
-            formData['durationSeconds'] = {};
+            formData['durationSecondsTotal'] = {};
 
         	for(let fieldData of $form.serializeArray()){
         		
-        		if(fieldData.name == 'durationSeconds[hour]'){
-        			formData['durationSeconds']['hour'] = fieldData.value;
-        		} else if(fieldData.name == 'durationSeconds[minute]') {
-        			formData['durationSeconds']['minute'] = fieldData.value;
-        		} else if(fieldData.name == 'durationSeconds[second]') {
-                    formData['durationSeconds']['second'] = fieldData.value;
+        		if(fieldData.name == 'durationSecondsTotal[hour]'){
+        			formData['durationSecondsTotal']['hour'] = fieldData.value;
+        		} else if(fieldData.name == 'durationSecondsTotal[minute]') {
+        			formData['durationSecondsTotal']['minute'] = fieldData.value;
+        		} else if(fieldData.name == 'durationSecondsTotal[second]') {
+                    formData['durationSecondsTotal']['second'] = fieldData.value;
                 } else {
         			formData[fieldData.name] = fieldData.value;
         		}
@@ -181,10 +181,8 @@
         }
 
         _saveWorkout(data, $form) {
-        	
         	return new Promise(function(resolve, reject) {
                 const url = $form.data('url');
-
                 $.ajax({
                     url,
                     method: 'POST',
@@ -404,8 +402,8 @@
                 	let fieldName = $(element).attr('name');
                 	const $fieldWrapper = $(element).closest('.form-group');
 
-                    if(fieldName == 'durationSeconds[hour]') {
-                        fieldName = 'durationSeconds';
+                    if(fieldName == 'durationSecondsTotal[hour]') {
+                        fieldName = 'durationSecondsTotal';
                     }
 
                 	if (!errorData[fieldName]) {
@@ -553,7 +551,7 @@
 
         _getDataFromFields(today) {
             const inputsData = {};
-            inputsData['durationSeconds'] = {};
+            inputsData['durationSecondsTotal'] = {};
 
             var $selectInput = this.$nowWorkoutWrapper.find('#js-workout-now-activity');
             inputsData['activity'] = $selectInput.val();
@@ -561,9 +559,9 @@
             var durationString = this.$nowWorkoutWrapper.find('#js-workout-now-duration').val();
             const durationArray = durationString.split(' ');
 
-            inputsData['durationSeconds']['hour'] = durationArray[0];
-            inputsData['durationSeconds']['minute'] = durationArray[2];
-            inputsData['durationSeconds']['second'] = durationArray[4];
+            inputsData['durationSecondsTotal']['hour'] = durationArray[0];
+            inputsData['durationSecondsTotal']['minute'] = durationArray[2];
+            inputsData['durationSecondsTotal']['second'] = durationArray[4];
             inputsData['startAt'] = today;
 
             inputsData['_token'] = $('#_token').val();

@@ -31,15 +31,48 @@ class WorkoutController extends AbstractController
      * @Route("/workout/list", name="workout_list")
      * @IsGranted("ROLE_USER")
      */
-    public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
 
-//TO DO
     	$user = $this->getUser();
     	$workouts = $workoutRepository->findBy(['user' => $user ]);
 
+        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        $formAverage->handleRequest($request);
 
-    	$form = $this->createForm(WorkoutFormType::class);
+        if ($formAverage->isSubmitted() && $formAverage->isValid()) {
+            $workoutAverageFormModel = $formAverage->getData();
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
+            
+            //Validation Model data
+            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+                    
+            if ($isValid) {
+                $activity = $workoutAverageFormModel->getActivity();
+                $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
+
+                $em->persist($workout);
+                $em->flush();
+
+                $this->addFlash('success', 'Workout was added!! ');
+                return $this->redirectToRoute('workout_list');
+            } else {
+                $errors = $modelValidator->getErrors();
+                return $this->render('workout/add.html.twig', [
+                    'workoutForm' => $formAverage->createView(),
+                    'workoutSpecificDataForm' => $formSpecific->createView(),
+                    'errors' => $errors,
+                ]);
+            }
+        }
+
+        return $this->render('workout/list.html.twig', [
+            'workouts' => $workouts,
+            'workoutForm' => $formAverage->createView()
+        ]);
+
+    	/*$form = $this->createForm(WorkoutFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
@@ -59,7 +92,7 @@ class WorkoutController extends AbstractController
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
             'workoutForm' => $form->createView()
-        ]);
+        ]);*/
     }
     
     /**
@@ -246,11 +279,12 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add_drawed", name="workout_add_drawed", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addDrawed(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function addDrawed(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator,string $map_api_key)
     {
 
 
         return $this->render('workout/add_drawed.html.twig', [
+            'map_api_key' => $map_api_key
             //'workoutForm' => $formAverage->createView(),
             //'workoutSpecificDataForm' => $formSpecific->createView(),
         ]);
@@ -273,45 +307,61 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/add", name="workout_add", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function add(Request $request, EntityManagerInterface $em)
+    public function add(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
         $data = json_decode($request->getContent(), true);
-
-        dump($data);
 
         if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
 
-        $form = $this->createForm(WorkoutFormType::class);
-        $form->submit($data);
+        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        $formAverage->submit($data);
 
-        if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
+        if (!$formAverage->isValid()) {
+            $errors = $this->getErrorsFromForm($formAverage);
 
             return $this->json(
             $errors,
             400
             );
         }
-        dump($form->getData());
         
-        $workout = new Workout();
-        $workout = $form->getData();
-        $workout->setUser($this->getUser());
-        $workout->calculateSaveBurnoutEnergy();
-        
-        $em->persist($workout);
-        $em->flush();
+        $workoutAverageFormModel = $formAverage->getData();
+        $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
+                
+        //Validation Model data
+        $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+                    
+        if ($isValid) {
+            $activity = $workoutAverageFormModel->getActivity();
+            $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+            $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
 
-        $response = new Response(null, 201);
+            $em->persist($workout);
+            $em->flush();
+            $response = new Response(null, 201);
 
-        $response->headers->set(
-            'Location',
-            $this->generateUrl('workout_get', ['id' => $workout->getId()])
-        );
+
+            $response->headers->set(
+                'Location',
+                $this->generateUrl('workout_get', ['id' => $workout->getId()])
+            );
         
-        return $response;
+            return $response;
+        } else {
+            $validatorErrors = $modelValidator->getErrors();
+                        
+            $errors = [
+                'activity' => $validatorErrors[0]->getMessage()
+                //'Calculate data goes wrong. Probably your workout duration is too short'
+            ];
+        
+            return $this->json(
+                $errors,
+                400
+            );
+        }
     }
 
      /**

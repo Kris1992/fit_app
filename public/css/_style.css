@@ -148,7 +148,10 @@ h1 {
 {
     color: #dddddd;
 }
-
+#mapContainer
+{
+    height: 100%;
+}
 
 
 
