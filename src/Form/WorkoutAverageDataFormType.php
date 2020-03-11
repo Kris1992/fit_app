@@ -72,7 +72,6 @@ class WorkoutAverageDataFormType extends AbstractType
             ])
         ;
 
-
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [

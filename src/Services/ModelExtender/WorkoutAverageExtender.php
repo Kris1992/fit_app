@@ -9,8 +9,8 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
 
     public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user): ?AbstractWorkoutFormModel
     {
-        $activity = $workoutModel->getActivity();
 
+        $activity = $workoutModel->getActivity();
         if ($user) {
             $workoutModel                    
                 ->setUser($user);

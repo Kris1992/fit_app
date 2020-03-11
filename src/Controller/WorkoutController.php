@@ -50,7 +50,7 @@ class WorkoutController extends AbstractController
             if ($isValid) {
                 $activity = $workoutAverageFormModel->getActivity();
                 $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
+                $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
 
                 $em->persist($workout);
                 $em->flush();
