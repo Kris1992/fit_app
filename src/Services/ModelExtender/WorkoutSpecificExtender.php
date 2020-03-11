@@ -15,32 +15,39 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         $this->movementRepository = $movementRepository;
     } 
 
-    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, User $user): AbstractWorkoutFormModel
+    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user): ?AbstractWorkoutFormModel
     {
-        switch ($workoutModel->getType()) {
-            case 'Movement':
-                $this->fillMovementProperties($workoutModel);
-                break;
+        if ($user) {
+            $workoutModel                    
+                ->setUser($user);
         }
 
-        $workoutModel                    
-            ->setUser($user);
+        switch ($workoutModel->getType()) {
+            case 'Movement':
+                return $this->fillMovementProperties($workoutModel);
+        }
 
-        return $workoutModel;
+        return null;
     }
 
-    private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel
+    private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): ?AbstractWorkoutFormModel
     {
 
         $activity = $this->movementRepository->findOneActivityBySpeedAverageAndName(
             $workoutModel->getActivityName(),
             $workoutModel->getAverageSpeed()
         );
-        $workoutModel                    
-            ->setActivity($activity)
-            ->calculateSaveBurnoutEnergyTotal()
-            ;
+        if ($activity) {
+            $workoutModel                    
+                ->setActivity($activity)
+                ->calculateSaveBurnoutEnergyTotal()
+                ;
 
-        return $workoutModel;
+            return $workoutModel;
+        }
+
+        //logger here
+
+        return null;
     }
 }

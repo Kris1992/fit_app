@@ -38,7 +38,7 @@ class Workout
      * @ORM\Column(type="integer")
      * @Groups("main")
      */
-    private $burnoutEnergy;//total
+    private $burnoutEnergyTotal;
 
     /**
      * @ORM\Column(type="datetime")
@@ -51,12 +51,12 @@ class Workout
      * @AcmeAssert\NotZeroDuration()
      * @Groups({"main", "input"})
      */
-    private $durationSeconds;//total
+    private $durationSecondsTotal;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $distance;
+    private $distanceTotal;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -92,7 +92,7 @@ class Workout
      */
     public function transformSaveTimeToString(): self
     {
-        $seconds = $this->getDurationSeconds();
+        $seconds = $this->getDurationSecondsTotal();
         $array['hour'] = (int)($seconds / (60 * 60));
         $array['minute'] = (int)(($seconds / 60) % 60);
         $array['second'] = (int)($seconds % 60);
@@ -161,26 +161,41 @@ class Workout
 
     public function setBurnoutEnergyTotal(int $burnoutEnergyTotal): self
     {
-        $this->burnoutEnergy = $burnoutEnergyTotal;
+        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
 
         return $this;   
     }
 
 
 
-    // to refactor i usunąć
-    public function calculateSaveBurnoutEnergy(): self
+    // Used in Fixtures
+    public function calculateSaveBurnoutEnergyTotal(): self
     {
         $activity = $this->activity;
         $activityEnergy = $activity->getEnergy();
 
-        $workoutDuration = $this->durationSeconds;
-        $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
+        $workoutDurationTotal = $this->durationSecondsTotal;
+        $burnoutEnergyTotal = $activityEnergy * ($workoutDurationTotal/(60*60));
 
-        $this->burnoutEnergy = $burnoutEnergy;
+        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
 
         return $this;
     }
+
+    public function calculateSaveDistanceTotal(): self
+    { 
+        $activity = $this->activity;
+        $speedDiff = $activity->getSpeedAverageMax() - $activity->getSpeedAverageMin();
+        $speed = $activity->getSpeedAverageMin() + ($speedDiff / 2);
+
+        $distanceTotal = $speed * ($this->getDurationSecondsTotal() / 3600);
+
+        $this->distanceTotal = $distanceTotal;
+
+        return $this;
+
+    }
+    //end of fixtures
 
     public function getId(): ?int
     {
@@ -211,9 +226,9 @@ class Workout
         return $this;
     }
 
-    public function getBurnoutEnergy(): ?int
+    public function getBurnoutEnergyTotal(): ?int
     {
-        return $this->burnoutEnergy;
+        return $this->burnoutEnergyTotal;
     }
 
     public function getStartAt(): ?\DateTimeInterface
@@ -228,26 +243,26 @@ class Workout
         return $this;
     }
 
-    public function getDurationSeconds(): ?int
+    public function getDurationSecondsTotal(): ?int
     {
-        return $this->durationSeconds;
+        return $this->durationSecondsTotal;
     }
 
-    public function setDurationSeconds(int $durationSeconds): self
+    public function setDurationSecondsTotal(int $durationSecondsTotal): self
     {
-        $this->durationSeconds = $durationSeconds;
+        $this->durationSecondsTotal = $durationSecondsTotal;
 
         return $this;
     }
 
-    public function getDistance(): ?float
+    public function getDistanceTotal(): ?float
     {
-        return $this->distance;
+        return $this->distanceTotal;
     }
 
-    public function setDistance(?float $distance): self
+    public function setDistanceTotal(?float $distanceTotal): self
     {
-        $this->distance = $distance;
+        $this->distanceTotal = $distanceTotal;
 
         return $this;
     }

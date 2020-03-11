@@ -11,7 +11,6 @@ use App\Repository\WorkoutRepository;
 use App\Repository\AbstractActivityRepository;
 use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Form\WorkoutFormType;//To Delete
 use App\Form\WorkoutSpecificDataFormType;
 use App\Form\WorkoutAverageDataFormType;
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
@@ -24,6 +23,7 @@ use Symfony\Component\Form\FormInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Workout\WorkoutFactory;
+use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 
 class WorkoutController extends AbstractController
 {
@@ -72,27 +72,6 @@ class WorkoutController extends AbstractController
             'workoutForm' => $formAverage->createView()
         ]);
 
-    	/*$form = $this->createForm(WorkoutFormType::class);
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $workout = new Workout();
-            $workout = $form->getData();
-            $workout->setUser($user);
-            $workout->calculateSaveBurnoutEnergy();
-
-            $em->persist($workout);
-            $em->flush();
-
-            $this->addFlash('success', 'Workout was created!! ');
-            
-            return $this->redirectToRoute('workout_list');
-        }
-
-        return $this->render('workout/list.html.twig', [
-            'workouts' => $workouts,
-            'workoutForm' => $form->createView()
-        ]);*/
     }
     
     /**
@@ -121,8 +100,6 @@ class WorkoutController extends AbstractController
        // $workouts = $workoutRepository->findByUserAndDateArrayNative($user, $timeline);
 
         //$workouts = $workoutRepository->findByUserAndDate($user, $timeline); if we want whole workout object
-
-        dump($workouts);
         
         return $this->json(
             $workouts,
@@ -222,7 +199,7 @@ class WorkoutController extends AbstractController
                     if ($isValid) {
                         $activity = $workoutAverageFormModel->getActivity();
                         $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                        $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
+                        $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
 
                         $em->persist($workout);
                         $em->flush();
@@ -246,11 +223,16 @@ class WorkoutController extends AbstractController
                     
                     $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
 
+                    if (!$workoutSpecificModel) {
+                        $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
+                        return $this->redirectToRoute('workout_add_n');
+                    }
+
                     //Validation Model data
                     $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
                     if ($isValid) {
                         $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
-                        $workout = $workoutFactory->createWorkoutFromSpecific($workoutSpecificModel);
+                        $workout = $workoutFactory->createWorkout($workoutSpecificModel);
 
                         $em->persist($workout);
                         $em->flush();
@@ -336,7 +318,7 @@ class WorkoutController extends AbstractController
         if ($isValid) {
             $activity = $workoutAverageFormModel->getActivity();
             $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-            $workout = $workoutFactory->createWorkoutFromSpecific($workoutAverageFormModel);
+            $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
 
             $em->persist($workout);
             $em->flush();
@@ -370,10 +352,6 @@ class WorkoutController extends AbstractController
      */
     public function getWorkoutAction(Workout $workout)
     {
-        //$durationSeconds = $workout->getDurationSeconds();
-        //change date to own function
-        //$durationSeconds = date('H:i:s', $durationSeconds);
-        //$workout->setTime($durationSeconds);
         $workout->transformSaveTimeToString();
 
         $startAt = $workout->getStartAt();
@@ -399,7 +377,7 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/api/workout/edit/{id}", name="workout_edit", methods={"PUT"})
      */
-    public function edit(Workout $workout, Request $request, EntityManagerInterface $em)
+    public function edit(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
@@ -410,33 +388,40 @@ class WorkoutController extends AbstractController
             throw new BadRequestHttpException('Invalid Json');    
         }
 
-        $form = $this->createForm(WorkoutFormType::class, $workout);
-        $form->submit($data);
+        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        $formAverage->submit($data);
 
-        if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
+        if (!$formAverage->isValid()) {
+            $errors = $this->getErrorsFromForm($formAverage);
 
             return $this->json(
             $errors,
             400
             );
         }
-        //dump($form->getData());
-        
-        $workout = $form->getData();
-        $workout->calculateSaveBurnoutEnergy();
-        
-        $em->persist($workout);
-        $em->flush();
 
-        $response = new Response(null, 201);
+        $workoutAverageFormModel = $formAverage->getData();
+        $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $workout->getUser());
+                
+        //Validation Model data
+        $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+        if ($isValid) {
+            $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
+            $em->persist($workout);
+            $em->flush();
 
-        $response->headers->set(
-            'Location',
-            $this->generateUrl('workout_get', ['id' => $workout->getId()])
-        );
+            $response = new Response(null, 201);
 
-        return $response;
+            $response->headers->set(
+                'Location',
+                $this->generateUrl('workout_get', ['id' => $workout->getId()])
+            );
+
+            return $response;
+        }
+
+        //We can't display unmapped errors in list so just empty response
+        return $this->json(null, 400);
     }
 
      /**

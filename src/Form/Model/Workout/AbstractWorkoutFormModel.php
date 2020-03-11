@@ -46,7 +46,6 @@ abstract class AbstractWorkoutFormModel
     protected $type;
 
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -81,8 +80,8 @@ abstract class AbstractWorkoutFormModel
         $activity = $this->activity;
         $activityEnergy = $activity->getEnergy();
 
-        $workoutDuration = $this->durationSecondsTotal;
-        $burnoutEnergyTotal = $activityEnergy * ($workoutDuration/(60*60));
+        $workoutDurationTotal = $this->durationSecondsTotal;
+        $burnoutEnergyTotal = $activityEnergy * ($workoutDurationTotal/(60*60));
 
         $this->burnoutEnergyTotal = $burnoutEnergyTotal;
 

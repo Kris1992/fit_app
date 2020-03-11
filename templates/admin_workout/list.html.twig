@@ -27,8 +27,8 @@
     		                <th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
     		                	{{ knp_pagination_sortable(pagination, 'User', 'u.email') }}
     		                </th>
-    		                <th {% if pagination.isSorted('w.durationSeconds') %} class="sorted" {% endif %}>
-    		                	{{ knp_pagination_sortable(pagination, 'Duration', 'w.durationSeconds') }}
+    		                <th {% if pagination.isSorted('w.durationSecondsTotal') %} class="sorted" {% endif %}>
+    		                	{{ knp_pagination_sortable(pagination, 'Duration', 'w.durationSecondsTotal') }}
     		            	</th>
     		            	<th {% if pagination.isSorted('w.startAt') %} class="sorted" {% endif %}>
     		                	{{ knp_pagination_sortable(pagination, 'Date', 'w.startAt') }}
@@ -42,7 +42,7 @@
     		                	<td>{{ workout.id }}</td>
     		                    <td>{{ workout.activity.name }}</td>
     		                    <td>{{ workout.user.email }}</td>
-    		                    <td>{{ workout.durationSeconds | time }}</td>
+    		                    <td>{{ workout.durationSecondsTotal | time }}</td>
                                 {# | date('H:i:s', '+00:00 GMT') #}
     		                    <td>{{ workout.startAt | date('m/d/Y') }}</td>
 

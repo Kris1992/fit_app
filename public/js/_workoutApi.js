@@ -256,7 +256,7 @@
 				</td>
 				<td>
 					<div class="form-group">
-						<input type="text" name="durationSeconds" required="required" class="form-control form-control-sm" value="${data[2]}">
+						<input type="text" name="durationSecondsTotal" required="required" class="form-control form-control-sm" value="${data[2]}">
 					</div>
 				</td>
 				<td>${data[3]}</td>
@@ -309,7 +309,7 @@
         	const $row = $link.closest('tr');
         	const url = $row.find('.js-submit-edit-workout').data('url');
 
-        	const duration = $row.find('[name=durationSeconds]').val();
+        	const duration = $row.find('[name=durationSecondsTotal]').val();
         	const durationArray = duration.split(':');
         	const ex = new RegExp(/^0{1}.{1}/);
         	for (var i = 0; i < 3; i++) {
@@ -319,13 +319,13 @@
         	}
 
         	const inputsData = {};
-            inputsData['durationSeconds'] = {};
+            inputsData['durationSecondsTotal'] = {};
 
             inputsData['activity'] = $row.find('[name=activity]').children("option:selected").val();
         	inputsData['startAt'] = $row.find('[name=startAt]').val();
-        	inputsData['durationSeconds']['hour'] = durationArray[0];
-            inputsData['durationSeconds']['minute'] = durationArray[1];
-        	inputsData['durationSeconds']['second'] = durationArray[2];
+        	inputsData['durationSecondsTotal']['hour'] = durationArray[0];
+            inputsData['durationSecondsTotal']['minute'] = durationArray[1];
+        	inputsData['durationSecondsTotal']['second'] = durationArray[2];
 
             inputsData['_token'] = $('#_token').val();
         	
@@ -364,7 +364,7 @@
 				<td>${data['id']}</td>
 				<td data-id="${data['activity']['id']}">${data['activity']['name']}</td>
 				<td class="js-duration">${data['time']}</td>
-				<td class="js-energy">${data['burnoutEnergy']}</td>
+				<td class="js-energy">${data['burnoutEnergyTotal']}</td>
                 <td>${data['startDate']}</td>
 				<td class="links-table">
                     <div class="link-wrapper">

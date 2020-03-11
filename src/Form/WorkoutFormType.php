@@ -57,7 +57,7 @@ class WorkoutFormType extends AbstractType
                     'hour' => 'Hour', 'minute' => 'Minute'
                 ]
             ])*/
-            ->add('durationSeconds', CustomTimeType::class, [
+            ->add('durationSecondsTotal', CustomTimeType::class, [
                 'placeholder' => [
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
                 ],

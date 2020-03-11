@@ -64,7 +64,7 @@ import { getStatusError } from './_apiHelper.js';
         		Swal.fire({
   					title: `${data['activity']['name']}`,
   					html: `<strong>Duration: </strong> ${data['time']}
-  							<br/><strong>Burnout Energy: </strong>${data['burnoutEnergy']} <strong>kcal</strong>
+  							<br/><strong>Burnout Energy: </strong>${data['burnoutEnergyTotal']} <strong>kcal</strong>
   							<br/><strong>Date: </strong> ${data['startDate']}`,
   					type: 'info',
  		 			confirmButtonText: '<i class="fa fa-thumbs-up"></i> OK!',

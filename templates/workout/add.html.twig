@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'content_base.html.twig' %}
 
 {% block title %}Add Workout{% endblock %}
 {% block stylesheets %}
@@ -6,11 +6,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
 {% endblock %}
-{% block content %}
-
-<section class="addWorkout">
-	<div class="container">
-		<div class="row">
+{% block section_class %}addWorkout{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
 	      	<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
 		        <div class="card card-signin my-5 shadow-box">
                     <ul class="nav nav-pills nav-fill">
@@ -37,9 +35,6 @@
                     </div>
 		        </div>
 	      	</div>
-	    </div>
-    </div>
-</section>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

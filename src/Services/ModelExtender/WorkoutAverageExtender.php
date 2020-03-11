@@ -7,21 +7,21 @@ use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
 class WorkoutAverageExtender implements WorkoutExtenderInterface {
 
-    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, User $user): AbstractWorkoutFormModel
+    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user): ?AbstractWorkoutFormModel
     {
         $activity = $workoutModel->getActivity();
 
+        if ($user) {
+            $workoutModel                    
+                ->setUser($user);
+        }
         
         switch ($activity->getType()) {
             case 'Movement':
-                $this->fillMovementProperties($workoutModel);
-                break;
+                return $this->fillMovementProperties($workoutModel);
         }
 
-        $workoutModel                    
-            ->setUser($user);
-
-        return $workoutModel;
+        return null;
     }
 
     private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel

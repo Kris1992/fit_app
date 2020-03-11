@@ -266,7 +266,6 @@ import { getStatusError } from './_apiHelper.js';
 			}
 		}
 		
-	
 	}
 
 	window.ChartApi = ChartApi;

@@ -89,7 +89,7 @@ class WorkoutRepository extends ServiceEntityRepository
     public function getWorkoutsTimeAndNumWorkoutsByUser($user)
     {
         return $this->createQueryBuilder('w')
-            ->select( "sum(w.durationSeconds) as totalDuration, count(w.id) as totalWorkouts")
+            ->select( "sum(w.durationSecondsTotal) as totalDuration, count(w.id) as totalWorkouts")
             ->andWhere('w.user = :val')
             ->setParameter('val', $user)
             ->getQuery()
@@ -107,7 +107,7 @@ class WorkoutRepository extends ServiceEntityRepository
     public function countEnergyPerDayByUserAndDateArray($user, array $timeline)
     {
         return $this->createQueryBuilder('w')
-            ->select( "SUM(w.burnoutEnergy) AS burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->select( "SUM(w.burnoutEnergyTotal) AS burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
             ->groupby('startDate')
             ->andWhere('w.user = :val')
             ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')

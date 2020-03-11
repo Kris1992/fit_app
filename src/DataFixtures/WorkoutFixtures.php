@@ -30,9 +30,10 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
             $workout
                 ->setUser($this->getRandomReference('main_users'))
                 ->setActivity($this->getRandomReference($this->faker->randomElement(self::$activities)))
-                ->setDurationSeconds($this->faker->numberBetween($min = 1, $max = 86399))
+                ->setDurationSecondsTotal($this->faker->numberBetween($min = 1, $max = 86399))
                 /* max time -> 23:59:59 */ 
-                ->calculateSaveBurnoutEnergy()
+                ->calculateSaveDistanceTotal()
+                ->calculateSaveBurnoutEnergyTotal()
                 ->setStartAt($this->faker->dateTime)
                 ;
 

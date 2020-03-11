@@ -12,8 +12,7 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
      */
     private $distanceTotal;
 
-
-    public function getDistanceTotal(): ?int
+    public function getDistanceTotal(): ?float
     {
         return $this->distanceTotal;
     }

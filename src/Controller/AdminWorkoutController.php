@@ -1,5 +1,5 @@
 <?php
-
+//To rebuild all forms
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 **/
 class AdminWorkoutController extends AbstractController
 {
- 	
+    
  	/**
      * @Route("/admin/workout", name="admin_workout_list", methods={"GET"})
      */
@@ -44,6 +44,35 @@ class AdminWorkoutController extends AbstractController
      */
     public function add(Request $request, EntityManagerInterface $em)
     {
+        $form = $this->createForm(WorkoutFormType::class, null, [
+            'is_admin' => true
+        ]);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $workout = new Workout();
+            $workout = $form->getData();
+            $workout->calculateSaveBurnoutEnergy();
+
+            $em->persist($workout);
+            $em->flush();
+
+            $this->addFlash('success', 'Workout was created!! ');
+            
+            return $this->redirectToRoute('admin_workout_list');
+        }
+
+        return $this->render('admin_workout/add.html.twig', [
+            'workoutForm' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/admin/workout/add_specific", name="admin_workout_add_specific", methods={"POST", "GET"})
+     */
+    public function addSpecific(Request $request, EntityManagerInterface $em)
+    {
+        // to do
         $form = $this->createForm(WorkoutFormType::class, null, [
             'is_admin' => true
         ]);
