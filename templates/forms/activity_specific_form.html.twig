@@ -1,3 +1,10 @@
+{%  if activityForm.energy is defined %}
+{{ form_row(activityForm.energy, {
+    'label' : 'Energy [kcal]: ',
+    attr: { placeholder: 'Energy per hour' }
+}) }}
+{% endif %}
+
 {# Movement #}
 {%  if activityForm.intensity is defined %}
     {{ form_row(activityForm.intensity, {

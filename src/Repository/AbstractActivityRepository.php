@@ -78,6 +78,23 @@ class AbstractActivityRepository extends ServiceEntityRepository
         ;
     }
 
+
+    /**
+     * findByTypeNamesAlphabetical Find all activities by given type
+     * @param  string $type Type of activity
+     * @return AbstractActivity[]
+     */
+    public function findByTypeNamesAlphabetical(string $type)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.type LIKE :type')
+            ->setParameter('type', $type)
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     /**
      * findAllByIds Find all activities with given ids
      * @param  array  $arrayIds Array with at least one id

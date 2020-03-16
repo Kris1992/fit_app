@@ -22,19 +22,19 @@ abstract class AbstractWorkoutFormModel
     protected $activity;
 
     /**
-     * @Assert\NotBlank(message="Your burntout Energy is too small", groups={"model"})
-     * @Assert\GreaterThan(message="Your burntout Energy is too small", value=0, groups={"model"})
+     * @Assert\NotBlank(message="Your burnout Energy is too small", groups={"model"})
+     * @Assert\GreaterThan(message="Your burnout Energy is too small", value=0, groups={"model"})
      */
     protected $burnoutEnergyTotal;
 
     /**
-     * @Assert\NotBlank(message="Please enter date of start")
+     * @Assert\NotBlank(message="Please enter date of start", groups={"sets", "Default"})
      */
     protected $startAt;
     
     /**
-     * @Assert\NotBlank(message="Please enter time")
-     * @AcmeAssert\NotZeroDuration()
+     * @Assert\NotBlank(message="Please enter time", groups={"model", "Default"})
+     * @AcmeAssert\NotZeroDuration(groups={"model", "Default"})
      */
     protected $durationSecondsTotal;
 
@@ -89,6 +89,13 @@ abstract class AbstractWorkoutFormModel
         $workoutDurationTotal = $this->durationSecondsTotal;
         $burnoutEnergyTotal = $activityEnergy * ($workoutDurationTotal/(60*60));
 
+        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
+
+        return $this;
+    }
+
+    public function setBurnoutEnergyTotal(?int $burnoutEnergyTotal): self
+    {
         $this->burnoutEnergyTotal = $burnoutEnergyTotal;
 
         return $this;

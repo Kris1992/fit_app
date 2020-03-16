@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiCsrfValidationSubscriber implements EventSubscriberInterface
-{
+{   
+    
     public function onKernelRequest(RequestEvent $event)
     {
         if (!$event->isMasterRequest()) {

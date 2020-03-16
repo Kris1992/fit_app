@@ -9,7 +9,6 @@ use App\Repository\WorkoutRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Form\WorkoutFormType;//To delete
 
 use App\Form\WorkoutSpecificDataFormType;
 use App\Form\WorkoutAverageDataFormType;
@@ -68,11 +67,11 @@ class AdminWorkoutController extends AbstractController
 
             //Validation Model data
             $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-                    
+
             if ($isValid) {
                 $activity = $workoutAverageFormModel->getActivity();
                 $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
+                $workout = $workoutFactory->create($workoutAverageFormModel);
                 $em->persist($workout);
                 $em->flush();
 
@@ -141,7 +140,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/edit_average/{id}", name="admin_workout_edit", methods={"POST", "GET"})
      */
-    public function edit(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
         
@@ -158,7 +157,7 @@ class AdminWorkoutController extends AbstractController
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             //$workoutModel = $formAverage->getData(); //form handles modeldata so we don't need it
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel,null);
-                
+
             //Validation Model data
             $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
             if ($isValid) {

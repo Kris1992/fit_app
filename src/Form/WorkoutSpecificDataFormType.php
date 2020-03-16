@@ -6,7 +6,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-//use App\Entity\Workout;
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Entity\AbstractActivity;
 
@@ -163,6 +162,9 @@ class WorkoutSpecificDataFormType extends AbstractType
                 $form
                     ->add('distanceTotal', NumberType::class)
                 ;
+                break;
+            case 'MovementSet':
+                dump('tutaj');
                 break;
             case 'Weight':
                 $form

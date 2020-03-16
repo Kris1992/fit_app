@@ -2,23 +2,21 @@
 
 namespace App\Services\Factory\Activity;
 
-use App\Entity\WeightActivity;
+use App\Entity\MovementSetActivity;
 use App\Entity\AbstractActivity;
 use App\Form\Model\Activity\AbstractActivityFormModel;
 
-class WeightActivityFactory implements ActivityAbstractFactory {
-    
+class MovementSetActivityFactory implements ActivityAbstractFactory {
+
     public function create(AbstractActivityFormModel $activityModel): AbstractActivity
     {
-        $weightActivity = new WeightActivity();
-        $weightActivity
+        $movementSetActivity = new MovementSetActivity();
+        $movementSetActivity
             ->setType($activityModel->getType())
             ->setName($activityModel->getName())
             ->setEnergy($activityModel->getEnergy())
-            ->setRepetitions($activityModel->getRepetitions())
-            ->setWeight($activityModel->getWeight())
             ;
 
-        return $weightActivity;
+        return $movementSetActivity;
     }
 }

@@ -1,146 +1,180 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html>
 
-{% block title %}Add Workout{% endblock %}
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
-    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
-{% endblock %}
-{% block content %}
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
-<section class="addWorkout">
-	<div class="container">
-		<div class="row">
-	      	<div class="col-sm-12 mx-auto">
-		        <div class="card card-signin my-5 shadow-box">
-                    <div class="row m-1">
-                        <div class="col-12">
-                            <h2 class="text-green text-center">Draw route on map</h2>
-                        </div>
-                        
-                        <div class="col-sm-12 col-md-8">
-                            <div style="width: 100%; height: 480px" id="mapContainer"></div>
-                        </div>
-                        <div class="col-sm-12 col-md-4">
-                            <div id="mapPanel">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="marker_mode">
-                                    <label class="form-check-label" for="marker_mode">Put marker after click</label>
-                                </div>
-                            </div>
-                        </div>  
-                    </div>
-                    
-		        </div>
-	      	</div>
-	    </div>
-    </div>
-</section>
-{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-<script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
-<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
-<script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript">
-    window.apikey = {{ map_api_key|json_encode|raw }};
-</script>
-<script src="{{ asset('js/_mapDraw.js') }}" type="text/javascript"></script>
+    <title>ContextMenu routing</title>
 
-
-
-
-
-
-<script type="text/javascript">
-/*
-    // Instantiate a map and platform object:
-var platform = new H.service.Platform({
-  'apikey': window.apikey
-});
-// Retrieve the target element for the map:
-var targetElement = document.getElementById('mapContainer');
-
-// Get the default map types from the platform object:
-var defaultLayers = platform.createDefaultLayers();
-loadMap();
-
-function loadMap(){
-    // Instantiate the map:
-    var map = new H.Map(
-  document.getElementById('mapContainer'),
-  defaultLayers.vector.normal.map,
-  {
-    zoom: 10,
-    center: { lat: 52.51, lng: 13.4 }
-  });
+    <style type="text/css">
+        body {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
 }
 
-// Create the parameters for the routing request:
-//var routingParameters = {
-  // The routing mode:
-//  'mode': 'fastest;car',
-  // The start point of the route:
-//  'waypoint0': 'geo!50.1120423728813,8.68340740740811',
-  // The end point of the route:
-//  'waypoint1': 'geo!52.5309916298853,13.3846220493377',
-  // To retrieve the shape of the route we choose the route
-  // representation mode 'display'
-//  'representation': 'display'
-//};
+#map {
+  width: 100%;
+  height: 100%;
+  background-color: gray;
+}
 
-// Define a callback function to process the routing response:
-var onResult = function(result) {
-  var route,
-    routeShape,
-    startPoint,
-    endPoint,
-    linestring;
-  if(result.response.route) {
-  // Pick the first route from the response:
-  route = result.response.route[0];
-  // Pick the route's shape:
-  routeShape = route.shape;
+#routingInputContainer {
+  width: 300px; 
+  height: 110px; 
+  position:absolute; 
+  top: 5px; 
+  left: 5px; 
+  padding: 10px; 
+  background-color: rgba(00, 130, 130, 0.8);
+  color: white;
+}
 
-  // Create a linestring to use as a point source for the route line
-  linestring = new H.geo.LineString();
+.routingInput {width: 95%;}
+    </style>
 
-  // Push all the points in the shape into the linestring:
-  routeShape.forEach(function(point) {
-    var parts = point.split(',');
-    linestring.pushLatLngAlt(parts[0], parts[1]);
-  });
 
-  // Retrieve the mapped positions of the requested waypoints:
-  startPoint = route.waypoint[0].mappedPosition;
-  endPoint = route.waypoint[1].mappedPosition;
+  </head>
 
-  // Create a polyline to display the route:
-  var routeLine = new H.map.Polyline(linestring, {
-    style: { strokeColor: 'blue', lineWidth: 3 }
-  });
+  <body>
+    <div id="map"></div>
+    <div id="routingInputContainer">
+      Starting point:
+    
+      <input id="inputStart" class="routingInput"/>
+      Destination point:
+      <input id="inputDest" class="routingInput"/>
+      <br/><br/>
+      <span id="info"></span>
+    </div>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script type="text/javascript">
+        'use strict';
+//config must be impelemented here
+const platform = configPlatform();
+const defaultLayers = configLayers();
+var markers = [];
 
-  // Create a marker for the start point:
-  var startMarker = new H.map.Marker({
-    lat: startPoint.latitude,
-    lng: startPoint.longitude
-  });
+// map instantiate must be global too
+var map = new H.Map(
+    document.getElementById('map'),
+    defaultLayers.vector.normal.map,
+    {
+      zoom: 10,
+    }
+);
 
-  // Create a marker for the end point:
-  var endMarker = new H.map.Marker({
-    lat: endPoint.latitude,
-    lng: endPoint.longitude
-  });
+var mapEvents = new H.mapevents.MapEvents(map);
+var behavior = new H.mapevents.Behavior(mapEvents);
+var icon  = setCustomMarker();
 
-  // Add the route polyline and the two markers to the map:
-  map.addObjects([routeLine, startMarker, endMarker]);
-
-  // Set the map's viewport to make the whole route visible:
-  map.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-  }
-};
-
+const lineString = new H.geo.LineString();
+var polyline;
+var routingService = platform.getRoutingService();
+console.log(platform);
 var routingParameters = {
+  'mode': 'fastest;car',
+  'waypoint0': 'geo!50.1120423728813,8.68340740740811',
+  'waypoint1': 'geo!52.5309916298853,13.3846220493377',
+  'representation': 'dragNDrop'
+};
+routingService.calculateRoute(routingParameters, success => {
+    console.log(success);
+});
+
+addClickEventListener(icon, lineString, polyline);
+
+//$(document).ready(function() {
+initMap();    
+//});
+
+//to do wyeksportowania
+function getActualPosition()
+{
+        return new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej);
+        });
+}
+
+function initMap() {
+    if(navigator.geolocation) {
+        getActualPosition().then((currentPos) => {
+            var currentCoords = currentPos.coords;
+            loadMap(currentCoords);
+            
+        });
+    }  else {
+        alert('navigator is not support');
+    }
+}
+function loadMap(currentCoords) {
+    /*map = new H.Map(
+        document.getElementById('mapContainer'),
+        defaultLayers.vector.normal.map,
+        {
+          zoom: 10,
+          center: { lat: currentCoords.latitude, lng: currentCoords.longitude }
+        }
+    );*/
+
+    map.setCenter({lat: currentCoords.latitude, lng: currentCoords.longitude});    
+}
+
+function addClickEventListener(icon, lineString, polyline) {
+    map.addEventListener('tap', (evt) => {
+        //const marker_mode = document.getElementById('marker_mode').checked;
+        calculateDistance();  
+        /*if (marker_mode) {
+            var coord = map.screenToGeo(
+                evt.currentPointer.viewportX,
+                evt.currentPointer.viewportY
+            );
+
+            const marker = new H.map.Marker({ lat: coord.lat, lng: coord.lng },{ icon: icon });
+            markers.push(marker);
+            map.addObject(marker);
+
+            lineString.pushPoint(marker.getGeometry());
+            if (markers.length > 1) {
+                //polyline = new H.map.Polyline(lineString);
+                //map.addObject(polyline); 
+                
+            }
+    
+        }*/
+    });
+}
+
+function calculateDistance()
+{
+    /*var points = [];
+
+    for (var i = 0; i < markers.length; i++) {
+        points[i] = [];
+        points[i][0] = markers[i].getGeometry().lat;
+        points[i][1] = markers[i].getGeometry().lng;
+    }*/
+/*
+    const params = {
+        mode: 'shortest;pedestrian',
+        //'waypoint0': 'geo!50.055246,19.991113',
+        //'waypoint1': 'geo!50.0620007,20.0033978',
+       // waypoint0: points[0][0]+','+points[0][1],
+       // waypoint1: points[1][0]+','+points[1][1],
+        representation: "display",
+        routeAttributes: "summary"
+    };
+*/
+
+ /*var routingParameters = {
   // The routing mode:
   'mode': 'fastest;car',
   // The start point of the route:
@@ -150,35 +184,92 @@ var routingParameters = {
   // To retrieve the shape of the route we choose the route
   // representation mode 'display'
   'representation': 'display'
-};
-
-    var routingService = platform.getRoutingService();
-    routingService.calculateRoute(routingParameters, success => {
-        console.log(success);
-    });
-// Get an instance of the routing service:
-/*var router = platform.getRoutingService();
-
-// Call calculateRoute() with the routing parameters,
-// the callback and an error callback function (called if a
-// communication error occurs):
-router.calculateRoute(routingParameters, success => {
-    console.log(success);
-},
-  function(error) {
-    alert(error.message);
-  });*/
-</script>
-
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('.js-datepicker').datetimepicker({
-        format:'Y-m-d H:i'
-    });
+};*/
+console.log(platform);
+var routingService2 = platform.getRoutingService();
+routingService2.calculateRoute(routingParameters, success => {
+    console.log('success');
+}, error => {
+    console.log(error);
 });
-</script>
-{% endblock %}
+   
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//config
+function configPlatform() {
+    return new H.service.Platform({
+        'apikey': 'qlo0n5XZ0BOpJD380JVNkNwPfD8TceAf2FI5tsrBh38',
+        'useHTTPS': true
+    });
+}
+
+function configLayers() {
+    return platform.createDefaultLayers();
+}
+//end of config
+//custom marker
+function setCustomMarker(){
+    var svgMarkup = '<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle fill="royalblue" cx="7" cy="7" r="7" /></svg>';
+
+
+  return new H.map.Icon(svgMarkup);
+}
+//End of custom marker
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+  </body>
+
+</html>

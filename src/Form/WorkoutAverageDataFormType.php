@@ -7,7 +7,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\AbstractActivity;
 use App\Entity\MovementActivity;
-use App\Repository\UserRepository;
 use App\Repository\AbstractActivityRepository;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,6 +14,13 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use App\Form\Model\Workout\WorkoutAverageFormModel;
+
+
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 
 
@@ -54,14 +60,6 @@ class WorkoutAverageDataFormType extends AbstractType
                     'hour' => 'Hour', 'minute' => 'Minute'
                 ]
             ])*/
-            ->add('durationSecondsTotal', CustomTimeType::class, [
-                'placeholder' => [
-                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
-                ],
-                'attr' => [
-                    'class'=>'form-inline'
-                ]
-            ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'single_text',
@@ -72,12 +70,47 @@ class WorkoutAverageDataFormType extends AbstractType
             ])
         ;
 
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) {
+                /** @var WorkoutAverageFormModel|null $data */
+                $data = $event->getData();
+
+                if (!$data) {
+                    return;
+                }
+
+                $this->setupSetsField(
+                    $event->getForm(),
+                    $data->getType()
+                );
+            }
+        );
+        
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function(FormEvent $event) {
+                $form = $event->getForm();
+                $data = $event->getData();
+                $this->setupSetsField(
+                    $form,
+                    $data['type']
+                );
+            }
+        );
+
+
+
+
+
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [
                     'disabled' => $isEdit
                 ]);
-            }
+        }
+
+
        
     }
 
@@ -85,13 +118,60 @@ class WorkoutAverageDataFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => WorkoutAverageFormModel::class,
-            'is_admin' => false
+            'is_admin' => false,
+            'validation_groups' => function (FormInterface $form) {
+                $data = $form->getData();
+
+                switch ($data->getType()) {
+                    case 'MovementSet':
+                        return ['sets'];         
+                    default:
+                        return ['Default'];
+                }
+            },
         ]);
     }
 
     public function getBlockPrefix()
     {
         return '';
+    }
+
+    private function setupSetsField(FormInterface $form, ?string $type)
+    {   
+        
+        switch ($type) {
+            case 'MovementSet':
+                $form
+                    ->add('movementSets', CollectionType::class, [
+                        'entry_type' => MovementSetFormType::class,
+                        'entry_options' => [
+                            'label' => false
+                        ],
+                        'by_reference' => false,
+                        'allow_add' => true,
+                        'allow_delete' => true
+                    ])
+                ;
+                break;
+            default:
+            //Activities with sets don't needed that field
+                $form
+                    ->add('durationSecondsTotal', CustomTimeType::class, [
+                        'placeholder' => [
+                            'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                        ],
+                        'attr' => [
+                            'class'=>'form-inline'
+                        ]
+                    ])
+                    ;
+                break;
+        }
+
+        $form
+            ->add('type', HiddenType::class)
+        ;
     }
 
     /**

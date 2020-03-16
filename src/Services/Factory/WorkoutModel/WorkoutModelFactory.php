@@ -9,6 +9,7 @@ class WorkoutModelFactory
 {   
 
     const MOVEMENT_FACTORY="Movement";
+    const MOVEMENTSET_FACTORY="MovementSet";
     const WEIGHT_FACTORY="Weight";
  
     public static function chooseFactory($factoryName, $modelType) {
@@ -18,6 +19,8 @@ class WorkoutModelFactory
                 switch($factoryName) {
                     case self::MOVEMENT_FACTORY:
                         return new MovementWorkoutModelAverageFactory();
+                    case self::MOVEMENTSET_FACTORY:
+                        return new MovementSetWorkoutModelAverageFactory();
                     case self::WEIGHT_FACTORY:
                         return new WeightWorkoutModelAverageFactory();
                     default:

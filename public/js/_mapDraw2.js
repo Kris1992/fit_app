@@ -6,7 +6,7 @@ var markers = [];
 
 // map instantiate must be global too
 var map = new H.Map(
-    document.getElementById('mapContainer'),
+    document.getElementById('map'),
     defaultLayers.vector.normal.map,
     {
       zoom: 10,
@@ -129,8 +129,8 @@ function calculateDistance()
 console.log(platform);
 var routingService2 = platform.getRoutingService();
 routingService2.calculateRoute(routingParameters, success => {
-    //console.log(success);
-}, error => { console.log(error);});
+    console.log('success');
+});
    
 
 
@@ -169,8 +169,7 @@ routingService2.calculateRoute(routingParameters, success => {
 //config
 function configPlatform() {
     return new H.service.Platform({
-        'apikey': window.apikey,
-
+        'apikey': 'qlo0n5XZ0BOpJD380JVNkNwPfD8TceAf2FI5tsrBh38'
     });
 }
 
@@ -187,6 +186,7 @@ function setCustomMarker(){
   return new H.map.Icon(svgMarkup);
 }
 //End of custom marker
+
 
 
 

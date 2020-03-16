@@ -458,6 +458,25 @@ class WorkoutController extends AbstractController
             []
         );
     }
+
+    /**
+     * @Route("/api/workout/get_workout_sets_form", name="api_workout_sets_form")
+     */
+    public function getWorkoutSetsForm(Request $request, AbstractActivityRepository $activityRepository)
+    {
+        $activityId = $request->query->get('id');
+        $activity = $activityRepository->find($activityId);
+        $type = $activity->getType();
+        
+        $workoutAverageFormModel = new WorkoutAverageFormModel();
+        $workoutAverageFormModel->setType($type);
+        
+        $formAverage = $this->createForm(WorkoutAverageDataFormType::class, $workoutAverageFormModel);
+        
+        return $this->render('forms/workout_sets_form.html.twig', [
+            'workoutForm' => $formAverage->createView(),
+        ]);
+    }
     
     //bind it to service
     protected function getErrorsFromForm(FormInterface $form)

@@ -63,7 +63,7 @@ class AdminActivityController extends AbstractController
 
             $activityTransformer = ActivityTransformer::chooseTransformer($data['type']);
             $activityModel = $activityTransformer->transformArrayToModel($data);
-            
+
            /* switch ($data['type']) {
                 case 'Movement':
                     $dataModel = ArrayConverter::toObject($data, new MovementActivityFormModel());
@@ -72,13 +72,13 @@ class AdminActivityController extends AbstractController
                     $dataModel = ArrayConverter::toObject($data, new WeightActivityFormModel());
                     break;
             }*/
-
+            
             //Validation Model data
             $isValid = $modelValidator->isValid($activityModel);
             
             if($isValid) {
-                $activityFactory = ActivityFactory::chooseFactory($data['type']);
-                $activity = $activityFactory->createActivity($data);
+                $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
+                $activity = $activityFactory->create($activityModel);
 
                 $em->persist($activity);
                 $em->flush();

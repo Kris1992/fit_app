@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -59,14 +61,16 @@ class Workout
     private $distanceTotal;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\MovementSet", mappedBy="workout", 
+     * orphanRemoval=true, cascade={"persist", "refresh"})
      */
-    private $repetitions;
+    private $movementSets;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $sets;
+    public function __construct()
+    {
+        $this->movementSets = new ArrayCollection();
+    }
+
 
 
     /// Helper variables
@@ -82,6 +86,8 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
+
+
 
 
 
@@ -267,27 +273,35 @@ class Workout
         return $this;
     }
 
-    public function getRepetitions(): ?int
+    /**
+     * @return Collection|MovementSet[]
+     */
+    public function getMovementSets(): Collection
     {
-        return $this->repetitions;
+        return $this->movementSets;
     }
 
-    public function setRepetitions(?int $repetitions): self
+    public function addMovementSet(MovementSet $movementSet): self
     {
-        $this->repetitions = $repetitions;
+        if (!$this->movementSets->contains($movementSet)) {
+            $this->movementSets[] = $movementSet;
+            $movementSet->setWorkout($this);
+        }
 
         return $this;
     }
 
-    public function getSets(): ?int
+    public function removeMovementSet(MovementSet $movementSet): self
     {
-        return $this->sets;
-    }
-
-    public function setSets(?int $sets): self
-    {
-        $this->sets = $sets;
+        if ($this->movementSets->contains($movementSet)) {
+            $this->movementSets->removeElement($movementSet);
+            // set the owning side to null (unless already changed)
+            if ($movementSet->getWorkout() === $this) {
+                $movementSet->setWorkout(null);
+            }
+        }
 
         return $this;
     }
+
 }

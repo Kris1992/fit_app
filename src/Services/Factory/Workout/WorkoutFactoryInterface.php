@@ -11,10 +11,10 @@ interface WorkoutFactoryInterface
 {   
 
     /**
-     * createWorkout  Create workout from workout model 
+     * create  Create workout from workout model 
      * @param  AbstractWorkoutFormModel  $workoutModel Model with workout data get from form
      * @return Workout Return workout
      */
-    public function createWorkout(AbstractWorkoutFormModel $workoutModel): Workout;
+    public function create(AbstractWorkoutFormModel $workoutModel): Workout;
 
 }

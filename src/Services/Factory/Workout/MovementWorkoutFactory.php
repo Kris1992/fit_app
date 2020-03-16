@@ -8,7 +8,7 @@ use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
 class MovementWorkoutFactory implements WorkoutFactoryInterface {
 
-    public function createWorkout(AbstractWorkoutFormModel $workoutModel): Workout
+    public function create(AbstractWorkoutFormModel $workoutModel): Workout
     {
         $workout = new Workout();
         $workout
@@ -16,7 +16,7 @@ class MovementWorkoutFactory implements WorkoutFactoryInterface {
             ->setActivity($workoutModel->getActivity())
             ->setDurationSecondsTotal($workoutModel->getDurationSecondsTotal())
             ->setDistanceTotal($workoutModel->getDistanceTotal())
-            ->setBurnoutEnergyTotal($workoutModel->getBurnoutEnergyTotal())//dodac tą metodę usunąć calculate
+            ->setBurnoutEnergyTotal($workoutModel->getBurnoutEnergyTotal())
             ->setStartAt($workoutModel->getStartAt())
             ;
 

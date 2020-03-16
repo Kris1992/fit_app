@@ -17,7 +17,10 @@
                                 }
                             }) }}
                                 {{ form_row(workoutForm.activity, {
-                                    'attr': {'class': 'form-control-lg'},
+                                    attr: { 
+                                        'data-workout-sets-url': path('api_workout_sets_form'),
+                                        'class': 'js-activity-form form-control-lg'
+                                    },
                                     'label' : 'Activity: '
                                 }) }}
                                 {%  if workoutForm.user is defined %}
@@ -25,16 +28,19 @@
                                         'label' : 'User: '
                                     }) }}
                                 {% endif %}
-                                {{ form_row(workoutForm.durationSecondsTotal, {
-                                    'label' : 'Duration: '
-                                }) }}
                                 {{ form_row(workoutForm.startAt, {
                                     'label' : 'Date: '
                                 }) }}
+                                
+                                <div id="workout-sets-wrapper-js">
+                                    {% include './forms/workout_sets_form.html.twig' %}
+                                </div>
+                                
                                 <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
                             
                             {{ form_end(workoutForm) }}
                     </div>
 {% endblock %}
+
 
 

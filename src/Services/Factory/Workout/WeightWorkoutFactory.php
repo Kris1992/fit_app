@@ -8,7 +8,7 @@ use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
 class WeightWorkoutFactory implements WorkoutFactoryInterface {
 
-    public function createWorkout(AbstractWorkoutFormModel $workoutModel): Workout
+    public function create(AbstractWorkoutFormModel $workoutModel): Workout
     {
         // naprawić
         $workout = new Workout();

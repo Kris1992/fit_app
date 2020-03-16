@@ -9,12 +9,15 @@ class WorkoutFactory
 {   
 
     const MOVEMENT_FACTORY="Movement";
+    const MOVEMENTSET_FACTORY="MovementSet";
     const WEIGHT_FACTORY="Weight";
  
     public static function chooseFactory($factoryName) {
         switch($factoryName) {
             case self::MOVEMENT_FACTORY:
                 return new MovementWorkoutFactory();
+            case self::MOVEMENTSET_FACTORY:
+                return new MovementSetWorkoutFactory();
             case self::WEIGHT_FACTORY:
                 return new WeightWorkoutFactory();
         }

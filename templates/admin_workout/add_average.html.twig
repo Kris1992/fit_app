@@ -1,20 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Add Workout{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
-    <script src="{{ asset('js/algolia-autocomplete.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        
-        $('.js-datepicker').datetimepicker({
-            format:'Y-m-d H:i'
-        });
-    });
-    </script>
-{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
@@ -41,4 +27,19 @@
 	    </div>
     </div>
 </section>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
+    <script src="{{ asset('js/algolia-autocomplete.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/_workoutSets.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        
+        $('.js-datepicker').datetimepicker({
+            format:'Y-m-d H:i'
+        });
+    });
+    </script>
 {% endblock %}

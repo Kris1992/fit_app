@@ -28,7 +28,6 @@ class ActivityFormType extends AbstractType
                 'disabled' => $isEdit
             ])
             ->add('name', TextType::class)
-            ->add('energy', IntegerType::class)
         ;
 
         $builder->addEventListener(
@@ -70,6 +69,9 @@ class ActivityFormType extends AbstractType
 
     private function setupSpecificActivityField(FormInterface $form, ?string $type)
     {   
+        $form
+            ->add('energy', IntegerType::class)
+            ;
         switch ($type) {
             case 'Movement':
                 $form
@@ -80,6 +82,11 @@ class ActivityFormType extends AbstractType
                     ->add('speedAverageMin', NumberType::class)
                     ->add('speedAverageMax', NumberType::class)
                 ;
+                break;
+            case 'MovementSet':
+                $form
+                    ->remove('energy')//this type of activity don't need energy (Energy from sets activities will be used)
+                    ;
                 break;
             case 'Weight':
                 $form
@@ -97,6 +104,7 @@ class ActivityFormType extends AbstractType
                 return $choices = [
                     'Weight' => 'Weight',
                     'Movement (running, cycling etc.)' => 'Movement',
+                    'Movement (running, cycling with loops)' => 'MovementSet',
                 ];
                 break;
             case 'movement_instensity':
