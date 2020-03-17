@@ -10,8 +10,9 @@ class MovementActivitySetFormModel extends AbstractActivitySetFormModel
 {
 
     /**
-     * @Assert\NotBlank(message="Distance cannot be blank", groups={"model"})
-     * @Assert\GreaterThan(message="Distance must be greater than 0", value=0, groups={"model"})
+     * @Assert\NotBlank(message="Distance cannot be blank", groups={"model", "specific_sets"})
+     * @Assert\GreaterThan(message="Distance must be greater than 0", value=0, groups={"model", 
+     * "specific_sets"})
      */
     private $distance;
 
@@ -38,6 +39,15 @@ class MovementActivitySetFormModel extends AbstractActivitySetFormModel
         $this->distance = $distance;
 
         return $this;
+    }
+
+    public function getAverageSpeed(): ?float
+    {
+        if($this->getDistance() != null && $this->getDurationSeconds() != null){
+            return $this->getDistance()/($this->getDurationSeconds()/3600);
+        }
+
+        return null;
     }
 
     

@@ -112,6 +112,25 @@ class AbstractActivityRepository extends ServiceEntityRepository
     /**
      * @return string
      */
+    public function findByTypeUniqueNamesAlphabetical($type = null)
+    {
+        if ($type === null) {
+            return $this->findUniqueNamesAlphabetical();
+        } else {
+            return $this->createQueryBuilder('a')
+                ->select('DISTINCT a.name' )
+                ->andWhere('a.type LIKE :type')
+                ->setParameter('type', $type)
+                ->orderBy('a.name', 'ASC')
+                ->getQuery()
+                ->getResult()
+            ;
+        }    
+    }
+
+    /**
+     * @return string
+     */
     public function findUniqueNamesAlphabetical()
     {
         return $this->createQueryBuilder('a')

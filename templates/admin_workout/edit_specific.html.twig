@@ -18,13 +18,13 @@
                     <div class="card card-signin my-5 shadow-box">
                         <ul class="nav nav-pills nav-fill">
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{ path('admin_workout_edit', { id: workoutId }) }}">Average data</a>
+                                <a class="nav-link" href="{{ path('admin_workout_edit', { id: workoutId }) }}">Average data</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('admin_workout_specific_edit', { id: workoutId }) }}">Specific data</a>
+                                <a class="nav-link active" href="{{ path('admin_workout_specific_edit', { id: workoutId }) }}">Specific data</a>
                             </li>
                         </ul>
-                        {{ include('forms/workout_average_data_form.html.twig', {
+                        {{ include('forms/workout_specific_data_form.html.twig', {
                             header_text: 'Edit Workout',
                             button_text: 'Update'
                         }) }}
@@ -38,7 +38,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="module" src="{{ asset('js/_formHelper.js') }}"></script>
-    <script type="module" src="{{ asset('js/_workoutSets.js') }}"></script>
+    <script type="module" src="{{ asset('js/_workoutSpecificForm.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
     <script>
     $(document).ready(function() {

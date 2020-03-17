@@ -21,12 +21,13 @@ class WeightActivityFixtures extends BaseFixture
         $this->createMany(10, 'weight_activity', function($i)
         {
             $activity = new WeightActivity();
-            $activity->setType('Weight');
-            $activity->setName($this->faker->randomElement(self::$weightActivities));
-            $activity->setEnergy($this->faker->numberBetween(10,400)); 
-        
-            $activity->setRepetitions($this->faker->numberBetween(1,20)); 
-            $activity->setWeight($this->faker->numberBetween(1,200)); 
+            $activity
+                ->setType('Weight')
+                ->setName($this->faker->randomElement(self::$weightActivities))
+                ->setEnergy($this->faker->numberBetween(10,400))
+                ->setRepetitions($this->faker->numberBetween(1,20)) 
+                ->setWeight($this->faker->numberBetween(1,200))
+                ; 
 
             return $activity;
         });

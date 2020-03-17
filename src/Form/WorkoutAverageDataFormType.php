@@ -38,7 +38,7 @@ class WorkoutAverageDataFormType extends AbstractType
 
         $workout = $options['data'] ?? null;
         $isEdit = $workout && $workout->getId();
-        
+
         $builder
             ->add('activity', EntityType::class, [ 
                 'class' => AbstractActivity::class, 
@@ -99,10 +99,6 @@ class WorkoutAverageDataFormType extends AbstractType
             }
         );
 
-
-
-
-
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [
@@ -124,7 +120,7 @@ class WorkoutAverageDataFormType extends AbstractType
 
                 switch ($data->getType()) {
                     case 'MovementSet':
-                        return ['sets'];         
+                        return ['average_sets'];         
                     default:
                         return ['Default'];
                 }
@@ -139,12 +135,11 @@ class WorkoutAverageDataFormType extends AbstractType
 
     private function setupSetsField(FormInterface $form, ?string $type)
     {   
-        
         switch ($type) {
             case 'MovementSet':
                 $form
                     ->add('movementSets', CollectionType::class, [
-                        'entry_type' => MovementSetFormType::class,
+                        'entry_type' => MovementSetAverageFormType::class,
                         'entry_options' => [
                             'label' => false
                         ],
@@ -153,6 +148,13 @@ class WorkoutAverageDataFormType extends AbstractType
                         'allow_delete' => true
                     ])
                 ;
+                //If we edit from other activities to movement set we need to remove that field
+                if($form->has('durationSecondsTotal')) {
+                    $form
+                        ->remove('durationSecondsTotal')
+                        ;
+                }
+
                 break;
             default:
             //Activities with sets don't needed that field

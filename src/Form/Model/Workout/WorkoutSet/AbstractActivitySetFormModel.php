@@ -21,13 +21,13 @@ class AbstractActivitySetFormModel
     protected $workout;
 
     /**
-     * @Assert\NotBlank(message="Choose activity", groups={"sets"})
+     * @Assert\NotBlank(message="Choose activity", groups={"average_sets", "model"})
      */
     protected $activity;
 
     /**
-     * @Assert\NotBlank(message="Please enter time", groups={"sets"})
-     * @AcmeAssert\NotZeroDuration(groups={"sets"})
+     * @Assert\NotBlank(message="Please enter time", groups={"average_sets", "specific_sets"})
+     * @AcmeAssert\NotZeroDuration(groups={"average_sets", "specific_sets"})
      */
     protected $durationSeconds;
 
@@ -37,6 +37,9 @@ class AbstractActivitySetFormModel
      * groups={"model"})
      */
     protected $burnoutEnergy;
+
+    //Helpers properties
+    protected $activityName;
 
     public function setId(int $id)
     {
@@ -108,5 +111,17 @@ class AbstractActivitySetFormModel
         $this->burnoutEnergy = $burnoutEnergy;
 
         return $this;
+    }
+
+    public function setActivityName(string $activityName): self
+    {
+        $this->activityName = $activityName;
+
+        return $this;
+    }
+
+    public function getActivityName(): ?string
+    {
+        return $this->activityName;
     }
 }

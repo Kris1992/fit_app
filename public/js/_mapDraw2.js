@@ -169,7 +169,7 @@ routingService2.calculateRoute(routingParameters, success => {
 //config
 function configPlatform() {
     return new H.service.Platform({
-        'apikey': 'qlo0n5XZ0BOpJD380JVNkNwPfD8TceAf2FI5tsrBh38'
+        'apikey': window.apikey,
     });
 }
 

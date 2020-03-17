@@ -6,11 +6,7 @@ use App\Entity\Workout;
 use App\Entity\MovementSet;
 use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 class WorkoutUpdater implements WorkoutUpdaterInterface {
-
 
     const MOVEMENT_UPDATER="Movement";
     const MOVEMENTSET_UPDATER="MovementSet";
@@ -30,6 +26,11 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
 
     private function updateMovementType(AbstractWorkoutFormModel $dataModel, Workout $workout)
     {
+        //First check workout for sets data (If user change activity from sets to another one)
+        if ($this->checkIsChangeFromSets($workout)) {
+            $workout = $this->deleteSetsData($workout);
+        }
+
         //inside this function we can check update is needed (is something changed?), but for now it is ok
         $workout
             ->setUser($dataModel->getUser())
@@ -94,6 +95,38 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
             ->setDistanceTotal($dataModel->getDistanceTotal())
             ;
         
+        return $workout;
+    }
+
+    /**
+     * checkIsChangeFromSets Check workout was changed from sets activity
+     * @param  Workout $workout Workout entity which will be checked
+     * @return bool 
+     */
+    private function checkIsChangeFromSets(Workout $workout): bool
+    {
+        $workoutMovementSets = $workout->getMovementSets();
+        if ($workoutMovementSets) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * deleteSetsData Delete all sets data from workout
+     * @param  Workout $workout Workout entity to clear sets data
+     * @return Workout
+     */
+    private function deleteSetsData(Workout $workout): Workout
+    {
+        $workoutMovementSets = $workout->getMovementSets();
+        if ($workoutMovementSets) {
+            foreach ($workoutMovementSets as $workoutMovementSet) {
+                $workout->removeMovementSet($workoutMovementSet);
+            }
+        }
+
         return $workout;
     }
 

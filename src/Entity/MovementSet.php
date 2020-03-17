@@ -17,7 +17,7 @@ class MovementSet
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Workout", inversedBy="movementSet")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Workout", inversedBy="movementSets")
      * @ORM\JoinColumn(nullable=false)
      */
     private $workout;

@@ -28,7 +28,8 @@ abstract class AbstractWorkoutFormModel
     protected $burnoutEnergyTotal;
 
     /**
-     * @Assert\NotBlank(message="Please enter date of start", groups={"sets", "Default"})
+     * @Assert\NotBlank(message="Please enter date of start", groups={"average_sets", 
+     * "specific_sets", "Default"})
      */
     protected $startAt;
     
@@ -40,7 +41,10 @@ abstract class AbstractWorkoutFormModel
 
 
     //helpers
-
+    /**
+     * @Assert\NotBlank(message="Please enter activity name", groups={"specific_sets"})
+     * @Assert\NotNull(message="Please enter activity name", groups={"specific_sets"})
+     */
     protected $activityName;
 
     protected $type;

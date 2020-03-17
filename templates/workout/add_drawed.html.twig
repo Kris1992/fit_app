@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
-    <title>ContextMenu routing</title>
+    <title>Draw route</title>
 
     <style type="text/css">
         body {
@@ -42,22 +42,14 @@
 
   <body>
     <div id="map"></div>
-    <div id="routingInputContainer">
-      Starting point:
-    
-      <input id="inputStart" class="routingInput"/>
-      Destination point:
-      <input id="inputDest" class="routingInput"/>
-      <br/><br/>
-      <span id="info"></span>
-    </div>
+
     <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
     <script type="text/javascript">
-        'use strict';
+        //'use strict';
 //config must be impelemented here
 const platform = configPlatform();
 const defaultLayers = configLayers();
@@ -87,13 +79,19 @@ var routingParameters = {
   'representation': 'dragNDrop'
 };
 routingService.calculateRoute(routingParameters, success => {
+    console.log('Immediately call after instantiate map');
+    console.log('success');
     console.log(success);
 });
+map.addEventListener('tap', (evt) => {
+        calculateDistance();  
+    });
 
-addClickEventListener(icon, lineString, polyline);
+//addClickEventListener(icon, lineString, polyline);
 
 //$(document).ready(function() {
-initMap();    
+initMap();   
+
 //});
 
 //to do wyeksportowania
@@ -105,15 +103,18 @@ function getActualPosition()
 }
 
 function initMap() {
-    if(navigator.geolocation) {
-        getActualPosition().then((currentPos) => {
-            var currentCoords = currentPos.coords;
+    //if(navigator.geolocation) {
+        //getActualPosition().then((currentPos) => {
+            //var currentCoords = currentPos.coords;
+            var currentCoords =[];
+            currentCoords.latitude = 50.1120423728813;
+            currentCoords.longitude = 8.68340740740811;
             loadMap(currentCoords);
             
-        });
-    }  else {
-        alert('navigator is not support');
-    }
+        //});
+   // }  else {
+    //    alert('navigator is not support');
+   // }
 }
 function loadMap(currentCoords) {
     /*map = new H.Map(
@@ -185,11 +186,14 @@ function calculateDistance()
   // representation mode 'display'
   'representation': 'display'
 };*/
-console.log(platform);
 var routingService2 = platform.getRoutingService();
 routingService2.calculateRoute(routingParameters, success => {
+    console.log('Call method calculateRoute() after click');
     console.log('success');
+    console.log(success);
 }, error => {
+    console.log('Call method calculateRoute() after click');
+    console.log('error');
     console.log(error);
 });
    
@@ -230,8 +234,8 @@ routingService2.calculateRoute(routingParameters, success => {
 //config
 function configPlatform() {
     return new H.service.Platform({
-        'apikey': 'qlo0n5XZ0BOpJD380JVNkNwPfD8TceAf2FI5tsrBh38',
-        'useHTTPS': true
+        'apikey': window.apikey,
+        //'useHTTPS': true
     });
 }
 

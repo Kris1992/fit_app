@@ -68,17 +68,19 @@ class MovementActivityFixtures extends BaseFixture
         $this->createMany(5, 'running_activity', function($i)
         {
             $activity = new MovementActivity();
-            $activity->setType('Movement');
-            $activity->setName(self::$movementActivities[0]);
-            $activity->setIntensity(self::$movementIntensities[$i]['name']);
-            $activity->setEnergy(
-                $this->faker->numberBetween(
-                    self::$movementIntensities[$i]['energy']['min'],
-                    self::$movementIntensities[$i]['energy']['max']
-                )
-            ); 
-            $activity->setSpeedAverageMin(self::$movementIntensities[$i]['min']);
-            $activity->setSpeedAverageMax(self::$movementIntensities[$i]['max']);
+            $activity
+                ->setType('Movement')
+                ->setName(self::$movementActivities[0])
+                ->setIntensity(self::$movementIntensities[$i]['name'])
+                ->setEnergy(
+                    $this->faker->numberBetween(
+                        self::$movementIntensities[$i]['energy']['min'],
+                        self::$movementIntensities[$i]['energy']['max']
+                    )
+                ) 
+                ->setSpeedAverageMin(self::$movementIntensities[$i]['min'])
+                ->setSpeedAverageMax(self::$movementIntensities[$i]['max'])
+                ;
 
             return $activity;
         });
@@ -86,17 +88,19 @@ class MovementActivityFixtures extends BaseFixture
         $this->createMany(5, 'cycling_activity', function($i)
         {
             $activity = new MovementActivity();
-            $activity->setType('Movement');
-            $activity->setName(self::$movementActivities[1]);
-            $activity->setIntensity(self::$movementIntensities[$i]['name']);
-            $activity->setEnergy(
-                $this->faker->numberBetween(
-                    self::$movementIntensities[$i]['energy']['min'],
-                    self::$movementIntensities[$i]['energy']['max']
-                )
-            ); 
-            $activity->setSpeedAverageMin(self::$movementIntensities[$i]['min']);
-            $activity->setSpeedAverageMax(self::$movementIntensities[$i]['max']);
+            $activity
+                ->setType('Movement')
+                ->setName(self::$movementActivities[1])
+                ->setIntensity(self::$movementIntensities[$i]['name'])
+                ->setEnergy(
+                    $this->faker->numberBetween(
+                        self::$movementIntensities[$i]['energy']['min'],
+                        self::$movementIntensities[$i]['energy']['max']
+                    )
+                ) 
+                ->setSpeedAverageMin(self::$movementIntensities[$i]['min'])
+                ->setSpeedAverageMax(self::$movementIntensities[$i]['max'])
+                ;
 
             return $activity;
         });

@@ -47,7 +47,13 @@
                                         {{ activity.intensity }}
                                     {% endif %}
                                 </td>
-    		                    <td>{{ activity.energy }}</td>
+    		                    <td>
+                                    {% if activity.energy == 1 %}
+                                        -----
+                                    {% else %}
+                                        {{ activity.energy }}
+                                    {% endif%}
+                                </td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
                                         <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">

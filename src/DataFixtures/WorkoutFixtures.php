@@ -18,7 +18,8 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
-            MovementActivityFixtures::class
+            MovementActivityFixtures::class,
+            MovementSetActivityFixtures::class,
         ];
     }
 

@@ -21,7 +21,7 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
      * @Assert\Count(
      *      min = 1,
      *      minMessage = "You must specify at least one set",
-     *      groups={"sets"}
+     *      groups={"average_sets"}
      * )
      */
     private $movementSets;

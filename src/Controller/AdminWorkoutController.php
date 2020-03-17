@@ -116,7 +116,7 @@ class AdminWorkoutController extends AbstractController
             $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
             if ($isValid) {
                 $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
-                $workout = $workoutFactory->createWorkout($workoutSpecificModel);
+                $workout = $workoutFactory->create($workoutSpecificModel);
 
                 $em->persist($workout);
                 $em->flush();
@@ -182,7 +182,63 @@ class AdminWorkoutController extends AbstractController
         }
        
         return $this->render('admin_workout/edit_average.html.twig', [
-            'workoutForm' => $formAverage->createView()
+            'workoutForm' => $formAverage->createView(),
+            'workoutId' => $workout->getId()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/workout/edit_specific/{id}", name="admin_workout_specific_edit", 
+     * methods={"POST", "GET"})
+     */
+    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
+        $activity = $workout->getActivity();
+        $workoutModelFactory = WorkoutModelFactory::chooseFactory(
+            $activity->getType(), 
+            'Specific'
+        );
+        $workoutSpecificFormModel = $workoutModelFactory->create($workout);
+
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
+            $workoutSpecificFormModel, [
+            'is_admin' => true
+        ]);
+    
+        $formSpecific->handleRequest($request);
+
+        if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
+            //$workoutModel = $formSpecific->getData(); //form handles modeldata so we don't need it
+            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel,null);
+
+            //Validation Model data
+            $isValid = $modelValidator->isValid($workoutSpecificFormModel, ['model']);
+
+            if ($isValid) {
+                $workout = $workoutUpdater->update($workoutSpecificFormModel, $workout);
+                $em->persist($workout);
+                $em->flush();
+
+                $this->addFlash('success', 'Workout is updated!');
+
+                return $this->redirectToRoute('admin_workout_specific_edit', [
+                    'id' => $workout->getId(),
+                ]);
+            } else {
+                $errors = $modelValidator->getErrors();
+                
+                return $this->render('admin_workout/edit_specific.html.twig', [
+                    'workoutSpecificDataForm' => $formSpecific->createView(),
+                    'errors' => $errors,
+                ]);
+            }
+        }
+       
+        return $this->render('admin_workout/edit_specific.html.twig', [
+            'workoutSpecificDataForm' => $formSpecific->createView(),
+            'workoutId' => $workout->getId()
         ]);
     }
 

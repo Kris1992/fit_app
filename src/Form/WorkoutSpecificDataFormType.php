@@ -5,22 +5,18 @@ namespace App\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Entity\AbstractActivity;
-
 use App\Entity\MovementActivity;
 use App\Repository\UserRepository;
 use App\Repository\AbstractActivityRepository;
-
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-
-//nowe
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
@@ -53,14 +49,6 @@ class WorkoutSpecificDataFormType extends AbstractType
                 'placeholder' => 'Choose an activity',
                 'invalid_message' => 'Invalid activity!',
             ])
-            ->add('durationSecondsTotal', CustomTimeType::class, [
-                'placeholder' => [
-                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
-                ],
-                'attr' => [
-                    'class'=>'form-inline'
-                ]
-            ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
                 'widget' => 'single_text',
@@ -70,7 +58,6 @@ class WorkoutSpecificDataFormType extends AbstractType
                 'view_timezone' => 'UTC',
             ])
         ;
-
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
@@ -118,8 +105,6 @@ class WorkoutSpecificDataFormType extends AbstractType
             }
         );*/
         
-
-
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [
@@ -132,17 +117,18 @@ class WorkoutSpecificDataFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => WorkoutSpecificFormModel::class,//Workout::class,
+            'data_class' => WorkoutSpecificFormModel::class,
             'is_admin' => false,
             'validation_groups' => function (FormInterface $form) {
                 $data = $form->getData();
 
                 switch ($data->getType()) {
                     case 'Movement':
-                        return ['Default','movement'];         
+                        return ['Default','movement'];
+                    case 'MovementSet':
+                        return ['specific_sets'];         
                     default:
-                        # code...
-                        break;
+                        return ['Default'];
                 }
             },
         ]);
@@ -161,10 +147,34 @@ class WorkoutSpecificDataFormType extends AbstractType
             case 'Movement':
                 $form
                     ->add('distanceTotal', NumberType::class)
+                    ->add('durationSecondsTotal', CustomTimeType::class, [
+                        'placeholder' => [
+                            'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                        ],
+                        'attr' => [
+                            'class'=>'form-inline'
+                        ]
+                    ])
                 ;
                 break;
             case 'MovementSet':
-                dump('tutaj');
+                $form
+                    ->add('movementSets', CollectionType::class, [
+                        'entry_type' => MovementSetSpecificFormType::class,
+                        'entry_options' => [
+                            'label' => false
+                        ],
+                        'by_reference' => false,
+                        'allow_add' => true,
+                        'allow_delete' => true
+                    ])
+                ;
+                if($form->has('distanceTotal')) {
+                    $form
+                        ->remove('distanceTotal')
+                        ->remove('durationSecondsTotal')
+                        ;
+                }
                 break;
             case 'Weight':
                 $form

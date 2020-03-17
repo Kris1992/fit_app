@@ -172,87 +172,86 @@ class WorkoutController extends AbstractController
         ]);
     }
 
-
-
-
-     /**
-     * @Route("/workout/add", name="workout_add_n", methods={"POST", "GET"})
+    /**
+     * @Route("/workout/add_average", name="workout_add_average", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function add_n(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
-
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
-        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
 
-        if ($request->isMethod('POST')) {
-
-                $formAverage->handleRequest($request);
-                   
-                if ($formAverage->isSubmitted() && $formAverage->isValid()) {
-                    $workoutAverageFormModel = $formAverage->getData();
-                    $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
-                
-                    //Validation Model data
-                    $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-                    
-                    if ($isValid) {
-                        $activity = $workoutAverageFormModel->getActivity();
-                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                        $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
-
-                        $em->persist($workout);
-                        $em->flush();
-
-                        $this->addFlash('success', 'Workout was added!! ');
-                        return $this->redirectToRoute('workout_list');
-                    } else {
-                        $errors = $modelValidator->getErrors();
-                        return $this->render('workout/add.html.twig', [
-                            'workoutForm' => $formAverage->createView(),
-                            'workoutSpecificDataForm' => $formSpecific->createView(),
-                            'errors' => $errors,
-                        ]);
-                    }
-                }
+        $formAverage->handleRequest($request);           
+        if ($formAverage->isSubmitted() && $formAverage->isValid()) {
+            $workoutAverageFormModel = $formAverage->getData();
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());  
             
-                $formSpecific->handleRequest($request);
-                   
-                if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
-                    $workoutSpecificModel = $formSpecific->getData();
+            //Validation Model data
+            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
                     
-                    $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
+            if ($isValid) {
+                $activity = $workoutAverageFormModel->getActivity();
+                $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                $workout = $workoutFactory->create($workoutAverageFormModel);
 
-                    if (!$workoutSpecificModel) {
-                        $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
-                        return $this->redirectToRoute('workout_add_n');
-                    }
+                $em->persist($workout);
+                $em->flush();
 
-                    //Validation Model data
-                    $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
-                    if ($isValid) {
-                        $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
-                        $workout = $workoutFactory->createWorkout($workoutSpecificModel);
-
-                        $em->persist($workout);
-                        $em->flush();
-
-                        $this->addFlash('success', 'Workout was added!! ');
-                        return $this->redirectToRoute('workout_list');
-                    } else {
-                        $errors = $modelValidator->getErrors();
-                        return $this->render('workout/add.html.twig', [
-                            'workoutForm' => $formAverage->createView(),
-                            'workoutSpecificDataForm' => $formSpecific->createView(),
-                            'errors' => $errors,
-                        ]);
-                    }
-                }
-            
+                $this->addFlash('success', 'Workout was added!! ');
+                return $this->redirectToRoute('workout_list');
+            } else {
+                $errors = $modelValidator->getErrors();
+                return $this->render('workout/add_average.html.twig', [
+                    'workoutForm' => $formAverage->createView(),
+                    'errors' => $errors,
+                ]);
+            }
         }
 
-        return $this->render('workout/add.html.twig', [
+        return $this->render('workout/add_average.html.twig', [
             'workoutForm' => $formAverage->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/workout/add_specific", name="workout_add_specific", methods={"POST", "GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator)
+    {
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+            
+        $formSpecific->handleRequest($request);
+        if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
+            $workoutSpecificModel = $formSpecific->getData();
+            
+            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
+
+            if (!$workoutSpecificModel) {
+                $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
+                return $this->redirectToRoute('workout_add_specific');
+            }
+
+            //Validation Model data
+            $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
+            if ($isValid) {
+                $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
+                $workout = $workoutFactory->create($workoutSpecificModel);
+
+                $em->persist($workout);
+                $em->flush();
+
+                $this->addFlash('success', 'Workout was added!! ');
+                return $this->redirectToRoute('workout_list');
+            } else {
+                $errors = $modelValidator->getErrors();
+                return $this->render('workout/add_specific.html.twig', [
+                    'workoutSpecificDataForm' => $formSpecific->createView(),
+                    'errors' => $errors,
+                ]);
+            }
+        }
+
+        return $this->render('workout/add_specific.html.twig', [
             'workoutSpecificDataForm' => $formSpecific->createView(),
         ]);
     }

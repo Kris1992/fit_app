@@ -1,3 +1,10 @@
+{# Most activities #}
+{%  if workoutSpecificDataForm.durationSecondsTotal is defined %}
+    {{ form_row(workoutSpecificDataForm.durationSecondsTotal, {
+        'label' : 'Duration: '
+    }) }}
+{% endif %}
+
 {# Movement #}
 {%  if workoutSpecificDataForm.distanceTotal is defined %}
     {{ form_row(workoutSpecificDataForm.distanceTotal, {
@@ -5,7 +12,34 @@
     }) }}
 {% endif %}
 
-
 {%  if workoutSpecificDataForm.type is defined %}
     {{ form_row(workoutSpecificDataForm.type) }}
+{% endif %}
+
+{# Movement Sets #}
+{%  if workoutSpecificDataForm.movementSets is defined %}
+    <div class="form-error color-fire">
+        {%  if workoutSpecificDataForm.movementSets.parent.vars.errors[0] is defined %}
+            {{ workoutSpecificDataForm.movementSets.parent.vars.errors[0].message }}
+        {% endif %}
+    </div>
+    <div id="workout_sets" 
+    data-prototype="{{ form_widget(workoutSpecificDataForm.movementSets.vars.prototype)|e }}"
+    >
+        {% do workoutSpecificDataForm.movementSets.setRendered() %}
+        {% for row in workoutSpecificDataForm.movementSets %}
+            <div class="card my-2 card-js">
+                <div class="card-header bg-info text-white">
+                    <strong>SET {{row.vars.name}}</strong>
+                </div>
+                <div class="card-body">
+                    {{ form_row(row) }}
+                </div>
+                <div class="card-footer bg-secondary text-center">
+                    <a href="#" class="btn btn-danger remove-js">Remove set</a>
+                </div>
+                
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}

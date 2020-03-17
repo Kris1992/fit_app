@@ -11,22 +11,8 @@ use App\Entity\AbstractActivity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 
-/*use App\Entity\Workout;
 
-
-
-use App\Repository\UserRepository;
-
-
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-*/
-
-
-class MovementSetFormType extends AbstractType
+class MovementSetAverageFormType extends AbstractType
 {
     private $activityRepository;
 
@@ -37,10 +23,7 @@ class MovementSetFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        //activity, distance, durationSeconds ,burnoutEnergy
-        $workout = $options['data'] ?? null;
-        $isEdit = $workout && $workout->getId();
-        
+
         $builder
             ->add('activity', EntityType::class, [ 
                 'class' => AbstractActivity::class, 
@@ -50,7 +33,10 @@ class MovementSetFormType extends AbstractType
                 'choice_label' => 
                 function(AbstractActivity $activity) {
                     return $this->getActivityName($activity);
-                }
+                },
+                'attr' => [
+                    'class' => 'form-control-lg'
+                ],
             ])
             ->add('durationSeconds', CustomTimeType::class, [
                 'placeholder' => [
@@ -68,8 +54,7 @@ class MovementSetFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => MovementActivitySetFormModel::class,
-            'is_admin' => false
+            'data_class' => MovementActivitySetFormModel::class
         ]);
     }
 
