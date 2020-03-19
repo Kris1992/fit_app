@@ -43,19 +43,15 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $workouts = $workoutRepository->getLastWorkoutsByUser($user, 5);
+        $personalBest = $workoutRepository->getHighScoresByUser($user);
+
+        $workouts = $workoutRepository->getLastWorkoutsByUser($user, 3);
         $totalData = $workoutRepository->getWorkoutsTimeAndNumWorkoutsByUser($user);
-
-        dump($workouts);
-        
-        
-         //$workouts = $workoutRepository->countEnergyPerDayByUserAndDateArray($user, $timeline);
-
-
 
         return $this->render('account/profile.html.twig', [
             'workouts' => $workouts,
-            'totalData' => $totalData
+            'totalData' => $totalData,
+            'personalBest' => $personalBest
         ]);
     }
 

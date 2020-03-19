@@ -89,7 +89,7 @@ class WorkoutRepository extends ServiceEntityRepository
     public function getWorkoutsTimeAndNumWorkoutsByUser($user)
     {
         return $this->createQueryBuilder('w')
-            ->select( "sum(w.durationSecondsTotal) as totalDuration, count(w.id) as totalWorkouts")
+            ->select( "SUM(w.durationSecondsTotal) as totalDuration, count(w.id) as totalWorkouts")
             ->andWhere('w.user = :val')
             ->setParameter('val', $user)
             ->getQuery()
@@ -173,9 +173,47 @@ class WorkoutRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * getHighScoresByUser
+     * @param  User $user User whose registry workouts
+     * @return Arrray[] Returns an array
+     */
+    public function getHighScoresByUser($user)
+    {
+        return $this->createQueryBuilder('w')
+            ->innerJoin('w.activity', 'a')
+            ->select('a.name AS activityName, MAX(w.durationSecondsTotal) AS totalDuration, MAX(w.distanceTotal) AS totalDistance, MAX(w.burnoutEnergyTotal) AS totalBurnoutEnergy')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ->groupBy('activityName')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * findByUserBeforeDate Find workouts handled by user with startAt date before given 
+     * @param  User $user  User whose handling workouts
+     * @param  string $date  Date before which we will search workouts
+     * @param  int    $limit Number of workouts to return
+     * @return Workout[]
+     */
+    public function findByUserBeforeDate($user,string $date, int $limit)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.user = :user AND w.startAt < :date')
+            ->setParameters([
+                'user' => $user,
+                'date' => $date
+            ])
+            ->orderBy( 'w.startAt', 'DESC' )
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
 
 
+    
 /*
     
     * @return Workout[] Returns an array of Workout objects

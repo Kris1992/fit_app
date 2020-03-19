@@ -347,7 +347,6 @@ class WorkoutController extends AbstractController
 
      /**
      * @Route("/api/workout_get/{id}", name="workout_get", methods={"GET"})
-     * 
      */
     public function getWorkoutAction(Workout $workout)
     {
@@ -475,6 +474,41 @@ class WorkoutController extends AbstractController
         return $this->render('forms/workout_sets_form.html.twig', [
             'workoutForm' => $formAverage->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/api/workout/workouts_get_after_date", name="api_workouts_get_after_date", 
+     * methods={"POST"})
+     */
+    public function getWorkoutsAfterDateAction(Request $request, WorkoutRepository $workoutRepository)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $date = json_decode($request->getContent(), true);
+        if(!strtotime($date)){
+            return new JsonResponse(['message' => 'Wrong date format. Cannot load more data.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $workouts = $workoutRepository->findByUserBeforeDate($user, $date, 10);
+
+        if (!$workouts) {
+            return new JsonResponse(['message' => 'No more workouts to load.'], Response::HTTP_BAD_REQUEST);
+        }
+        foreach ($workouts as $workout) {
+            $workout->transformSaveTimeToString();
+            $startAt = $workout->getStartAt();
+            $startAt = date_format($startAt, 'Y-m-d H:i');
+            $workout->setStartDate($startAt);
+        }
+
+        return $this->json(
+            $workouts,
+            200,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
     }
     
     //bind it to service

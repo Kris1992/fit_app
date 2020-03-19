@@ -57,6 +57,7 @@ class Workout
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups("main")
      */
     private $distanceTotal;
 

@@ -135,6 +135,13 @@ h1 {
     font-size: 1em;
     font-weight: bold;
 }
+.sidebar-item:hover {
+    text-decoration: none;
+}
+.sidebar-item:hover div {
+    color: #5cb85c !important;
+}
+
 
 /* List */
 .links-table a:hover {

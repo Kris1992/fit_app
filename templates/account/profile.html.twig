@@ -1,10 +1,8 @@
 {% extends 'content_base.html.twig' %}
 
 {% block title %}Profile{% endblock %}
-
+{% block section_class %}account{% endblock %} 
 {% block content_body %}
-
-<section class="account">
 	<div class="col-sm-12 bg-profile border rounded">
         <div class="row">
             <div class="col-xs-12 col-sm-2">
@@ -40,71 +38,159 @@
             </div>
         </div>
         <div class="row bg-white py-3">
-            <div class="col-12 text-center">
-                <span><h4>Last Workouts</h4></span>
-            </div>
-            {% for workout in workouts %}
-            <div class="col-sm-6 py-2">
-    			<div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="text-left">{{ workout.activity.name }}</h5>
-                        {#<span class="text-right">{{ workout.durationSeconds | date('H:i:s') }}</span>#}
+            <div class="col-sm-12 col-md-3">
+                <nav>
+                    <div class="col-12 text-center">
+                        <h4>
+                            <span class="badge badge-secondary text-uppercase">Personal Bests
+                            </span>
+                        </h4>
                     </div>
- 					
-  					<div class="card-body">
-    					{#<h5 class="card-title">{{ workout.activity.name }}</h5>#}
-                        <div class="card-text row">
-                             <div class="workout-stat col-md-4">
-                                <img src="https://via.placeholder.com/150">
-                            </div>
-                            <div class="workout-stat col-md-8">
-                                <div class="col-12">
-                                     <span class="fas fa-fire color-fire"></span>
-                                    <span class="text-muted text-uppercase">Kcal</span>
-                                    <span>{{workout.burnoutEnergy }}</span>
+                    {% for record in personalBest %}
+                        <div class="card">
+                            <a class="sidebar-item" data-toggle="collapse" href="#{{ record.activityName | replace({' ': ''}) }}" aria-expanded="false" aria-controls="{{ record.activityName | replace({' ': ''}) }}">
+                                <div class="card-header bg-primary text-white">
+                                    <span class="fas fa-medal"></span>
+                                    <span class="text-uppercase">
+                                        {{ record.activityName }}
+                                    </span>
                                 </div>
-                                <div class="col-12">
-                                    <span class="far fa-clock color-clock"></span>
-                                    <span class="text-muted text-uppercase">Duration</span>
-                                    <span>{{ workout.durationSeconds | date('H:i:s') }}</span>
+                            </a>
+                            <div class="collapse multi-collapse show" id="{{ record.activityName | replace({' ': ''}) }}">
+                                <div class="card-body p-0">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                            Longest
+                                            <span class="badge badge-primary badge-pill">
+                                                {{ record.totalDuration | time }}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                            Farthest Distance
+                                            <span class="badge badge-primary badge-pill">
+                                                {{ record.totalDistance }} km
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                            Most Calories Burned
+                                            <span class="badge badge-primary badge-pill">
+                                                {{ record.totalBurnoutEnergy }} kcal
+                                            </span>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                           
-                            
-
-                           
                         </div>
-    					
-  					</div>
-                    <div class="card-footer text-muted">
-                        <span>{{ workout.startAt | date('Y-m-d H:i') }}</span>
-                        <a href="#" class="btn btn-primary">Like</a>
-                    </div>
-				</div>
+                    {% endfor %}
+                </nav>
             </div>
-            {% endfor %}
+            <div class="col-sm-12 col-md-9">
+                <div class="col-12 text-center">
+                    <span><h4>Last Workouts</h4></span>
+                </div>
+                {% for workout in workouts %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="text-left">{{ workout.activity.name }}</h5>
+                            </div>
+                    
+                            <div class="card-body">
+                                <div class="card-text row">
+                                    <div class="workout-stat col-md-3">
+                                        <img src="https://via.placeholder.com/150">
+                                    </div>
+                                    <div class="workout-stat col-md-9">
+                                        <div class="col-12">
+                                            <span class="fas fa-fire color-fire"></span>
+                                            <span class="text-muted text-uppercase">{{workout.burnoutEnergyTotal }} kcal</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="far fa-clock color-clock"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Duration
+                                                {{ workout.durationSecondsTotal | time }}
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-road color-clock"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Distance
+                                                {% if workout.distanceTotal %}
+                                                    {{ workout.distanceTotal }}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                km
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+
+                                <span class="workout-date-js" data-date="{{ workout.startAt | date('Y-m-d H:i') }}">{{ workout.startAt | date('Y-m-d H:i') }}</span>
+                               <!-- <a href="#"><span class="fas fa-thumbs-up"></span></a>-->
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="col-12 my-2 bg-warning" id="loadingWrapper-js" data-url="{{ path('api_workouts_get_after_date') }}"> 
+                    
+                </div>
+            </div>
         </div>
 	</div>
-</section>
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.0/jquery.waypoints.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/jquery.counterup@2.1.0/jquery.counterup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
 
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_profile.js') }}"></script>
 
-<script type="text/javascript">
-
-    $(document).ready(function() {
-        $('.counter-js').counterUp({
-            delay: 10,
-            time: 2000
-        });        
-    });
-
-
+<script type="text/template" id="js-workout-card-template">
+<div class="col-12">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="text-left"><%= activity.name %></h5>
+        </div>
+        <div class="card-body">
+            <div class="card-text row">
+                <div class="workout-stat col-md-3">
+                    <img src="https://via.placeholder.com/150">
+                </div>
+                <div class="workout-stat col-md-9">
+                    <div class="col-12">
+                        <span class="fas fa-fire color-fire"></span>
+                        <span class="text-muted text-uppercase"><%= burnoutEnergyTotal %> Kcal</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="far fa-clock color-clock"></span>
+                        <span class="text-muted text-uppercase">Duration <%= time %></span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-road color-clock"></span>
+                        <span class="text-muted text-uppercase">Distance 
+                        <% if (distanceTotal) { %>
+                            <%= distanceTotal %>
+                        <% } else { %>
+                            ---
+                        <% } %>
+                        km</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <span class="workout-date-js" data-date="<%= startDate %>"><%= startDate %></span>
+        </div>
+    </div>
+</div>
 </script>
 {% endblock %}
 
