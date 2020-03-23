@@ -10,11 +10,12 @@ use App\Repository\UserRepository;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-
-
 use App\Form\UserRegistrationFormType;
-use App\Form\Model\UserRegistrationFormModel;
-use App\Services\UploadImagesHelper;
+use App\Form\Model\User\UserRegistrationFormModel;
+use App\Services\ImagesManager\ImagesManagerInterface;
+
+//new
+use App\Services\Factory\UserModel\UserModelFactoryInterface;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -42,39 +43,22 @@ class AdminAccountController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("/admin/account/edit/{id}", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, UploadImagesHelper $uploadImagesHelper)
+    public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, ImagesManagerInterface $ImagesManager, UserModelFactoryInterface $userModelFactoryInterface)
     {
-        //transform user object to userModel object
-        /** @var User $user */
-        $userModel->setId($user->getId());
-        $userModel->setEmail($user->getEmail());
-        $userModel->setFirstName($user->getFirstName());
-        $userModel->setSecondName($user->getSecondName());
-        $userModel->setGender($user->getGender());
-        $userModel->setBirthdate($user->getBirthdate());
-        $userModel->setWeight($user->getWeight());
-        $userModel->setHeight($user->getHeight());
-        $userModel->setRole($user->getRole());
-
-        if($user->getImageFilename())
-        {
-            $userModel->setImageFilename($user->getImageFilename());
-        }
-        
-
-            
+        /** @var UserRegistrationFormModel $userModel */
+        $userModel = $userModelFactoryInterface->create($user);
+          
         $form = $this->createForm(UserRegistrationFormType::class, $userModel, [
             'is_admin' => true
         ]);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) 
-        {
-            $userModel2 = $form->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            dd('stop');
+            //$userModel2 = $form->getData();
         
             $user->setEmail($userModel2->getEmail());
             $user->setFirstName($userModel2->getFirstName());
@@ -90,7 +74,8 @@ class AdminAccountController extends AbstractController
 
             if($uploadedFile)
             {
-                $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
+                $newFilename = $ImagesManager->uploadUserImage($uploadedFile, $user->getImageFilename());//sprawdzić
+                //$newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
 
                 $user->setImageFilename($newFilename);
             }
@@ -103,6 +88,7 @@ class AdminAccountController extends AbstractController
                 'id' => $user->getId(),
             ]);
         }
+
         return $this->render('admin_account/edit.html.twig', [
             'registrationForm' => $form->createView()
         ]);
@@ -159,7 +145,6 @@ class AdminAccountController extends AbstractController
         }
         $entityManager->flush();
         */
-
 
             } else {
                 $this->addFlash('danger','Wrong token');

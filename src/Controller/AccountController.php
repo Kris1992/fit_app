@@ -23,8 +23,7 @@ use App\Entity\PasswordToken;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
 use App\Form\UserRegistrationFormType;
-use App\Form\Model\UserRegistrationFormModel;
-use App\Services\UploadImagesHelper;
+use App\Form\Model\User\UserRegistrationFormModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 use App\Services\ImagesManager\ImagesManagerInterface;

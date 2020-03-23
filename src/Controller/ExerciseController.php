@@ -13,7 +13,6 @@ class ExerciseController extends AbstractController
     public function index()
     {
 
-
         return $this->render('exercise/homepage.html.twig', [
             
         ]);

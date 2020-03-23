@@ -1,11 +1,10 @@
 <?php
-namespace App\Form\Model;
+
+namespace App\Form\Model\User;
 
 use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Validator\UniqueUser;
 use App\Validator\ContainsAlphanumeric;
-
 use App\Services\UploadImagesHelper;
 
 /**
@@ -96,7 +95,7 @@ class UserRegistrationFormModel
         return $this->id;
     }
     
-    public function setId(int $id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -108,7 +107,7 @@ class UserRegistrationFormModel
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
@@ -120,14 +119,14 @@ class UserRegistrationFormModel
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function setPlainPassword(string $plainPassword): self
+    public function setPlainPassword(?string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
 
@@ -144,14 +143,14 @@ class UserRegistrationFormModel
         return $this->secondName;
     }
 
-    public function setSecondName(string $secondName): self
+    public function setSecondName(?string $secondName): self
     {
         $this->secondName = $secondName;
 
         return $this;
     }
 
-    public function setRole(string $role): self
+    public function setRole(?string $role): self
     {
         $this->role = $role;
 
@@ -168,7 +167,7 @@ class UserRegistrationFormModel
         return $this->gender;
     }
 
-    public function setGender(string $gender): self
+    public function setGender(?string $gender): self
     {
         $this->gender = $gender;
 
@@ -217,14 +216,14 @@ class UserRegistrationFormModel
         return $this->agreeTerms;
     }
     
-    public function setAgreeTerms(bool $agreeTerms): self
+    public function setAgreeTerms(?bool $agreeTerms): self
     {
         $this->agreeTerms = $agreeTerms;
 
         return $this;
     }
 
-    public function setImageFilename(string $imageFilename): self
+    public function setImageFilename(?string $imageFilename): self
     {
         $this->imageFilename = $imageFilename;
 
@@ -236,12 +235,12 @@ class UserRegistrationFormModel
         return $this->imageFilename;
     }
 
-    public function getImagePath()
+    public function getImagePath(): ?string
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
     }
 
-    public function getThumbImagePath()
+    public function getThumbImagePath(): ?string
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
     }

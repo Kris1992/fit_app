@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Form\Model\UserRegistrationFormModel;
+use App\Form\Model\User\UserRegistrationFormModel;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,11 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-
-
-
 use Symfony\Component\Validator\Constraints\Image;
-
 
 class UserRegistrationFormType extends AbstractType
 {
@@ -31,7 +27,6 @@ class UserRegistrationFormType extends AbstractType
 
         $user = $options['data'] ?? null;
         $isEdit = $user && $user->getId();
-        //dd($isEdit);
 
         $imageConstraints = [
             new Image([

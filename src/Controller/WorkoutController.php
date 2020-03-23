@@ -35,6 +35,30 @@ class WorkoutController extends AbstractController
     {
 
     	$user = $this->getUser();
+
+        /* TO Think about
+        $array = [
+            'Run' =>
+                [
+                    'durationTotal' => [
+                        'id' => 10,
+                        'duration' => 3600
+                    ],
+                    'distanceTotal' => [
+                        'id' => 10,
+                        'distace' => 3600
+                    ],
+                ]
+        ];
+        dump($array);
+        //tests
+        $workoutsTest1 = $workoutRepository->getHighScoresByUser($user);
+        dump($workoutsTest1);
+        $workoutsTest2 = $workoutRepository->getHighScoresByUserTest($user);
+        
+        dump($workoutsTest2);*/
+        ///
+
     	$workouts = $workoutRepository->findBy(['user' => $user ]);
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);

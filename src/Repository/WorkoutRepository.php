@@ -154,9 +154,7 @@ class WorkoutRepository extends ServiceEntityRepository
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']));
         
-
         return $query->getResult();
-
     }
 
     /**
@@ -189,6 +187,119 @@ class WorkoutRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getHighScoresByUserNative($user)
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('activity_name', 'activityName');
+        $rsm->addScalarResult('id', 'id');
+        $rsm->addScalarResult('totalDuration', 'totalDuration');
+        $rsm->addScalarResult('totalDistance', 'totalDistance');
+        $rsm->addScalarResult('totalBurnoutEnergy', 'totalBurnoutEnergy');
+
+        $sql = 'SELECT MAX(w.duration_seconds_total) AS totalDuration, MAX(w.distance_total) AS totalDistance, MAX(w.burnout_energy_total) AS totalBurnoutEnergy, a.name AS activity_name FROM workout w INNER JOIN abstract_activity a ON w.activity_id = a.id WHERE (w.user_id = :user) GROUP BY activity_name';
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters(array('user' => $user));
+
+        return $query->getResult();
+    }
+
+
+    public function getHighScoresByUserTest($user)
+    {
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('activity_name', 'activityName');
+        $rsm->addScalarResult('id', 'id');
+        $rsm->addScalarResult('totalDuration', 'totalDuration');
+        $rsm->addScalarResult('totalDistance', 'totalDistance');
+        $rsm->addScalarResult('totalBurnoutEnergy', 'totalBurnoutEnergy');
+
+    
+        $sql = 'SELECT w.id, w.duration_seconds_total AS totalDuration, a.name AS activity_name FROM workout w INNER JOIN abstract_activity a ON w.activity_id = a.id WHERE (w.user_id = :user) AND (a.name, w.duration_seconds_total) IN (SELECT ah.name, MAX(wh.duration_seconds_total) FROM workout wh INNER JOIN abstract_activity ah ON wh.activity_id = ah.id WHERE (wh.user_id = :user) GROUP BY ah.name)';
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters(array('user' => $user));
+
+        // value IN (SELECT column-name
+        //           FROM table-name2 
+         //         WHERE condition)
+        //$sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+       //"FROM users u INNER JOIN address a ON u.address_id = a.id";
+       //INNER JOIN activity a ON `w.activity_id` = `a.id`
+
+        dd($query->getResult());
+        /*
+SELECT * 
+FROM t1 WHERE (id,rev) IN 
+( SELECT id, MAX(rev)
+  FROM t1
+  GROUP BY id
+)
+        $qb2 = $this->createQueryBuilder('wHigh')
+                ->innerJoin('wHigh.activity', 'ac')
+                ->select('ac.name AS activityName, MAX(wHigh.durationSecondsTotal) AS totalDuration, MAX(wHigh.distanceTotal) AS totalDistance, MAX(wHigh.burnoutEnergyTotal) AS totalBurnoutEnergy')
+                ->andWhere('wHigh.user = :user')
+                ->setParameter('user', $user)
+                ->groupBy('activityName')
+                ;
+
+        $qb = $this->createQueryBuilder('w')
+                ->innerJoin('w.activity', 'a')
+                ->select('w')
+                ->where('w.user = :user')
+                ->setParameter('user', $user)
+                ;
+
+
+        $qb
+            ->andWhere(
+                $qb->expr()->eq( 'w.durationSecondsTotal','('..')')
+            )
+            ->getQuery()
+            ->getResult();
+        */
+        
+
+                
+                //->getQuery()
+                //->getResult();
+
+
+
+    /*select all
+    a potem where 
+    select total 
+    name i total = name i total
+    gruop by*/
+
+    
+    /*$qb2= $this->createQueryBuilder('w')
+            ->select('MAX(w.durationSecondsTotal) AS totalDuration, MAX(w.distanceTotal) AS totalDistance, MAX(w.burnoutEnergyTotal) AS totalBurnoutEnergy')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ;
+
+    ->innerJoin('', 'm', 'WITH', $qb->expr()->eq( 'm.periodeComptable', '('.$qb2->getDQL().')' ))
+        ->where('a = :affaire')
+        ->setParameter('affaire', $affaire)
+        ;*/
+
+    return $qb->getQuery()->getResult();
+
+
+        /*return $this->createQueryBuilder('w')
+            ->innerJoin('w.activity', 'a')
+            ->select('a.name AS activityName, MAX(w.durationSecondsTotal) AS totalDuration, MAX(w.distanceTotal) AS totalDistance, MAX(w.burnoutEnergyTotal) AS totalBurnoutEnergy')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ->groupBy('activityName')
+            ->getQuery()
+            ->getResult();*/
+    }
+
+
 
     /**
      * findByUserBeforeDate Find workouts handled by user with startAt date before given 

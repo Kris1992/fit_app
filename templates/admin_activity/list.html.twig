@@ -1,6 +1,10 @@
 {% extends 'content_base.html.twig' %}
 
 {% block title %}Activity list{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.css">
+{% endblock %}
 
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
@@ -65,15 +69,16 @@
                                             <span class="fa fa-trash-alt"></span>
                                         </a>
                                     </div>
-    		                    </td>
-    		                   
+    		                    </td>              
     		                </tr>
     		            {% endfor %}
     		        </tbody>
     		    </table>
                 <input type="hidden" name="token" value="{{ csrf_token('delete_multiple') }}"/>
                 <button type="submit" class="btn btn-danger">Delete checked</button>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#importActivity">Import from file</button>
             </form>
+            {% include 'forms/csv_modal_form.html.twig' %}
 		</div>
 		<div class="navigation">
 
@@ -92,5 +97,35 @@
 
 {% block javascripts %}
 {{ parent() }}
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+ <script type="text/javascript">
+Dropzone.autoDiscover = false;
+
+$(document).ready(function() {
+    $('#importActivity').on('shown.bs.modal',(event) => {
+        initializeDropzone();
+    });
+});
+
+function initializeDropzone() {
+    var formElement = document.querySelector('.js-dropzone');
+    if (!formElement) {
+        return;
+    }
+
+    var dropzone = new Dropzone(formElement, {
+        paramName: 'activityCSVFile',
+        maxFiles: 1, 
+        maxFilesize: 2,
+        dictDefaultMessage: 
+        `
+            <strong>Drop files here to upload</strong>
+            <p>Input here .csv file with activities data</p>
+            <p class="text-danger">Server does not keep this file so if you wanna reuse it later keep it on disc</p>
+        `
+    });
+}
+
+    </script>
 <script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
 {% endblock %}

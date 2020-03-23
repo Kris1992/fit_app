@@ -5,10 +5,12 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\ActivityFormType;
+use App\Form\Model\CSVFile\CSVFileFormModel;
 use App\Entity\AbstractActivity;
 use App\Services\Factory\Activity\ActivityFactory;
 use App\Form\Model\Activity\BasicActivityFormModel;
@@ -22,6 +24,7 @@ use App\Form\Model\Activity\WeightActivityFormModel;
 
 use App\Services\Transformer\Activity\ActivityTransformer;
 use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -95,6 +98,37 @@ class AdminActivityController extends AbstractController
         return $this->render('admin_activity/add.html.twig', [
             'activityForm' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("api/admin/activity/import", name="api_admin_activity_import", methods={"POST", "GET"})
+     */
+    public function import(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, ActivitiesImporterInterface $activitiesImporter)
+    {
+
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $request->files->get('activityCSVFile');
+        $CSVFileFormModel = new CSVFileFormModel();
+        $CSVFileFormModel->setUploadedFile($uploadedFile);
+
+        //Validation Model data
+        $isValid = $modelValidator->isValid($CSVFileFormModel);
+
+        if(!$isValid) {
+            $violations = $modelValidator->getErrors();
+
+            //Take just first violation
+            $violation = $violations[0]->getMessage();
+
+            return new JsonResponse($violation, Response::HTTP_BAD_REQUEST);
+        }
+
+        $activitiesImporter->import($CSVFileFormModel->getUploadedFile());
+
+
+        /*return $this->render('admin_activity/import.html.twig', [
+            'CSVFileForm' => $form->createView(),
+        ]);*/
     }
 
      /**
