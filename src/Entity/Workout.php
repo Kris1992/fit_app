@@ -91,7 +91,6 @@ class Workout
 
 
 
-
  
     /**
      * transformSaveTimeToString Transform time from seconds to string format H:i:s

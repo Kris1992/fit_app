@@ -9,6 +9,16 @@ use Psr\Log\LoggerInterface;
 use App\Services\FilesManager\FilesManagerInterface;
 use App\Services\FileReader\FileReaderInterface;
 
+use App\Services\Transformer\Activity\ActivityTransformer;
+use App\Services\Factory\Activity\ActivityFactory;
+use App\Services\ModelValidator\ModelValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
+//second way curl by symfony component
+use Symfony\Component\HttpClient\CurlHttpClient;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\Multipart\FormDataPart;
+
 class ActivitiesImporter implements ActivitiesImporterInterface
 {
 
@@ -16,6 +26,8 @@ class ActivitiesImporter implements ActivitiesImporterInterface
     private $filesManagerInterface;
     private $uploadsDirectory;
     private $csvFileReader;
+    private $modelValidatorInterface;
+    private $em;
 
 
     /**
@@ -24,23 +36,19 @@ class ActivitiesImporter implements ActivitiesImporterInterface
      * @param LoggerInterface $logger
      * @param FilesManagerInterface $filesManagerInterface
      */
-    public function __construct(LoggerInterface $logger, FilesManagerInterface $filesManagerInterface, FileReaderInterface $csvFileReader, string $uploadsDirectory)  
+    public function __construct(LoggerInterface $logger, FilesManagerInterface $filesManagerInterface, FileReaderInterface $csvFileReader, ModelValidatorInterface $modelValidatorInterface, EntityManagerInterface $em, string $uploadsDirectory)  
     {
         $this->logger = $logger;
         $this->filesManagerInterface = $filesManagerInterface;
         $this->uploadsDirectory = $uploadsDirectory;
         $this->csvFileReader = $csvFileReader;
+        $this->modelValidatorInterface = $modelValidatorInterface;
+        $this->em = $em;
     }
 
-    public function import(File $file): void
+    public function import(File $file): array
     {
-        /*
-        upload 
-        check by csvlint and curl
-        read and bind to model
-        validate model
-        save to db
-         */
+
         try {
             $filename = $this->filesManagerInterface->upload($file, 'activity_csv');
         } catch (\Exception $e) {
@@ -50,19 +58,58 @@ class ActivitiesImporter implements ActivitiesImporterInterface
         $absoluteFilePath = $this->uploadsDirectory.'/activity_csv/'.$filename;
 
         //To do something new I decide to validate csv file by using CSVLint api and curl
-        $isValidCSV = $this->curlCSVValidator($absoluteFilePath);
+        //$isValidCSV = $this->curlCSVValidator($absoluteFilePath);
+        $isValidCSV = $this->curlCSVValidator2($absoluteFilePath);
         
         if($isValidCSV) {
             $this->csvFileReader->read($absoluteFilePath);
-            $array = $this->csvFileReader->parseToArray();
+            $activitiesArray = $this->csvFileReader->parseToArray();
+            $activities = [];
 
+            $result['valid'] = 0;
+            $result['invalid'] = 0;
+            $result['invalidRows'] = [];
+
+            foreach ($activitiesArray as $key => $activityArray) {
+                $activityTransformer = ActivityTransformer::chooseTransformer($activityArray['type']);
+                    if ($activityTransformer) {
+                        $activityModel = $activityTransformer->transformArrayToModel($activityArray);
+                        //Validation Model data
+                        $isValid = $this->modelValidatorInterface->isValid($activityModel);
+                        if($isValid) {
+                            $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
+                            //$activities[$key] = $activityFactory->create($activityModel);
+                            $activity = $activityFactory->create($activityModel);
+                            //temporary (find the better way)
+                            $this->em->persist($activity);
+                            $this->em->flush();
+
+                            $result['valid']++;    
+                        } else {
+                            $result['invalid']++;
+                            $violations = $this->modelValidatorInterface->getErrors();
+
+                            //Take just first violation
+                            $violation = $violations[0]->getMessage();
+                            array_push(
+                                $result['invalidRows'], 
+                                [ 
+                                    'id' => $key+2,//header + num from 1 not 0
+                                    'message'=> $violation,
+                                ]
+                            );
+                        }
+                    }
+            }    
         }
 
         $this->filesManagerInterface->delete($filename, 'activity_csv');
         
         if (!$isValidCSV) {
-            throw new Exception("Uploaded CSV file is not valid");
+            throw new \Exception("Uploaded CSV file is not valid");
         }
+
+        return $result;
     }
 
     private function curlCSVValidator(string $absoluteFilePath): bool
@@ -101,6 +148,29 @@ class ActivitiesImporter implements ActivitiesImporterInterface
         return false;
         //throw new Exception("CSV is not valid or site CSVLint is disconnect");
         //logger
+    }
+
+    // second way curl (just for fun)
+    private function curlCSVValidator2(string $absoluteFilePath): bool
+    {
+
+        $client = new CurlHttpClient();
+        $formField = [
+            'files[]' => DataPart::fromPath($absoluteFilePath),
+        ];
+        $formData = new FormDataPart($formField);
+        $response = $client->request('POST', 'http://csvlint.io/package', [
+            'headers' => $formData->getPreparedHeaders()->toArray(),
+            'body' => $formData->bodyToIterable(),
+        ]);
+
+        $result = $response->getContent();
+
+        if(preg_match('!Your CSV is valid!', $result)) {
+            return true;
+        }
+
+        return false;
     }
 }
 

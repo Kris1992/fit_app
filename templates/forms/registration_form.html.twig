@@ -41,9 +41,19 @@
                                                 <a href="{{ uploaded_asset(registrationForm.vars.data.imagePath) }}" target="_blank">
                                                     <span class="fa fa-search-plus position-absolute link-show"></span>
                                                 </a>
-                                                <a href="{{ path('api_delete_user_image') }}" id="delete-image">
-                                                    <span class="fa fa-trash position-absolute link-delete"></span>
-                                                </a>
+                                                {% if is_granted('ROLE_ADMIN') %}
+                                                    <a 
+                                                        href="{{ path('api_admin_delete_user_image', 
+                                                        { id: registrationForm.vars.data.id }) }}"
+                                                        id="delete-image"
+                                                    >
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a> 
+                                                {% else %}
+                                                    <a href="{{ path('api_delete_user_image') }}" id="delete-image">
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

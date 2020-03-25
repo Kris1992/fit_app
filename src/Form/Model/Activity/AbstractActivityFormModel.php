@@ -11,6 +11,7 @@ abstract class AbstractActivityFormModel implements \ArrayAccess
 
     /**
      * @Assert\NotBlank(message="Please enter type")
+     * @Assert\Choice(callback="getAvaibleTypes", message="Choose a valid type.")
      */
     protected $type;
 
@@ -76,6 +77,15 @@ abstract class AbstractActivityFormModel implements \ArrayAccess
         $this->energy = $energy;
 
         return $this;
+    }
+
+    public static function getAvaibleTypes(): array
+    {
+        return  [
+            'Weight' => 'Weight',
+            'Movement (running, cycling etc.)' => 'Movement',
+            'Movement (running, cycling with loops)' => 'MovementSet',
+        ];
     }
 
 

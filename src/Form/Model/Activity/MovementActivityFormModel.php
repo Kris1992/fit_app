@@ -5,7 +5,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueRangeSpeed;
 use App\Validator\UniqueFieldsPair;
 
-
 /**
 * @UniqueRangeSpeed(
 *     fields={"speedAverageMin", "speedAverageMax"},
@@ -51,6 +50,7 @@ class MovementActivityFormModel extends AbstractActivityFormModel
 
      /**
      * @Assert\NotBlank(message="Please enter intensity")
+     * @Assert\Choice(callback="getAvaibleIntensities", message="Choose a valid intensity.")
      */
     private $intensity;
 
@@ -88,5 +88,11 @@ class MovementActivityFormModel extends AbstractActivityFormModel
         $this->intensity = $intensity;
 
         return $this;
+    }
+
+    public static function getAvaibleIntensities(): array
+    {
+        $intensities = ['Very slow', 'Slow', 'Normal', 'Fast', 'Very fast'];
+        return array_combine($intensities, $intensities);
     }
 }

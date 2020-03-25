@@ -20,6 +20,8 @@ class ActivityTransformer
                 return new MovementSetActivityTransformer();
             case self::WEIGHT_TRANSFORMER:
                 return new WeightActivityTransformer();
+            default:
+                return null;
         }
     }
 }

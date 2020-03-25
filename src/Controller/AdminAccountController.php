@@ -5,17 +5,17 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Form\UserRegistrationFormType;
-use App\Form\Model\User\UserRegistrationFormModel;
-use App\Services\ImagesManager\ImagesManagerInterface;
-
-//new
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
+use App\Services\Updater\User\UserUpdaterInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Command\DeleteUserImage;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -46,7 +46,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/edit/{id}", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $em, UserRegistrationFormModel $userModel, ImagesManagerInterface $ImagesManager, UserModelFactoryInterface $userModelFactoryInterface)
+    public function edit(User $user, Request $request, EntityManagerInterface $em, UserModelFactoryInterface $userModelFactoryInterface, UserUpdaterInterface $userUpdaterInterface)
     {
         /** @var UserRegistrationFormModel $userModel */
         $userModel = $userModelFactoryInterface->create($user);
@@ -57,28 +57,8 @@ class AdminAccountController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dd('stop');
-            //$userModel2 = $form->getData();
-        
-            $user->setEmail($userModel2->getEmail());
-            $user->setFirstName($userModel2->getFirstName());
-            $user->setSecondName($userModel2->getSecondName());
-            $user->setGender($userModel2->getGender());
-            $user->setBirthdate($userModel2->getBirthdate());
-            $user->setWeight($userModel2->getWeight());
-            $user->setHeight($userModel2->getHeight());
-            $user->setRoles([$userModel2->getRole()]);
-
-            /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $form['imageFile']->getData();
-
-            if($uploadedFile)
-            {
-                $newFilename = $ImagesManager->uploadUserImage($uploadedFile, $user->getImageFilename());//sprawdzić
-                //$newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
-
-                $user->setImageFilename($newFilename);
-            }
+            
+            $user = $userUpdaterInterface->update($userModel, $user, $form['imageFile']->getData());
             
             $em->persist($user);
             $em->flush();
@@ -97,7 +77,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete/{id}", name="admin_account_delete",  methods={"DELETE"})
      */
-    public function delete(Request $request, User $user)//$id)
+    public function delete(Request $request, User $user, MessageBusInterface $messageBus)//$id)
     {
         //$userRepository = $this->getDoctrine()->getRepository(User::class);
         //$user = $user_rep->find($id);
@@ -118,11 +98,11 @@ class AdminAccountController extends AbstractController
     public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository)
     {
         $submittedToken = $request->request->get('token');
-        if($request->request->has('deleteId')){
+        if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
                 $ids = $request->request->get('deleteId');
                 $users = $userRepository->findAllByIds($ids);
-                if($users){
+                if($users) {
                     foreach ($users as $user) {
                         $entityManager->remove($user);
                     }
@@ -154,6 +134,37 @@ class AdminAccountController extends AbstractController
 
         $this->addFlash('warning','Nothing to do');
         return $this->redirectToRoute('admin_account_list');
+    }
+
+    /**
+     * @Route("/api/admin/account/{id}/delete_user_image", name="api_admin_delete_user_image",
+     * methods={"DELETE"})
+     */
+    public function deleteUserImageAction(Request $request, MessageBusInterface $messageBus, User $user): Response
+    {
+
+        $data = json_decode($request->getContent(), true);
+    
+        if($data === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $userId = $user->getId();
+
+        //double check that everything is ok
+        if($userId == $data['userId']) {
+            $imageFilename = $user->getImageFilename();
+            if(!empty($imageFilename)) {
+                $messageBus->dispatch(new DeleteUserImage($userId));
+                return new JsonResponse(Response::HTTP_OK);
+            }
+        }
+
+        $responseMessage = [
+            'errorMessage' => 'Image not found!'
+        ];
+
+        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
     }
     
 }

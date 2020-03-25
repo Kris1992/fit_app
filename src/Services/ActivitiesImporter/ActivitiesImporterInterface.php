@@ -13,7 +13,7 @@ interface ActivitiesImporterInterface
     /**
      * import Import activities from file to db
      * @param  File   $file Uploaded file
-     * @return void
+     * @return array Array with result data (imported correctly, invalid row, invalid message)
      */
-    public function import(File $file): void;
+    public function import(File $file): array;
 }

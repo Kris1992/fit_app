@@ -13,6 +13,8 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
+use App\Form\Model\Activity\MovementActivityFormModel;
+use App\Form\Model\Activity\AbstractActivityFormModel;
 
 class ActivityFormType extends AbstractType
 {
@@ -101,20 +103,10 @@ class ActivityFormType extends AbstractType
     {   
         switch ($fieldName) {
             case 'activity_type':
-                return $choices = [
-                    'Weight' => 'Weight',
-                    'Movement (running, cycling etc.)' => 'Movement',
-                    'Movement (running, cycling with loops)' => 'MovementSet',
-                ];
+                return AbstractActivityFormModel::getAvaibleTypes();
                 break;
             case 'movement_instensity':
-                return $choices = [
-                    'Very slow' => 'Very slow',
-                    'Slow' => 'Slow',
-                    'Normal' => 'Normal',
-                    'Fast' => 'Fast',
-                    'Very fast' => 'Very fast',
-                ];
+                return MovementActivityFormModel::getAvaibleIntensities();
                 break;
         }
     }

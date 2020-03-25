@@ -178,7 +178,6 @@ class AdminWorkoutController extends AbstractController
                     'errors' => $errors,
                 ]);
             }
-
         }
        
         return $this->render('admin_workout/edit_average.html.twig', [
@@ -262,11 +261,11 @@ class AdminWorkoutController extends AbstractController
     public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository)
     {
         $submittedToken = $request->request->get('token');
-        if($request->request->has('deleteId')){
+        if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
                 $ids = $request->request->get('deleteId');
                 $workouts = $workoutRepository->findAllByIds($ids);
-                if($workouts){
+                if($workouts) {
                     foreach ($workouts as $workout) {
                         $entityManager->remove($workout);
                     }

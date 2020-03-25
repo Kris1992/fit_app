@@ -59,7 +59,7 @@ class WorkoutController extends AbstractController
         dump($workoutsTest2);*/
         ///
 
-    	$workouts = $workoutRepository->findBy(['user' => $user ]);
+    	$workouts = $workoutRepository->findBy([ 'user' => $user ]);
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
         $formAverage->handleRequest($request);

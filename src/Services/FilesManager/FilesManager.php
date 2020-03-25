@@ -76,6 +76,11 @@ class FilesManager implements FilesManagerInterface {
         }   
     }
 
+    public function getAbsolutePath(string $path): string
+    {   
+        return $this->uploadsDirectory.'/'.$path;
+    }
+
     /**
      * createDir create folder from folderName 
      * @param  string $folderName Name of folder to create

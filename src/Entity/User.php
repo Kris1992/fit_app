@@ -167,6 +167,14 @@ class User implements UserInterface
         return $this->roles[0];
     }
 
+    public function isAdmin(): bool
+    {
+        if ($this->getRole() === 'ROLE_ADMIN') {
+            return true;
+        }
+        return false;
+    } 
+
     /**
      * @see UserInterface
      */
@@ -401,7 +409,5 @@ class User implements UserInterface
 
         return $this;
     }
-
-
 
 }

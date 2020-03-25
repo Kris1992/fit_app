@@ -9,10 +9,3 @@ symfony composer req phpunit --dev
 composer require behat/mink-selenium2-driver
 
 
-
-
-match against 
-
-ft_min_word_len = 2
-ft_stopword_file=""
-

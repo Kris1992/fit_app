@@ -9,8 +9,6 @@ use Twig\TwigFilter;
 use Twig\TwigFunction;
 use App\Services\ImagesManager\ImagesManagerInterface;
 
-
-
 class AppExtension extends AbstractExtension implements ServiceSubscriberInterface
 {
 
@@ -20,7 +18,6 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
     {
         $this->container = $container;
     }
-
 
     public static function getSubscribedServices()
     {
@@ -40,6 +37,5 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
         return $this->container
             ->get(ImagesManagerInterface::class)
             ->getPublicPath($path);
-        
     }
 }

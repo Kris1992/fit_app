@@ -50,7 +50,7 @@ class CSVFileReader implements FileReaderInterface
 
         while (($rowData = fgetcsv($this->file, self::MAX_LINE_LENGTH, ",")) !== FALSE) {
             foreach ($this->header as $i => $property) {
-                    $rowDataAssoc[$property] = $rowData[$i];
+                    $rowDataAssoc[$property] = ucfirst($rowData[$i]);
                 }
             $dataArray[] = $rowDataAssoc;
         }

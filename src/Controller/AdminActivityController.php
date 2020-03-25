@@ -18,13 +18,12 @@ use App\Repository\AbstractActivityRepository;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
-use App\Form\Model\Activity\AbstractActivityFormModel;
-use App\Form\Model\Activity\MovementActivityFormModel;
-use App\Form\Model\Activity\WeightActivityFormModel;
-
 use App\Services\Transformer\Activity\ActivityTransformer;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
+
+use App\Services\FilesManager\FilesManagerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -94,7 +93,6 @@ class AdminActivityController extends AbstractController
             $modelValidator->mapErrorsToForm($form);
         }
 
-
         return $this->render('admin_activity/add.html.twig', [
             'activityForm' => $form->createView(),
         ]);
@@ -122,13 +120,14 @@ class AdminActivityController extends AbstractController
 
             return new JsonResponse($violation, Response::HTTP_BAD_REQUEST);
         }
+        
+        try {
+            $result = $activitiesImporter->import($CSVFileFormModel->getUploadedFile());
+        } catch (\Exception $e) {
+            return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
-        $activitiesImporter->import($CSVFileFormModel->getUploadedFile());
-
-
-        /*return $this->render('admin_activity/import.html.twig', [
-            'CSVFileForm' => $form->createView(),
-        ]);*/
+        return new JsonResponse($result, Response::HTTP_OK);
     }
 
      /**
@@ -151,11 +150,9 @@ class AdminActivityController extends AbstractController
             if(!$isValid) {
                 $modelValidator->mapErrorsToForm($form);
             }
-
         }
 
-        if ($form->isSubmitted() && $form->isValid()) 
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             //It is not necessary in this case
             //$activityModel = $form->getData();
             
@@ -197,11 +194,11 @@ class AdminActivityController extends AbstractController
     public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
     {
         $submittedToken = $request->request->get('token');
-        if($request->request->has('deleteId')){
+        if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
                 $ids = $request->request->get('deleteId');
                 $activities = $activityRepository->findAllByIds($ids);
-                if($activities){
+                if($activities) {
                     foreach ($activities as $activity) {
                         $entityManager->remove($activity);
                     }
@@ -249,6 +246,18 @@ class AdminActivityController extends AbstractController
         return $this->render('forms/activity_specific_form.html.twig', [
             'activityForm' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/api/admin/activity/download_template", 
+     * name="api_admin_activity_download_template", methods={"GET"})
+     */
+    public function downloadActivitiesTemplate(Request $request, FilesManagerInterface $filesManagerInterface)
+    {
+        $templatePath = '/activity_csv/activitiesTemplate.csv';
+        $absolutePath = $filesManagerInterface->getAbsolutePath($templatePath);
+        
+        return $this->file($absolutePath, 'template.csv', ResponseHeaderBag::DISPOSITION_ATTACHMENT);
     }
 
 }
