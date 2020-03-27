@@ -53,7 +53,7 @@ class UserFactory implements UserFactoryInterface {
         if (true === $userModel->getAgreeTerms()) {
             $user->agreeToTerms();
         } else {
-            throw new Exception("You not agree terms?");
+            throw new \Exception("You not agree terms?");
         }
 
         return $user;

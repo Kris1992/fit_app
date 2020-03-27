@@ -6,6 +6,7 @@ use App\Entity\Workout;
 
 use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
+
 class MovementWorkoutFactory implements WorkoutFactoryInterface {
 
     public function create(AbstractWorkoutFormModel $workoutModel): Workout

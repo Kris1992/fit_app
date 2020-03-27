@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraint;
  * @Annotation
  * @Target({"CLASS", "ANNOTATION"})
  */
-class UniqueRangeSpeed extends Constraint
+class UniqueRangeProperties extends Constraint
 {
     /*
      * Any public properties become valid options for the annotation.

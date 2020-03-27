@@ -85,6 +85,7 @@ abstract class AbstractActivityFormModel implements \ArrayAccess
             'Weight' => 'Weight',
             'Movement (running, cycling etc.)' => 'Movement',
             'Movement (running, cycling with loops)' => 'MovementSet',
+            'Bodyweight' => 'Bodyweight',
         ];
     }
 

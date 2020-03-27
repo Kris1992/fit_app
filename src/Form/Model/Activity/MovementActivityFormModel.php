@@ -2,11 +2,11 @@
 namespace App\Form\Model\Activity;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\UniqueRangeSpeed;
+use App\Validator\UniqueRangeProperties;
 use App\Validator\UniqueFieldsPair;
 
 /**
-* @UniqueRangeSpeed(
+* @UniqueRangeProperties(
 *     fields={"speedAverageMin", "speedAverageMax"},
 *     errorPath="name",
 *     entityClass="MovementActivity"

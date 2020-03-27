@@ -114,7 +114,6 @@ class User implements UserInterface
         $this->workouts = new ArrayCollection();
         $this->curiosities = new ArrayCollection();
     }
-    
 
     public function getId(): ?int
     {

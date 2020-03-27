@@ -15,6 +15,7 @@ use Symfony\Component\Form\FormEvents;
 
 use App\Form\Model\Activity\MovementActivityFormModel;
 use App\Form\Model\Activity\AbstractActivityFormModel;
+use App\Form\Model\Activity\BodyweightActivityFormModel;
 
 class ActivityFormType extends AbstractType
 {
@@ -79,7 +80,7 @@ class ActivityFormType extends AbstractType
                 $form
                     ->add('intensity', ChoiceType::class, [
                         'placeholder' => 'Choose intensity',
-                        'choices' => $this->getChoices('movement_instensity'),
+                        'choices' => $this->getChoices('movement_intensity'),
                     ])
                     ->add('speedAverageMin', NumberType::class)
                     ->add('speedAverageMax', NumberType::class)
@@ -88,6 +89,16 @@ class ActivityFormType extends AbstractType
             case 'MovementSet':
                 $form
                     ->remove('energy')//this type of activity don't need energy (Energy from sets activities will be used)
+                    ;
+                break;
+            case 'Bodyweight':
+                $form
+                    ->add('repetitionsAvgMin', IntegerType::class)
+                    ->add('repetitionsAvgMax', IntegerType::class)
+                    ->add('intensity', ChoiceType::class, [
+                        'placeholder' => 'Choose intensity',
+                        'choices' => $this->getChoices('bodyweight_intensity'),
+                    ])
                     ;
                 break;
             case 'Weight':
@@ -104,10 +115,10 @@ class ActivityFormType extends AbstractType
         switch ($fieldName) {
             case 'activity_type':
                 return AbstractActivityFormModel::getAvaibleTypes();
-                break;
-            case 'movement_instensity':
+            case 'movement_intensity':
                 return MovementActivityFormModel::getAvaibleIntensities();
-                break;
+            case 'bodyweight_intensity':
+                return BodyweightActivityFormModel::getAvaibleIntensities();
         }
     }
 

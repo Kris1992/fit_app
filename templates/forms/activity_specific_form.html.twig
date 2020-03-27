@@ -25,6 +25,24 @@
     }) }}
 {% endif %}
 
+{# Bodyweight #}
+
+{%  if activityForm.repetitionsAvgMin is defined %}
+    {{ form_row(activityForm.repetitionsAvgMin, {
+        'label' : 'Minimum repetitions per hour: '
+    }) }}
+{% endif %}
+{%  if activityForm.repetitionsAvgMax is defined %}
+    {{ form_row(activityForm.repetitionsAvgMax, {
+        'label' : 'Maximum repetitions per hour: '
+    }) }}
+{% endif %}
+
+
+
+
+
+
 {# Weight #}
 
 {%  if activityForm.repetitions is defined %}

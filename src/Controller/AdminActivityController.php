@@ -62,7 +62,6 @@ class AdminActivityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $data = $form->getData();
-
             $activityTransformer = ActivityTransformer::chooseTransformer($data['type']);
             $activityModel = $activityTransformer->transformArrayToModel($data);
 
@@ -77,7 +76,6 @@ class AdminActivityController extends AbstractController
             
             //Validation Model data
             $isValid = $modelValidator->isValid($activityModel);
-            
             if($isValid) {
                 $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
                 $activity = $activityFactory->create($activityModel);

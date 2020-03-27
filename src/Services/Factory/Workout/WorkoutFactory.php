@@ -20,6 +20,8 @@ class WorkoutFactory
                 return new MovementSetWorkoutFactory();
             case self::WEIGHT_FACTORY:
                 return new WeightWorkoutFactory();
+            default:
+                throw new \Exception("This type of activity is not supported yet");
         }
     }
 }
