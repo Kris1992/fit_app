@@ -12,18 +12,21 @@ abstract class AbstractWorkoutFormModel
     protected $id;
 
     /**
-     * @Assert\NotBlank(message="Cannot configure user", groups={"model"})
+     * @Assert\NotBlank(message="Cannot configure user", groups={"model", "bodyweight_model"})
      */
     protected $user;
 
     /**
-     * @Assert\NotBlank(message="Cannot configure activity", groups={"model"})
+     * @Assert\NotBlank(message="Cannot configure activity", groups={"model", 
+     * "bodyweight_model"})
      */
     protected $activity;
 
     /**
-     * @Assert\NotBlank(message="Your burnout Energy is too small", groups={"model"})
-     * @Assert\GreaterThan(message="Your burnout Energy is too small", value=0, groups={"model"})
+     * @Assert\NotBlank(message="Your burnout Energy is too small", groups={"model", 
+     * "bodyweight_model"})
+     * @Assert\GreaterThan(message="Your burnout Energy is too small", value=0, 
+     * groups={"model", "bodyweight_model"})
      */
     protected $burnoutEnergyTotal;
 
@@ -34,8 +37,9 @@ abstract class AbstractWorkoutFormModel
     protected $startAt;
     
     /**
-     * @Assert\NotBlank(message="Please enter time", groups={"model", "Default"})
-     * @AcmeAssert\NotZeroDuration(groups={"model", "Default"})
+     * @Assert\NotBlank(message="Please enter time", groups={"model", "bodyweight_model",
+     *  "Default"})
+     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default"})
      */
     protected $durationSecondsTotal;
 
@@ -49,7 +53,7 @@ abstract class AbstractWorkoutFormModel
 
     protected $type;
 
-    public function setId(int $id)
+    public function setId(?int $id)
     {
         $this->id = $id;
 

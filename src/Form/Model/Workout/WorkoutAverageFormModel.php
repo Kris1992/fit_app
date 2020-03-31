@@ -17,6 +17,14 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
     private $distanceTotal;
 
     /**
+     * @Assert\NotBlank(message="Cannot calculate right number of repetitions", 
+     * groups={"bodyweight_model"})
+     * @Assert\GreaterThan(message="Calculated number of repetitions it's not correct", 
+     * value=0, groups={"bodyweight_model"})
+     */
+    private $repetitionsTotal;
+
+    /**
      * @Assert\Valid
      * @Assert\Count(
      *      min = 1,
@@ -87,5 +95,28 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
         return $this;
     }
 
+    public function setRepetitionsTotal(?int $repetitionsTotal): self
+    {
+        $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }    
+
+    public function getRepetitionsTotal(): ?float
+    {
+        return $this->repetitionsTotal;
+    }
+
+    public function calculateSaveRepetitionsTotal(): self
+    {
+        $repetitionsDiff = $this->activity->getRepetitionsAvgMax() - $this->activity->getRepetitionsAvgMin();
+        $repetitionsPerHour = $this->activity->getRepetitionsAvgMin() + ($repetitionsDiff / 2);
+
+        $repetitionsTotal = $repetitionsPerHour * ($this->getDurationSecondsTotal() / 3600);
+
+        $this->repetitionsTotal = (int)$repetitionsTotal;
+
+        return $this;
+    }
 
 }

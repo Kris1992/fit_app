@@ -2,9 +2,6 @@
 
 namespace App\Services\FileReader;
 
-use League\Flysystem\FileNotFoundException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\File\File;
 use Psr\Log\LoggerInterface;
 use App\Services\FilesManager\FilesManagerInterface;
 
@@ -25,7 +22,7 @@ class CSVFileReader implements FileReaderInterface
      */
     public function __construct(LoggerInterface $logger)  
     {
-        $this->logger = $logger;
+        $this->logger = $logger;//unused?
     }
 
     public function __destruct()
@@ -34,7 +31,6 @@ class CSVFileReader implements FileReaderInterface
             fclose($this->file);
         }
     }
-
 
     public function read(string $absoluteFilePath): void
     {

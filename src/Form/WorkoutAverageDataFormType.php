@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\AbstractActivity;
 use App\Entity\MovementActivity;
+use App\Entity\BodyweightActivity;
 use App\Repository\AbstractActivityRepository;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -14,15 +15,11 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use App\Form\Model\Workout\WorkoutAverageFormModel;
-
-
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-
-
 
 class WorkoutAverageDataFormType extends AbstractType
 {
@@ -105,8 +102,6 @@ class WorkoutAverageDataFormType extends AbstractType
                     'disabled' => $isEdit
                 ]);
         }
-
-
        
     }
 
@@ -184,12 +179,20 @@ class WorkoutAverageDataFormType extends AbstractType
      */
     private function getActivityName(AbstractActivity $activity): string
     {
-        if($activity instanceof MovementActivity){
+        if($activity instanceof MovementActivity) {
             return sprintf('%s [%s (%d - %d km/h)]',
                 $activity->getName(), 
                 $activity->getIntensity(), 
                 $activity->getSpeedAverageMin(),
                 $activity->getSpeedAverageMax()
+            );
+        } 
+        if($activity instanceof BodyweightActivity) {
+            return sprintf('%s [%s (%d - %d repeats)]',
+                $activity->getName(), 
+                $activity->getIntensity(), 
+                $activity->getRepetitionsAvgMin(),
+                $activity->getRepetitionsAvgMax()
             );
         } 
         

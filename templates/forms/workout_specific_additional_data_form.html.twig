@@ -43,3 +43,10 @@
         {% endfor %}
     </div>
 {% endif %}
+
+{# Bodyweight #}
+{%  if workoutSpecificDataForm.repetitionsTotal is defined %}
+    {{ form_row(workoutSpecificDataForm.repetitionsTotal, {
+        'label' : 'Number of repetitions: '
+    }) }}
+{% endif %}

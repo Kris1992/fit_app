@@ -10,6 +10,7 @@ class WorkoutFactory
 
     const MOVEMENT_FACTORY="Movement";
     const MOVEMENTSET_FACTORY="MovementSet";
+    const BODYWEIGHT_FACTORY="Bodyweight";
     const WEIGHT_FACTORY="Weight";
  
     public static function chooseFactory($factoryName) {
@@ -18,10 +19,12 @@ class WorkoutFactory
                 return new MovementWorkoutFactory();
             case self::MOVEMENTSET_FACTORY:
                 return new MovementSetWorkoutFactory();
+            case self::BODYWEIGHT_FACTORY:
+                return new BodyweightWorkoutFactory();
             case self::WEIGHT_FACTORY:
                 return new WeightWorkoutFactory();
             default:
-                throw new \Exception("This type of activity is not supported yet");
+                throw new \Exception("Unsupported type of activity");
         }
     }
 }

@@ -11,6 +11,8 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
     {
 
         $activity = $workoutModel->getActivity();
+        $workoutModel
+            ->setType($activity->getType());
         if ($user) {
             $workoutModel                    
                 ->setUser($user);
@@ -21,6 +23,8 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
                 return $this->fillMovementProperties($workoutModel);
             case 'MovementSet':
                 return $this->fillMovementSetProperties($workoutModel);
+            case 'Bodyweight':
+                return $this->fillBodyweightProperties($workoutModel);
         }
 
         return null;
@@ -32,6 +36,17 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
         $workoutModel
             ->calculateSaveBurnoutEnergyTotal()
             ->calculateSaveDistanceTotal()
+            ;
+
+        return $workoutModel;
+    }
+
+    private function fillBodyweightProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel
+    {
+
+        $workoutModel
+            ->calculateSaveBurnoutEnergyTotal()
+            ->calculateSaveRepetitionsTotal()
             ;
 
         return $workoutModel;

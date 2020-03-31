@@ -66,7 +66,7 @@ class MovementSetWorkoutFactorySpec extends ObjectBehavior
         $sets[0]->getActivity()->shouldBeAnInstanceOf(MovementActivity::class);
         $sets[0]->getDistance()->shouldReturn(10.0);
         $sets[0]->getDurationSeconds()->shouldReturn(3600);
-        $sets[0]->getDistance()->shouldReturn(10.0);
+        $sets[0]->getBurnoutEnergy()->shouldReturn(500);
     }
 }
 

@@ -62,33 +62,39 @@ class AdminActivityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $data = $form->getData();
-            $activityTransformer = ActivityTransformer::chooseTransformer($data['type']);
-            $activityModel = $activityTransformer->transformArrayToModel($data);
 
-           /* switch ($data['type']) {
-                case 'Movement':
-                    $dataModel = ArrayConverter::toObject($data, new MovementActivityFormModel());
-                    break;
-                case 'Weight':
-                    $dataModel = ArrayConverter::toObject($data, new WeightActivityFormModel());
-                    break;
-            }*/
+            //Form don't let not valid type, but if developer forget about implement it in transformers or factory it will throw exception
+            try {
+                $activityTransformer = ActivityTransformer::chooseTransformer($data['type']);
+            } catch (\Exception $e) {
+                $this->addFlash('warning', $e->getMessage());
+
+                return $this->render('admin_activity/add.html.twig', [
+                    'activityForm' => $form->createView(),
+                ]);
+            }
+            
+            $activityModel = $activityTransformer->transformArrayToModel($data);
             
             //Validation Model data
             $isValid = $modelValidator->isValid($activityModel);
             if($isValid) {
-                $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
-                $activity = $activityFactory->create($activityModel);
+                try {
+                    $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
+                    $activity = $activityFactory->create($activityModel);
 
-                $em->persist($activity);
-                $em->flush();
+                    $em->persist($activity);
+                    $em->flush();
 
-                $this->addFlash('success', 'Activity was created!! ');
+                    $this->addFlash('success', 'Activity was created!! ');
             
-                return $this->redirectToRoute('admin_activity_list');
+                    return $this->redirectToRoute('admin_activity_list');
+                } catch (\Exception $e) {
+                    $this->addFlash('warning', $e->getMessage());
+                }
+            } else {
+                $modelValidator->mapErrorsToForm($form);
             }
-
-            $modelValidator->mapErrorsToForm($form);
         }
 
         return $this->render('admin_activity/add.html.twig', [
@@ -135,7 +141,7 @@ class AdminActivityController extends AbstractController
     {            
         //An entity should be always valid !! so I dont wanna bind to form activity object
         //$form = $this->createForm(ActivityFormType::class, $activity);
-
+        
         $activityTransformer = ActivityTransformer::chooseTransformer($activity->getType());
         $activityModel = $activityTransformer->transformToModel($activity);
 
@@ -150,10 +156,7 @@ class AdminActivityController extends AbstractController
             }
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            //It is not necessary in this case
-            //$activityModel = $form->getData();
-            
+        if ($form->isSubmitted() && $form->isValid()) {    
             $activity = $activityTransformer->transformToActivity($activityModel, $activity);
 
             $em->persist($activity);

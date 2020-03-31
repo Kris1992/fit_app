@@ -48,6 +48,3 @@ class UserRegistration implements UserRegistrationInterface
                 ->verify($request->get('g-recaptcha-response'), $_SERVER['REMOTE_ADDR']);
     }
 }
-
-
-

@@ -71,36 +71,49 @@ class ActivitiesImporter implements ActivitiesImporterInterface
             $result['invalidRows'] = [];
 
             foreach ($activitiesArray as $key => $activityArray) {
-                $activityTransformer = ActivityTransformer::chooseTransformer($activityArray['type']);
-                    if ($activityTransformer) {
-                        $activityModel = $activityTransformer->transformArrayToModel($activityArray);
-                        //Validation Model data
-                        $isValid = $this->modelValidatorInterface->isValid($activityModel);
-                        if($isValid) {
-                            $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
-                            //$activities[$key] = $activityFactory->create($activityModel);
-                            $activity = $activityFactory->create($activityModel);
-                            //temporary (find the better way)
-                            $this->em->persist($activity);
-                            $this->em->flush();
+                try {
+                    $activityTransformer = ActivityTransformer::chooseTransformer($activityArray['type']);
+                    $activityModel = $activityTransformer->transformArrayToModel($activityArray);
+                    
+                    //Validation Model data
+                    $isValid = $this->modelValidatorInterface->isValid($activityModel);
+                    if($isValid) {
+                        $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
+                        //$activities[$key] = $activityFactory->create($activityModel);
+                        $activity = $activityFactory->create($activityModel);
+                        //in inheritance joined and single table (https://github.com/doctrine/orm/issues/6248) is impossible to make uniqueConstraints on few columns so it must flush one by one or in future i make for this array validator
+                        $this->em->persist($activity);
+                        $this->em->flush();
 
-                            $result['valid']++;    
-                        } else {
-                            $result['invalid']++;
-                            $violations = $this->modelValidatorInterface->getErrors();
+                        $result['valid']++;    
+                    } else {
+                        $result['invalid']++;
+                        $violations = $this->modelValidatorInterface->getErrors();
 
-                            //Take just first violation
-                            $violation = $violations[0]->getMessage();
-                            array_push(
-                                $result['invalidRows'], 
-                                [ 
-                                    'id' => $key+2,//header + num from 1 not 0
-                                    'message'=> $violation,
-                                ]
-                            );
-                        }
+                        //Take just first violation
+                        $violation = $violations[0]->getMessage();
+                        array_push(
+                            $result['invalidRows'], 
+                            [ 
+                                'id' => $key+2,//header + num from 1 not 0
+                                'message'=> $violation,
+                            ]
+                        );
                     }
+                } catch (\Exception $e) {
+                    $result['invalid']++;
+
+                    $violation = $e->getMessage();
+                        array_push(
+                            $result['invalidRows'], 
+                            [ 
+                                'id' => $key+2,//header + num from 1 not 0
+                                'message'=> $violation,
+                            ]
+                        );
+                }
             }    
+            
         }
 
         $this->filesManagerInterface->delete($filename, 'activity_csv');

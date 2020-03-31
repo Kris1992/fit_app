@@ -16,6 +16,13 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
     private $distanceTotal;
 
     /**
+     * @Assert\NotBlank(message="Please enter number of repetitions", 
+     * groups={"bodyweight_model"})
+     * @Assert\GreaterThan(value=0, groups={"bodyweight_model"})
+     */
+    private $repetitionsTotal;
+
+    /**
      * @Assert\Valid
      * @Assert\Count(
      *      min = 1,
@@ -30,17 +37,37 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
         $this->movementSets = new ArrayCollection();
     }
 
-
-    public function getDistanceTotal(): ?int
+    public function getDistanceTotal(): ?float
     {
         return $this->distanceTotal;
     }
 
-    public function setDistanceTotal(int $distanceTotal): self
+    public function setDistanceTotal(?float $distanceTotal): self
     {
         $this->distanceTotal = $distanceTotal;
 
         return $this;
+    }
+
+    public function getRepetitionsTotal(): ?int
+    {
+        return $this->repetitionsTotal;
+    }
+
+    public function setRepetitionsTotal(?int $repetitionsTotal): self
+    {
+        $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getRepetitionsPerHour(): ?int
+    {
+        if($this->getRepetitionsTotal() != null && $this->getDurationSecondsTotal() != null){
+            return (int)($this->getRepetitionsTotal()/($this->getDurationSecondsTotal()/3600));
+        }
+
+        return null;
     }
 
     public function getAverageSpeed(): ?float

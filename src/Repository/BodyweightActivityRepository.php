@@ -19,7 +19,7 @@ class BodyweightActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, BodyweightActivity::class);
     }
 
-        /**
+    /**
      * findOneActivityWithRange  Find activity by name with repetitions in range 
      * @param  string $activityName    Activity name
      * @param  int    $repetitionsAvgMin Min average repetitions
@@ -41,6 +41,22 @@ class BodyweightActivityRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findOneActivityByRepetitionsPerHourAndName(string $activityName,int $repetitionsPerHour)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.name LIKE :activityName')
+            ->andWhere('(a.repetitionsAvgMin <= :repetitionsPerHour) AND (a.repetitionsAvgMax >= :repetitionsPerHour)')
+            ->setParameters([
+                'activityName' => $activityName,
+                'repetitionsPerHour' => $repetitionsPerHour,
+            ])
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+        ;
+    }
+
 
     // /**
     //  * @return BodyweightActivity[] Returns an array of BodyweightActivity objects

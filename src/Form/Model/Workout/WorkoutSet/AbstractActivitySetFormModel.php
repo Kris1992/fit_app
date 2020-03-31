@@ -41,7 +41,7 @@ class AbstractActivitySetFormModel
     //Helpers properties
     protected $activityName;
 
-    public function setId(int $id)
+    public function setId(?int $id)
     {
         $this->id = $id;
 

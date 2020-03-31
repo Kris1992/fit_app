@@ -2,8 +2,6 @@
 
 namespace App\Services\FileReader;
 
-use Symfony\Component\HttpFoundation\File\File;
-
 /**
  *  Read file line by line
  */

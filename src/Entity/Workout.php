@@ -62,6 +62,11 @@ class Workout
     private $distanceTotal;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $repetitionsTotal;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\MovementSet", mappedBy="workout", 
      * orphanRemoval=true, cascade={"persist", "refresh"})
      */
@@ -300,6 +305,18 @@ class Workout
                 $movementSet->setWorkout(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRepetitionsTotal(): ?int
+    {
+        return $this->repetitionsTotal;
+    }
+
+    public function setRepetitionsTotal(?int $repetitionsTotal): self
+    {
+        $this->repetitionsTotal = $repetitionsTotal;
 
         return $this;
     }

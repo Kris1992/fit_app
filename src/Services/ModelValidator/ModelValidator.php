@@ -37,7 +37,6 @@ class ModelValidator implements ModelValidatorInterface
             $this->formErrors = $this->validator->validate($dataModel, null, $groups);
         }
 
-        
         if(count($this->formErrors) > 0) {
             return $this->isValid = false;
         }

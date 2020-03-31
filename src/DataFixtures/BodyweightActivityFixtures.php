@@ -11,7 +11,7 @@ class BodyweightActivityFixtures extends BaseFixture
 {
 
 	private static $bodyweightActivities = [
-        'Pumpup',
+        'Push-ups',
     ];
 
     private static $bodyweightIntensities = [

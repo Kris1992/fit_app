@@ -24,7 +24,7 @@ class ActivityFactory
             case self::WEIGHT_FACTORY:
                 return new WeightActivityFactory();
             default:
-                throw new \Exception("This type of activity is not supported yet");
+                throw new \Exception("Unsupported type of activity");
         }
     }
 }

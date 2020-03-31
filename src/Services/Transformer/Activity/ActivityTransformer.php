@@ -25,8 +25,8 @@ class ActivityTransformer
                 return new BodyweightActivityTransformer();
             case self::WEIGHT_TRANSFORMER:
                 return new WeightActivityTransformer();
-            //default:
-                //throw new \Exception("This is not supported type of activity");
+            default:
+                throw new \Exception("Unsupported type of activity");
         }
     }
 }

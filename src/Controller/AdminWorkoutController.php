@@ -9,7 +9,6 @@ use App\Repository\WorkoutRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Entity\Workout;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Form\WorkoutSpecificDataFormType;
 use App\Form\WorkoutAverageDataFormType;
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
@@ -17,9 +16,9 @@ use App\Form\Model\Workout\WorkoutAverageFormModel;
 use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Services\ModelExtender\WorkoutAverageExtender;
 use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\ModelValidator\ModelValidatorChooser;
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
-
 use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -52,7 +51,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/add_average", name="admin_workout_add", methods={"POST", "GET"})
      */
-    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class, null, [
@@ -65,25 +64,38 @@ class AdminWorkoutController extends AbstractController
             $workoutAverageFormModel = $formAverage->getData();
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null);
 
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+            if($workoutAverageFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutAverageFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutAverageFormModel, $validationGroup);
 
-            if ($isValid) {
-                $activity = $workoutAverageFormModel->getActivity();
-                $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                $workout = $workoutFactory->create($workoutAverageFormModel);
-                $em->persist($workout);
-                $em->flush();
+                if ($isValid) {
+                    try {
+                        $activity = $workoutAverageFormModel->getActivity();
+                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                        $workout = $workoutFactory->create($workoutAverageFormModel);
+                        $em->persist($workout);
+                        $em->flush();
 
-                $this->addFlash('success', 'Workout was created!! ');
-                return $this->redirectToRoute('admin_workout_list');
-            } else {
-                $errors = $modelValidator->getErrors();
-                return $this->render('admin_workout/add_average.html.twig', [
-                    'workoutForm' => $formAverage->createView(),
-                    'errors' => $errors,
-                ]);
+                        $this->addFlash('success', 'Workout was created!! ');
+                        return $this->redirectToRoute('admin_workout_list');
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                        return $this->render('admin_workout/add_average.html.twig', [
+                            'workoutForm' => $formAverage->createView(),
+                        ]);
+                    }
+
+                } else {
+                    $errors = $modelValidator->getErrors();
+                    return $this->render('admin_workout/add_average.html.twig', [
+                        'workoutForm' => $formAverage->createView(),
+                        'errors' => $errors,
+                    ]);
+                } 
             }
+
+            $this->addFlash('warning', 'Cannot create workout with this type of activity');
         }
 
         return $this->render('admin_workout/add_average.html.twig', [
@@ -94,7 +106,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/add_specific", name="admin_workout_add_specific", methods={"POST", "GET"})
      */
-    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator)
+    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class, null, [
             'is_admin' => true
@@ -104,32 +116,40 @@ class AdminWorkoutController extends AbstractController
         
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
             $workoutSpecificModel = $formSpecific->getData();
-            
             $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, null);
 
-            if (!$workoutSpecificModel) {
-                $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
-                return $this->redirectToRoute('admin_workout_add_specific');
+            if ($workoutSpecificModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificModel->getType());
+                $isValid = $modelValidator->isValid($workoutSpecificModel, $validationGroup);
+                
+                if ($isValid) {
+                    try {
+                        $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
+                        $workout = $workoutFactory->create($workoutSpecificModel);
+
+                        $em->persist($workout);
+                        $em->flush();
+
+                        $this->addFlash('success', 'Workout was created!! ');
+                        return $this->redirectToRoute('admin_workout_list');
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                        return $this->render('admin_workout/add_specific.html.twig', [
+                            'workoutSpecificDataForm' => $formSpecific->createView(),
+                        ]);
+                    }
+
+                } else {
+                    $errors = $modelValidator->getErrors();
+                    return $this->render('admin_workout/add_specific.html.twig', [
+                        'workoutSpecificDataForm' => $formSpecific->createView(),
+                        'errors' => $errors,
+                    ]);
+                }
             }
 
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
-            if ($isValid) {
-                $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
-                $workout = $workoutFactory->create($workoutSpecificModel);
-
-                $em->persist($workout);
-                $em->flush();
-
-                $this->addFlash('success', 'Workout was created!! ');
-                return $this->redirectToRoute('admin_workout_list');
-            } else {
-                $errors = $modelValidator->getErrors();
-                return $this->render('admin_workout/add_specific.html.twig', [
-                    'workoutSpecificDataForm' => $formSpecific->createView(),
-                    'errors' => $errors,
-                ]);
-            }
+            $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
         }
 
         return $this->render('admin_workout/add_specific.html.twig', [
@@ -140,43 +160,60 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/edit_average/{id}", name="admin_workout_edit", methods={"POST", "GET"})
      */
-    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
         
-        $activity = $workout->getActivity();
-
-        $workoutModelFactory = WorkoutModelFactory::chooseFactory($activity->getType(), 'Average');
-        $workoutAverageFormModel = $workoutModelFactory->create($workout);
+        try {
+            $activity = $workout->getActivity();
+            $workoutModelFactory = WorkoutModelFactory::chooseFactory($activity->getType(), 'Average');
+            $workoutAverageFormModel = $workoutModelFactory->create($workout);
         
-        $formAverage = $this->createForm(WorkoutAverageDataFormType::class, $workoutAverageFormModel, [
-            'is_admin' => true
-        ]);
+            $formAverage = $this->createForm(WorkoutAverageDataFormType::class, $workoutAverageFormModel, [
+                'is_admin' => true
+            ]);
+        } catch (\Exception $e) {
+            $formAverage = $this->createForm(WorkoutAverageDataFormType::class, null, [
+                'is_admin' => true
+            ]);
+            $this->addFlash('warning', $e->getMessage());
+        }
 
         $formAverage->handleRequest($request);
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             //$workoutModel = $formAverage->getData(); //form handles modeldata so we don't need it
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel,null);
 
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-            if ($isValid) {
-                $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
-                $em->persist($workout);
-                $em->flush();
+            if ($workoutAverageFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutAverageFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutAverageFormModel, $validationGroup);
 
-                $this->addFlash('success', 'Workout is updated!');
+                if ($isValid) {
+                    try {
+                        $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
+                        $em->persist($workout);
+                        $em->flush();
 
-                return $this->redirectToRoute('admin_workout_edit', [
-                    'id' => $workout->getId(),
-                ]);
-            } else {
-                $errors = $modelValidator->getErrors();
+                        $this->addFlash('success', 'Workout is updated!');
+
+                        return $this->redirectToRoute('admin_workout_edit', [
+                            'id' => $workout->getId(),
+                        ]);
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                    }
+                } else {
+                    $errors = $modelValidator->getErrors();
                 
-                return $this->render('admin_workout/edit_average.html.twig', [
-                    'workoutForm' => $formAverage->createView(),
-                    'errors' => $errors,
-                ]);
+                    return $this->render('admin_workout/edit_average.html.twig', [
+                        'workoutForm' => $formAverage->createView(),
+                        'workoutId' => $workout->getId(),
+                        'errors' => $errors,
+                    ]);
+                }
+            } else {
+                $this->addFlash('warning', 'Cannot update this type of activity');
             }
         }
        
@@ -190,48 +227,65 @@ class AdminWorkoutController extends AbstractController
      * @Route("/admin/workout/edit_specific/{id}", name="admin_workout_specific_edit", 
      * methods={"POST", "GET"})
      */
-    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
-        $activity = $workout->getActivity();
-        $workoutModelFactory = WorkoutModelFactory::chooseFactory(
-            $activity->getType(), 
-            'Specific'
-        );
-        $workoutSpecificFormModel = $workoutModelFactory->create($workout);
+        try {
+            $activity = $workout->getActivity();
+            $workoutModelFactory = WorkoutModelFactory::chooseFactory(
+                $activity->getType(), 
+                'Specific'
+            );
+            $workoutSpecificFormModel = $workoutModelFactory->create($workout);
 
-        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
-            $workoutSpecificFormModel, [
-            'is_admin' => true
-        ]);
+            $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
+                $workoutSpecificFormModel, [
+                'is_admin' => true
+            ]);
+        } catch (\Exception $e) {
+            $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
+                null, [
+                'is_admin' => true
+            ]);
+            $this->addFlash('warning', $e->getMessage());
+        }
     
         $formSpecific->handleRequest($request);
 
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
-            //$workoutModel = $formSpecific->getData(); //form handles modeldata so we don't need it
             $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel,null);
 
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutSpecificFormModel, ['model']);
+            if ($workoutSpecificFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutSpecificFormModel, $validationGroup);
 
-            if ($isValid) {
-                $workout = $workoutUpdater->update($workoutSpecificFormModel, $workout);
-                $em->persist($workout);
-                $em->flush();
+                if ($isValid) {
+                    try {
+                        $workout = $workoutUpdater->update($workoutSpecificFormModel, $workout);
+                        $em->persist($workout);
+                        $em->flush();
 
-                $this->addFlash('success', 'Workout is updated!');
+                        $this->addFlash('success', 'Workout is updated!');
 
-                return $this->redirectToRoute('admin_workout_specific_edit', [
-                    'id' => $workout->getId(),
-                ]);
-            } else {
-                $errors = $modelValidator->getErrors();
+                        return $this->redirectToRoute('admin_workout_specific_edit', [
+                            'id' => $workout->getId(),
+                        ]);
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                    }
+                } else {
+                    $errors = $modelValidator->getErrors();
                 
-                return $this->render('admin_workout/edit_specific.html.twig', [
-                    'workoutSpecificDataForm' => $formSpecific->createView(),
-                    'errors' => $errors,
-                ]);
+                    return $this->render('admin_workout/edit_specific.html.twig', [
+                        'workoutSpecificDataForm' => $formSpecific->createView(),
+                        'workoutId' => $workout->getId(),
+                        'errors' => $errors,
+                    ]);
+                }
+            } else {
+                $this->addFlash('warning', 'Cannot update this type of activity');
             }
         }
        

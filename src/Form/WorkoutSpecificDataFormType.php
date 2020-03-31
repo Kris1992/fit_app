@@ -111,7 +111,6 @@ class WorkoutSpecificDataFormType extends AbstractType
                     'disabled' => $isEdit
                 ]);
             }
-       
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -173,9 +172,22 @@ class WorkoutSpecificDataFormType extends AbstractType
                     $form
                         ->remove('distanceTotal')
                         ->remove('durationSecondsTotal')
-                        ;
+                    ;
                 }
                 break;
+            case 'Bodyweight':
+                $form
+                    ->add('durationSecondsTotal', CustomTimeType::class, [
+                        'placeholder' => [
+                            'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                        ],
+                        'attr' => [
+                            'class'=>'form-inline'
+                        ]
+                    ])
+                    ->add('repetitionsTotal', IntegerType::class)
+                ;
+                break;    
             case 'Weight':
                 $form
                     ->add('repetitions', IntegerType::class)

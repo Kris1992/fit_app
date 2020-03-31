@@ -27,7 +27,7 @@ class BodyweightActivityFactorySpec extends ObjectBehavior
         $activityModel = new BodyweightActivityFormModel();
         $activityModel
             ->setType('Bodyweight')
-            ->setName('Pump')
+            ->setName('Push-ups')
             ->setEnergy(500)
             ->setRepetitionsAvgMin(40)
             ->setRepetitionsAvgMax(60)
@@ -37,7 +37,7 @@ class BodyweightActivityFactorySpec extends ObjectBehavior
         $activity = $this->create($activityModel);
         $activity->shouldBeAnInstanceOf(BodyweightActivity::class);
         $activity->getType()->shouldBe('Bodyweight');
-        $activity->getName()->shouldReturn('Pump');
+        $activity->getName()->shouldReturn('Push-ups');
         $activity->getEnergy()->shouldReturn(500);
         $activity->getRepetitionsAvgMin()->shouldReturn(40);
         $activity->getRepetitionsAvgMax()->shouldReturn(60);

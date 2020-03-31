@@ -9,8 +9,6 @@ use App\Entity\MovementActivity;
 use App\Entity\Workout;
 use App\Entity\User;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-
 
 class MovementWorkoutFactorySpec extends ObjectBehavior
 {
@@ -33,6 +31,7 @@ class MovementWorkoutFactorySpec extends ObjectBehavior
             ->setUser($user)
             ->setActivity($activity)
             ->setDurationSecondsTotal(3600)
+            ->setDistanceTotal(12.5)
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime())
             ;
@@ -43,6 +42,7 @@ class MovementWorkoutFactorySpec extends ObjectBehavior
         $workout->getActivity()->shouldBeAnInstanceOf(MovementActivity::class);
         $workout->getDurationSecondsTotal()->shouldReturn(3600);
         $workout->getBurnoutEnergyTotal()->shouldReturn(500);
+        $workout->getDistanceTotal()->shouldReturn(12.5);
         $workout->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
     }
 }

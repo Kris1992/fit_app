@@ -43,7 +43,6 @@ class MovementSet
      */
     private $burnoutEnergy;
 
-
     public function getId(): ?int
     {
         return $this->id;

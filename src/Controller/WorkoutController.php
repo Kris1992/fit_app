@@ -6,7 +6,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use App\Repository\WorkoutRepository;
 use App\Repository\AbstractActivityRepository;
 use App\Entity\Workout;
@@ -22,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\FormInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\ModelValidator\ModelValidatorChooser;
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 
@@ -33,7 +33,7 @@ class WorkoutController extends AbstractController
      */
     public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
-
+        //TO DO
     	$user = $this->getUser();
 
         /* TO Think about
@@ -200,7 +200,7 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add_average", name="workout_add_average", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
 
@@ -209,26 +209,38 @@ class WorkoutController extends AbstractController
             $workoutAverageFormModel = $formAverage->getData();
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());  
             
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
+            if($workoutAverageFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutAverageFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutAverageFormModel, $validationGroup);
                     
-            if ($isValid) {
-                $activity = $workoutAverageFormModel->getActivity();
-                $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                $workout = $workoutFactory->create($workoutAverageFormModel);
+                if ($isValid) {
+                    try {
+                        $activity = $workoutAverageFormModel->getActivity();
+                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                        $workout = $workoutFactory->create($workoutAverageFormModel);
 
-                $em->persist($workout);
-                $em->flush();
+                        $em->persist($workout);
+                        $em->flush();
 
-                $this->addFlash('success', 'Workout was added!! ');
-                return $this->redirectToRoute('workout_list');
-            } else {
-                $errors = $modelValidator->getErrors();
-                return $this->render('workout/add_average.html.twig', [
-                    'workoutForm' => $formAverage->createView(),
-                    'errors' => $errors,
-                ]);
+                        $this->addFlash('success', 'Workout was added!! ');
+                        return $this->redirectToRoute('workout_list');
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                        return $this->render('workout/add_average.html.twig', [
+                            'workoutForm' => $formAverage->createView(),
+                        ]);
+                    }
+
+                } else {
+                    $errors = $modelValidator->getErrors();
+                    return $this->render('workout/add_average.html.twig', [
+                        'workoutForm' => $formAverage->createView(),
+                        'errors' => $errors,
+                    ]);
+                }
             }
+            $this->addFlash('warning', 'Cannot create workout with this type of activity');
         }
 
         return $this->render('workout/add_average.html.twig', [
@@ -240,7 +252,7 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add_specific", name="workout_add_specific", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator)
+    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
             
@@ -250,29 +262,38 @@ class WorkoutController extends AbstractController
             
             $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
 
-            if (!$workoutSpecificModel) {
-                $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
-                return $this->redirectToRoute('workout_add_specific');
+            if ($workoutSpecificModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificModel->getType());
+                $isValid = $modelValidator->isValid($workoutSpecificModel, $validationGroup);
+
+                if ($isValid) {
+                    try {
+                        $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
+                        $workout = $workoutFactory->create($workoutSpecificModel);
+
+                        $em->persist($workout);
+                        $em->flush();
+
+                        $this->addFlash('success', 'Workout was added!! ');
+                        return $this->redirectToRoute('workout_list');
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                        return $this->render('workout/add_specific.html.twig', [
+                            'workoutSpecificDataForm' => $formSpecific->createView(),
+                        ]);
+                    }
+
+                } else {
+                    $errors = $modelValidator->getErrors();
+                    return $this->render('workout/add_specific.html.twig', [
+                        'workoutSpecificDataForm' => $formSpecific->createView(),
+                        'errors' => $errors,
+                    ]);
+                }
             }
 
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutSpecificModel, ['model']);
-            if ($isValid) {
-                $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
-                $workout = $workoutFactory->create($workoutSpecificModel);
-
-                $em->persist($workout);
-                $em->flush();
-
-                $this->addFlash('success', 'Workout was added!! ');
-                return $this->redirectToRoute('workout_list');
-            } else {
-                $errors = $modelValidator->getErrors();
-                return $this->render('workout/add_specific.html.twig', [
-                    'workoutSpecificDataForm' => $formSpecific->createView(),
-                    'errors' => $errors,
-                ]);
-            }
+        $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
         }
 
         return $this->render('workout/add_specific.html.twig', [
@@ -314,6 +335,7 @@ class WorkoutController extends AbstractController
      */
     public function add(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
     {
+        //TO DO
         $data = json_decode($request->getContent(), true);
 
         if($data === null) {
@@ -401,6 +423,7 @@ class WorkoutController extends AbstractController
      */
     public function edit(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
     {
+        //TO DO
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
         $data = json_decode($request->getContent(), true);
@@ -428,18 +451,20 @@ class WorkoutController extends AbstractController
         //Validation Model data
         $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
         if ($isValid) {
-            $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
-            $em->persist($workout);
-            $em->flush();
+            try {
+                $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
+                $em->persist($workout);
+                $em->flush();
 
-            $response = new Response(null, 201);
+                $response = new Response(null, 201);
 
-            $response->headers->set(
-                'Location',
-                $this->generateUrl('workout_get', ['id' => $workout->getId()])
-            );
+                $response->headers->set(
+                    'Location',
+                    $this->generateUrl('workout_get', ['id' => $workout->getId()])
+                );
 
-            return $response;
+                return $response;
+            } catch (\Exception $e) {}            
         }
 
         //We can't display unmapped errors in list so just empty response
