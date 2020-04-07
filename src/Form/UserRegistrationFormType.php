@@ -60,8 +60,7 @@ class UserRegistrationFormType extends AbstractType
             ;
 
 
-        if ($isEdit == false)
-        {
+        if ($isEdit == false) {
             $builder
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -69,9 +68,7 @@ class UserRegistrationFormType extends AbstractType
                 'first_options' => [ 'help' => 'Password should contain at least 2 numbers and 3 letters' ]
             ])
             ->add('agreeTerms', CheckboxType::class);
-        }
-        else
-        {
+        } else {
             $builder
                 ->add('id', HiddenType::class)
                 ->add('birthdate', BirthdayType::class, [
@@ -90,8 +87,7 @@ class UserRegistrationFormType extends AbstractType
                 ]);
         }
 
-        if($options['is_admin'])
-        {
+        if($options['is_admin']) {
             $builder
             ->add('role', ChoiceType::class, [
                 'choices'  => [

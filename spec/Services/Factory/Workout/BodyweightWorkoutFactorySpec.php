@@ -34,6 +34,7 @@ class BodyweightWorkoutFactorySpec extends ObjectBehavior
             ->setRepetitionsTotal(50)
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime())
+            ->setImageFilename('test.jpeg')
             ;
 
         $workout = $this->create($workoutModel);
@@ -44,5 +45,6 @@ class BodyweightWorkoutFactorySpec extends ObjectBehavior
         $workout->getRepetitionsTotal()->shouldReturn(50);
         $workout->getBurnoutEnergyTotal()->shouldReturn(500);
         $workout->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
+        $workout->getImageFilename()->shouldReturn('test.jpeg');
     }
 }

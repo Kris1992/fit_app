@@ -20,6 +20,7 @@ class MovementWorkoutModelAverageFactory implements WorkoutModelFactoryInterface
             ->setActivity($workout->getActivity())
             ->setDurationSecondsTotal($workout->getDurationSecondsTotal())
             ->setStartAt($workout->getStartAt())
+            ->setImageFilename($workout->getImageFilename())
             ;
 
         return $workoutModel;

@@ -35,7 +35,7 @@ class UserUpdater implements UserUpdaterInterface
             ;
 
             if($uploadedImage) {
-                $newFilename = $this->imagesManager->uploadUserImage($uploadedImage, $user->getImageFilename());
+                $newFilename = $this->imagesManager->uploadImage($uploadedImage, $user->getImageFilename(), $user->getLogin());
                 $user->setImageFilename($newFilename);
             }
         

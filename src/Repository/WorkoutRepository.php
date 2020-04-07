@@ -6,7 +6,6 @@ use App\Entity\Workout;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-
 use Doctrine\ORM\Query\Expr\Func;
 
 //native SQL
@@ -95,8 +94,6 @@ class WorkoutRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleResult();
     }
-
-     
     
     /**
      * countEnergyPerDayByUserAndDateArray Gives sum of energy per day in specific time 
@@ -108,25 +105,23 @@ class WorkoutRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('w')
             ->select( "SUM(w.burnoutEnergyTotal) AS burnoutEnergy, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
+            ->andWhere('w.user = :user')
+            //->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
+            ->andWhere('w.startAt >= :startVal AND w.startAt <= :stopVal')
+            ->setParameters(array('user' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
             ->groupby('startDate')
-            ->andWhere('w.user = :val')
-            ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
-            ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
             ->orderBy( 'startDate', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
 
-
-//
      /**
     * @return Array[] Returns an array 
     */
     
     public function findByUserAndDateArray($user, $timeline)
     {
-
         return $this->createQueryBuilder('w')
             ->select( "w.id, DATE_FORMAT(w.startAt, '%Y-%m-%d') AS startDate")
             ->andWhere('w.user = :val')

@@ -4,10 +4,24 @@ namespace App\Services\ModelExtender;
 
 use App\Entity\User;
 use App\Form\Model\Workout\AbstractWorkoutFormModel;
+use Symfony\Component\HttpFoundation\File\File;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 class WorkoutAverageExtender implements WorkoutExtenderInterface {
 
-    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user): ?AbstractWorkoutFormModel
+    private $workoutsImagesManager;
+
+    /**
+     * WorkoutAverageExtender Constructor
+     * 
+     * @param ImagesManagerInterface $workoutsImagesManager
+     */
+    public function __construct(ImagesManagerInterface $workoutsImagesManager)  
+    {
+        $this->workoutsImagesManager = $workoutsImagesManager;
+    }
+
+    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel
     {
 
         $activity = $workoutModel->getActivity();
@@ -20,14 +34,25 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
 
         switch ($activity->getType()) {
             case 'Movement':
-                return $this->fillMovementProperties($workoutModel);
+                $workoutModel = $this->fillMovementProperties($workoutModel);
+                break;
             case 'MovementSet':
-                return $this->fillMovementSetProperties($workoutModel);
+                $workoutModel = $this->fillMovementSetProperties($workoutModel);
+                break;
             case 'Bodyweight':
-                return $this->fillBodyweightProperties($workoutModel);
+                $workoutModel = $this->fillBodyweightProperties($workoutModel);
+                break;
+            default:
+                return null;
         }
 
-        return null;
+        if ($image) {
+            $subdirectory = $workoutModel->getUser()->getLogin();
+            $newFilename = $this->workoutsImagesManager->uploadImage($image, $workoutModel->getImageFilename(), $subdirectory);
+            $workoutModel->setImageFilename($newFilename);
+        }
+
+        return $workoutModel;
     }
 
     private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel

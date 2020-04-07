@@ -1,166 +1,66 @@
 <?php
 
-namespace App\Services\ImagesManager;
+namespace App\Services\ImagesResizer;
 
-use League\Flysystem\FilesystemInterface;
-use League\Flysystem\FileNotFoundException;
+use App\Services\FoldersManager\FoldersManagerInterface;
+
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
 use Psr\Log\LoggerInterface;
 use Gedmo\Sluggable\Util\Urlizer;
-use Symfony\Component\Asset\Context\RequestStackContext;
 
-
-class ImagesManager implements ImagesManagerInterface
+class ImagesResizer implements ImagesResizerInterface
 {
-    const USERS_IMAGES = 'users_images';
     const THUMB_IMAGES = 'thumb';
     const TEMP_GIF = 'gif_temp';
     const JPEG_QUALITY = 75;
     const PNG_QUALITY = 0;
 
-    private $publicFilesystem;
     private $logger;
-    private $publicAssetBaseUrl;
-    private $requestStackContext;
+    private $foldersManager;
     private $uploadsDirectory;
 
     /**
-     * ImagesManager Constructor
+     * ImagesResizer Constructor
      *
-     *@param FilesystemInterface $publicUploadsFilesystem
      *@param LoggerInterface $logger
-     *@param string $uploadedAssetsBaseUrl
-     *@param RequestStackContext $requestStackContext
+     *@param FoldersManagerInterface $foldersManager
+     *@param string $uploadsDirectory
      *
      */
-    public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger, string $uploadedAssetsBaseUrl, RequestStackContext $requestStackContext, string $uploadsDirectory)  
+    public function __construct(LoggerInterface $logger, FoldersManagerInterface $foldersManager, string $uploadsDirectory)  
     {
-        $this->publicFilesystem = $publicUploadsFilesystem;
         $this->logger = $logger;
-        $this->requestStackContext = $requestStackContext;
-        $this->publicAssetBaseUrl = $uploadedAssetsBaseUrl;
         $this->uploadsDirectory = $uploadsDirectory;
+        $this->foldersManager = $foldersManager;
     }
 
-    /**
-     * uploadUserImage Upload user image and compress it to smaller one thumb image if it is too large
-     * @param  File    $file             Uploaded file
-     * @param  string  $existingFilename Filename of image which was uploaded before[optional]
-     * @param  integer $newWidth         Width of compressed image [optional]
-     * @return string                    New filename
-     */
-    public function uploadUserImage(File $file, ?string $existingFilename, $newWidth = 100): string
-    {
-        $newFilename = $this->uploadFile($file, self::USERS_IMAGES, $newWidth);
-
-        if ($existingFilename) {
-           $result = $this->deleteOldImage($existingFilename);
-           if(!$result) {
-                $this->logger->alert(sprintf('User upload new file but deleting old one fails. Check file: "%s" exist!!', $existingFilename));
-           }
-        }
-
-        return $newFilename;
-    }
-
-    /**
-     * deleteUserImage Delete user images (original and compressed) from server 
-     * @param  string $existingFilename Filename of image to delete
-     * @return bool                   
-     */
-    public function deleteUserImage(string $existingFilename): bool
-    {
-        if ($existingFilename) {
-           return $this->deleteOldImage($existingFilename);
-        }
-        return false;
-    }
-
-    /**
-     * uploadFile Function which take care about upload image process
-     * @param  File   $file      Uploaded file
-     * @param  string $directory Destination directory
-     * @param  int    $newWidth  Width of compress image
-     * @return string            
-     */
-    private function uploadFile(File $file, string $directory, int $newWidth): string
-    {
-        if ($file instanceof UploadedFile) {
-            $originalFilename = $file->getClientOriginalName();
-        } else {
-            $originalFilename = $file->getFilename();
-        }
-
-        $newFilenameExtFree = $this->clearFilename($originalFilename);
-
-        $extension = $file->guessExtension();
-        $newFilename = $newFilenameExtFree.'.'.$extension;
-
-        $stream = fopen($file->getPathname(), 'r');
-        $result = $this->publicFilesystem->writeStream(
-            $directory.'/'.$newFilename,
-            $stream
-        );
-
-        if ($result === false) {
-            throw new \Exception(sprintf('Could not write uploaded file "%s"', $newFilename));
-        }
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
-
-        $this->compressImage($newFilenameExtFree, $extension, $newWidth);
-
-        return $newFilename;
-    }
-
-    /**
-     * deleteOldImage  Delete images (original and compressed) from server
-     * @param  string $existingFilename Filename of image
-     * @return bool
-     */
-    private function deleteOldImage(string $existingFilename): bool
-    {
-       try {
-            $result = $this->publicFilesystem->delete(self::USERS_IMAGES.'/'.$existingFilename);
-            $resultThumb = $this->publicFilesystem->delete(self::USERS_IMAGES.'/'.self::THUMB_IMAGES.'/'.$existingFilename);
-            if ($result === false || $resultThumb === false) {
-                throw new \Exception(sprintf('Could not delete old uploaded file "%s"', $existingFilename));
-                
-                return false;
-            }
-        } catch (FileNotFoundException $e) {
-            $this->logger->alert(sprintf('Old uploaded file "%s" was missing when trying to delete', $existingFilename));
-            
-            return false;
-        }
-
-        return true;   
-    }
 
     /**
      * compressImage Compress Image to smaller one if it is too large
-     * @param  string $filename  Filename without extension
+     * @param  string $source  Absolute path to source file
      * @param  string $extension Extension of file
      * @param  int $newWidth  New width of image
      * @return void           
      */
-    private function compressImage(string $filename, string $extension, int $newWidth): void
+    public function compressImage(string $source, string $extension, int $newWidth): void
     {
-    
+        
         if(!$this->islibraryLoaded()) {
             $this->logger->alert('Could not load GD library');
             throw new \Exception('Server library not found');
         }
 
-        $filePath = $this->uploadsDirectory.'/'.self::USERS_IMAGES.'/';
-        $source = $filePath.$filename.'.'.$extension;
-        $destinationFolder = $filePath.self::THUMB_IMAGES;
+        $pathInfo = pathinfo($source);
+        $filePath = $pathInfo['dirname'];
+        $basenameArray = explode('.', $pathInfo['basename']);
+        $filenameExtFree = $basenameArray[0];
+        
+        $destinationFolder = $filePath.'/'.self::THUMB_IMAGES;
+        
+        $this->foldersManager->createFolder($destinationFolder);
 
-        $this->createFolder($destinationFolder);
-
-        $destination = $destinationFolder.'/'.$filename.'.'.$extension;
+        $destination = $destinationFolder.'/'.$filenameExtFree.'.'.$extension;
 
         try{
             //used only GD library
@@ -200,15 +100,15 @@ class ImagesManager implements ImagesManagerInterface
                 fwrite($fpThumb, $gifEncoder->GetAnimation());
                 fclose($fpThumb);
 
-                $this->clearFolder($tempPath);
+                $this->foldersManager->clearFolder($tempPath);
             } elseif($extension === 'png') {
                 $image = imagecreatefrompng($source);
                 $newImage = $this->resizeImage($source, $image, $newWidth);
                 imagepng($newImage, $destination, self::PNG_QUALITY);
                 $this->flushMemory($image, $newImage);
             }
-        } catch(Exception $e_img) {
-            throw new Exception("Error: ".$e_img);
+        } catch(\Exception $e_img) {
+            throw new \Exception("Error: ".$e_img);
         }    
    }
 
@@ -271,18 +171,6 @@ class ImagesManager implements ImagesManagerInterface
    {
         imagedestroy($newImage);
         imagedestroy($img);
-   }
-
-   /**
-    * clearFolder Remove all files in folder
-    * @param  string $dirPath Path to folder
-    * @return void
-    */
-   private function clearFolder(string $dirPath): void
-   {
-        foreach(glob($dirpath.'*.*') as $file){
-            unlink($file);
-        }
    }
    
    /**
@@ -354,25 +242,6 @@ class ImagesManager implements ImagesManagerInterface
         }
 
         return true;
-    }
-
-    public function getPublicPath(string $path): string
-    {
-        return $this->requestStackContext
-            ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
-
-    }
-
-    /**
-     * createFolder Check required folder exsists (if not create it)
-     * @param  string $folderPath Path to required folder
-     * @return void             
-     */
-    private function createFolder(string $folderPath): void
-    {
-        if(!is_dir($folderPath)) {
-         mkdir($folderPath);
-        }
     }
 
 }

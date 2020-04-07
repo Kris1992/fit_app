@@ -9,6 +9,7 @@ use App\Entity\AbstractActivity;
 use App\Entity\MovementActivity;
 use App\Entity\BodyweightActivity;
 use App\Repository\AbstractActivityRepository;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -20,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints\Image;
 
 class WorkoutAverageDataFormType extends AbstractType
 {
@@ -35,6 +37,18 @@ class WorkoutAverageDataFormType extends AbstractType
 
         $workout = $options['data'] ?? null;
         $isEdit = $workout && $workout->getId();
+
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M',
+                'mimeTypes' => [
+                    'image/jpeg',
+                    'image/png',
+                    'image/gif'
+                ]
+
+            ])
+        ];
 
         $builder
             ->add('activity', EntityType::class, [ 
@@ -64,6 +78,11 @@ class WorkoutAverageDataFormType extends AbstractType
                 'attr' => ['class' => 'js-datepicker'],
                 'model_timezone' => 'UTC',
                 'view_timezone' => 'UTC',
+            ])
+            ->add('imageFile', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => $imageConstraints
             ])
         ;
 
@@ -96,11 +115,17 @@ class WorkoutAverageDataFormType extends AbstractType
             }
         );
 
+        if ($isEdit) {
+            $builder
+                ->add('id', HiddenType::class)
+                ;
+        }
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [
                     'disabled' => $isEdit
-                ]);
+                ])
+                ;
         }
        
     }

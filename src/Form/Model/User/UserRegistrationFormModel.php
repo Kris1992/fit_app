@@ -5,7 +5,7 @@ namespace App\Form\Model\User;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueUser;
 use App\Validator\ContainsAlphanumeric;
-use App\Services\ImagesManager\ImagesManager;
+use App\Services\ImagesManager\UsersImagesManager;
 
 /**
 * @UniqueUser(
@@ -23,6 +23,8 @@ class UserRegistrationFormModel
      * @Assert\Email()
      */
     private $email;
+
+    private $login;
 
      /**
      * @Assert\NotBlank(message="Please enter your first name!")
@@ -81,7 +83,7 @@ class UserRegistrationFormModel
 
      /**
      * @Assert\Range(
-     *      min = 120,
+     *      min = 100,
      *      max = 220,
      *      minMessage = "You must be at least {{ limit }} cm tall to enter",
      *      maxMessage = "You cannot be taller than {{ limit }} cm to enter"
@@ -112,6 +114,18 @@ class UserRegistrationFormModel
         $this->email = $email;
 
         return $this;
+    }
+
+    public function setLogin(string $login): self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getLogin(): string
+    {
+        return $this->login;
     }
     
     public function getFirstName(): ?string
@@ -237,12 +251,12 @@ class UserRegistrationFormModel
 
     public function getImagePath(): ?string
     {
-        return ImagesManager::USERS_IMAGES.'/'.$this->getImageFilename();
+        return UsersImagesManager::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath(): ?string
     {
-        return ImagesManager::USERS_IMAGES.'/'.ImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+        return UsersImagesManager::USERS_IMAGES.'/'.$this->getLogin().'/'.UsersImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

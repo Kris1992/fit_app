@@ -1,6 +1,7 @@
 //Now its not used
 import { getStatusError } from './_apiHelper.js';
 
+'use strict';
 
 const searchButton = document.getElementById('js-search-button');
 

@@ -54,6 +54,7 @@ class MovementSetWorkoutModelSpecificFactorySpec extends ObjectBehavior
             ->setActivity($activity)
             ->setStartAt(new \DateTime())
             ->addMovementSet($movementSet)
+            ->setImageFilename('test.jpeg')
             ;
         
         $workoutModel = $this->create($workout);
@@ -62,6 +63,7 @@ class MovementSetWorkoutModelSpecificFactorySpec extends ObjectBehavior
         $workoutModel->getActivityName()->shouldReturn('Running circuits');
         $workoutModel->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
         $workoutModel->getType()->shouldReturn('MovementSet');
+        $workoutModel->getImageFilename()->shouldReturn('test.jpeg');
         
         $sets = $workoutModel->getMovementSets();
         $sets[0]->getWorkout()->shouldBeAnInstanceOf(WorkoutSpecificFormModel::class);

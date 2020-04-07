@@ -17,6 +17,7 @@ class BodyweightWorkoutFactory implements WorkoutFactoryInterface {
             ->setRepetitionsTotal($workoutModel->getRepetitionsTotal())
             ->setBurnoutEnergyTotal($workoutModel->getBurnoutEnergyTotal())
             ->setStartAt($workoutModel->getStartAt())
+            ->setImageFilename($workoutModel->getImageFilename())
             ;
 
         return $workout;

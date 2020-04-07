@@ -22,6 +22,7 @@ class MovementWorkoutModelSpecificFactory implements WorkoutModelFactoryInterfac
             ->setStartAt($workout->getStartAt())
             ->setType($workout->getActivity()->getType())
             ->setDistanceTotal($workout->getDistanceTotal())
+            ->setImageFilename($workout->getImageFilename())
             ;
 
         return $workoutModel;

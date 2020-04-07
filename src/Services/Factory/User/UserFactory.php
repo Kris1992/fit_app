@@ -35,9 +35,11 @@ class UserFactory implements UserFactoryInterface {
         $user
             ->setEmail($userModel->getEmail())
             ->setFirstName($userModel->getFirstName())
+            ->saveLogin()
             ->setSecondName($userModel->getSecondName())
             ->setGender($userModel->getGender())
             ->setRoles([$role])
+            ->saveLogin()
             ;
 
         $user->setPassword($this->passwordEncoder->encodePassword(
@@ -46,9 +48,10 @@ class UserFactory implements UserFactoryInterface {
         ));
 
         if ($uploadedImage) {
-            $newFilename = $this->imagesManager->uploadUserImage($uploadedImage, null);
+            $newFilename = $this->imagesManager->uploadImage($uploadedImage, null, $user->getLogin());
             $user->setImageFilename($newFilename);
         }
+
 
         if (true === $userModel->getAgreeTerms()) {
             $user->agreeToTerms();

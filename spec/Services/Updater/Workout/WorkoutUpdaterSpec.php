@@ -41,6 +41,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime('2011-01-01'))
             ->setDistanceTotal(12.5)
+            ->setImageFilename('test.jpeg')
             ;
 
         $workout = new Workout();
@@ -51,6 +52,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(1000)
             ->setStartAt(new \DateTime('2015-05-05'))
             ->setDistanceTotal(25)
+            ->setImageFilename('oldtest.jpeg')
             ;
 
         $workoutUpdated = $this->update($workoutModel, $workout);
@@ -61,6 +63,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
         $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
         $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
         $workoutUpdated->getDistanceTotal()->shouldReturn(12.5);
+        $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
     }
 
     function it_should_be_able_to_change_movement_set_workout_to_movement_workout()
@@ -79,6 +82,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime('2011-01-01'))
             ->setDistanceTotal(12.5)
+            ->setImageFilename('test.jpeg')
             ;
 
         $movementSet = new MovementSet();
@@ -91,6 +95,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setStartAt(new \DateTime('2015-05-05'))
             ->setDistanceTotal(25)
             ->addMovementSet($movementSet)
+            ->setImageFilename('oldtest.jpeg')
             ;
 
         $workoutUpdated = $this->update($workoutModel, $workout);
@@ -101,6 +106,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
         $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
         $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
         $workoutUpdated->getDistanceTotal()->shouldReturn(12.5);
+        $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
         $sets = $workoutUpdated->getMovementSets();
         $sets[0]->shouldReturn(null);
     }
@@ -140,6 +146,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setStartAt(new \DateTime('2011-01-01'))
             ->setDistanceTotal(12.5)
             ->addMovementSet($movementSetModel)
+            ->setImageFilename('test.jpeg')
             ;
 
 
@@ -152,6 +159,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(1000)
             ->setStartAt(new \DateTime('2015-05-05'))
             ->setDistanceTotal(25)
+            ->setImageFilename('oldtest.jpeg')
             ;
 
         $workoutUpdated = $this->update($workoutModel, $workout);
@@ -162,6 +170,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
         $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
         $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
         $workoutUpdated->getDistanceTotal()->shouldReturn(12.5);
+        $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
         $sets = $workoutUpdated->getMovementSets();
         $sets[0]->getDurationSeconds()->shouldReturn(3600);
         $sets[0]->getBurnoutEnergy()->shouldReturn(500);
@@ -184,6 +193,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime('2011-01-01'))
             ->setDistanceTotal(12.5)
+            ->setImageFilename('test.jpeg')
             ;
 
         $movementSet = new MovementSet();
@@ -196,6 +206,7 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->setStartAt(new \DateTime('2015-05-05'))
             ->setDistanceTotal(25)
             ->addMovementSet($movementSet)
+            ->setImageFilename('oldtest.jpeg')
             ;
 
         $this->shouldThrow('Exception')->during('update', [$workoutModel, $workout]);

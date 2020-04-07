@@ -3,6 +3,7 @@ namespace App\Form\Model\Workout;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
+use App\Services\ImagesManager\WorkoutsImagesManager;
 use App\Entity\User;
 use App\Entity\AbstractActivity;
 
@@ -32,26 +33,29 @@ abstract class AbstractWorkoutFormModel
 
     /**
      * @Assert\NotBlank(message="Please enter date of start", groups={"average_sets", 
-     * "specific_sets", "Default"})
+     * "specific_sets", "Default", "route_map"})
      */
     protected $startAt;
     
     /**
      * @Assert\NotBlank(message="Please enter time", groups={"model", "bodyweight_model",
      *  "Default"})
-     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default"})
+     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default", "route_map"})
      */
     protected $durationSecondsTotal;
 
+    protected $imageFilename;
 
     //helpers
     /**
-     * @Assert\NotBlank(message="Please enter activity name", groups={"specific_sets"})
-     * @Assert\NotNull(message="Please enter activity name", groups={"specific_sets"})
+     * @Assert\NotBlank(message="Please enter activity name", groups={"specific_sets", "route_map"})
+     * @Assert\NotNull(message="Please enter activity name", groups={"specific_sets", "route_map"})
      */
     protected $activityName;
 
     protected $type;
+
+
 
     public function setId(?int $id)
     {
@@ -138,6 +142,18 @@ abstract class AbstractWorkoutFormModel
         return $this;
     }
 
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
     public function setActivityName(string $activityName): self
     {
         $this->activityName = $activityName;
@@ -161,5 +177,16 @@ abstract class AbstractWorkoutFormModel
     {
         return $this->type;
     }
+
+    public function getImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+    }
+
 
 }

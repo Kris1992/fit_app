@@ -6,6 +6,7 @@ use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Services\ModelExtender\WorkoutExtenderInterface;
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
+use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Repository\MovementActivityRepository;
 use App\Repository\BodyweightActivityRepository;
 use App\Repository\AbstractActivityRepository;
@@ -19,10 +20,11 @@ use Prophecy\Argument;
 
 class WorkoutSpecificExtenderSpec extends ObjectBehavior
 {
-    function let(MovementActivityRepository $movementRepository, AbstractActivityRepository $activityRepository, BodyweightActivityRepository $bodyweightRepository, LoggerInterface $logger)
+    function let(MovementActivityRepository $movementRepository, AbstractActivityRepository $activityRepository, BodyweightActivityRepository $bodyweightRepository, ImagesManagerInterface $workoutsImagesManager, LoggerInterface $logger)
     {
-        $this->beConstructedWith($movementRepository, $activityRepository, $bodyweightRepository, $logger);
+        $this->beConstructedWith($movementRepository, $activityRepository, $bodyweightRepository, $workoutsImagesManager, $logger);
     }
+    
     function it_is_initializable()
     {
         $this->shouldHaveType(WorkoutSpecificExtender::class);
@@ -41,7 +43,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             ->setType('any')
             ;
 
-        $this->fillWorkoutModel($workoutModel, null)->shouldBe(null);
+        $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
         $logger->alert(Argument::type('string'))->shouldBeCalledTimes(1);
     }
 
@@ -71,7 +73,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             Argument::type('int')
         )->willReturn($activity);
 
-        $workout = $this->fillWorkoutModel($workoutModel, $user);
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
         $workout->shouldBeAnInstanceOf(WorkoutSpecificFormModel::class);
         $workout->getUser()->shouldBeAnInstanceOf(User::class);
         $workout->getActivity()->shouldBeAnInstanceOf(MovementActivity::class);
@@ -94,7 +96,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             Argument::type('int')
         )->willReturn(null);
 
-        $this->fillWorkoutModel($workoutModel, null)->shouldBe(null);
+        $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
         $logger->alert(Argument::type('string'))->shouldBeCalledTimes(1);
     }
 
@@ -123,7 +125,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             Argument::type('int')
         )->willReturn($activity);
 
-        $workout = $this->fillWorkoutModel($workoutModel, $user);
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
         $workout->shouldBeAnInstanceOf(WorkoutSpecificFormModel::class);
         $workout->getUser()->shouldBeAnInstanceOf(User::class);
         $workout->getActivity()->shouldBeAnInstanceOf(BodyweightActivity::class);
@@ -146,7 +148,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             Argument::type('int')
         )->willReturn(null);
 
-        $this->fillWorkoutModel($workoutModel, null)->shouldBe(null);
+        $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
         $logger->alert(Argument::type('string'))->shouldBeCalledTimes(1);
     }
 
@@ -193,7 +195,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             'name' => 'Running circuits'
         ])->willReturn($movementSetActivity);
 
-        $workout = $this->fillWorkoutModel($workoutModel, $user);
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
         $workout->shouldBeAnInstanceOf(WorkoutSpecificFormModel::class);
         $workout->getUser()->shouldBeAnInstanceOf(User::class);
         $workout->getActivity()->shouldBeAnInstanceOf(MovementSetActivity::class);
@@ -223,7 +225,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
             Argument::type('int')
         )->shouldBeCalledTimes(1)->willReturn(null);
 
-        $this->fillWorkoutModel($workoutModel, null)->shouldBe(null);
+        $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
         $logger->alert(Argument::type('string'))->shouldBeCalledTimes(1);
     }
 }

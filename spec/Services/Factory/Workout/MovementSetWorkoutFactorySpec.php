@@ -50,6 +50,7 @@ class MovementSetWorkoutFactorySpec extends ObjectBehavior
             ->setBurnoutEnergyTotal(500)
             ->setStartAt(new \DateTime())
             ->addMovementSet($movementSetModel)
+            ->setImageFilename('test.jpeg')
             ;
 
         $workout = $this->create($workoutModel);
@@ -60,6 +61,7 @@ class MovementSetWorkoutFactorySpec extends ObjectBehavior
         $workout->getDistanceTotal()->shouldReturn(10.0);
         $workout->getBurnoutEnergyTotal()->shouldReturn(500);
         $workout->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
+        $workout->getImageFilename()->shouldReturn('test.jpeg');
         
         $sets = $workout->getMovementSets();
         $sets[0]->getWorkout()->shouldBeAnInstanceOf(Workout::class);

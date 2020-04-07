@@ -2,10 +2,8 @@
 
 namespace App\DataFixtures;
 
-
 use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
-
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends BaseFixture
@@ -28,6 +26,7 @@ class UserFixtures extends BaseFixture
                 ->setEmail(sprintf('user%d@fit.com', $i)) 
                 ->setFirstName($this->faker->firstName)
                 ->setSecondName($this->faker->lastName)
+                ->saveLogin()
                 ->setRoles(['ROLE_USER'])
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
@@ -53,6 +52,7 @@ class UserFixtures extends BaseFixture
                 ->setFirstName($this->faker->firstName)
                 ->setSecondName($this->faker->lastName)
                 ->setRoles(['ROLE_ADMIN'])
+                ->saveLogin()
                 ->setPassword($this->passwordEncoder->encodePassword(
                     $user,
                     'admin01'

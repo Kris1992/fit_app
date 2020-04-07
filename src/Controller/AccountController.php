@@ -23,8 +23,6 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
 use App\Form\UserRegistrationFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
-use App\Services\ImagesManager\ImagesManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
@@ -192,10 +190,10 @@ class AccountController extends AbstractController
 
         $userId = $user->getId();
 
-        if($userId == $data['userId']) {
+        if($userId == $data['id']) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
-                $messageBus->dispatch(new DeleteUserImage($userId));
+                $messageBus->dispatch(new DeleteUserImage($userId, null, null));
                 return new JsonResponse(Response::HTTP_OK);
             }
         }

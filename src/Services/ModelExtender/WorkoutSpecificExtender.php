@@ -7,6 +7,8 @@ use App\Entity\AbstractActivity;
 use App\Form\Model\Workout\AbstractWorkoutFormModel;
 use App\Repository\MovementActivityRepository;
 use App\Repository\AbstractActivityRepository;
+use Symfony\Component\HttpFoundation\File\File;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 use App\Repository\BodyweightActivityRepository;
 use Psr\Log\LoggerInterface;
@@ -16,22 +18,33 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
     private $movementRepository;
     private $activityRepository;
     private $bodyweightRepository;
+    private $workoutsImagesManager;
     private $logger;
 
+    /**
+     * WorkoutSpecificExtender Constructor
+     * @param MovementActivityRepository   $movementRepository   
+     * @param AbstractActivityRepository   $activityRepository   
+     * @param BodyweightActivityRepository $bodyweightRepository
+     * @param ImagesManagerInterface       $workoutsImagesManager 
+     * @param LoggerInterface              $logger               
+     */
     public function __construct(
         MovementActivityRepository $movementRepository, 
         AbstractActivityRepository $activityRepository,
         BodyweightActivityRepository $bodyweightRepository,
+        ImagesManagerInterface $workoutsImagesManager,
         LoggerInterface $logger
     )
     {
         $this->movementRepository = $movementRepository;
         $this->activityRepository = $activityRepository;
         $this->bodyweightRepository = $bodyweightRepository;
+        $this->workoutsImagesManager = $workoutsImagesManager;
         $this->logger = $logger;
     } 
 
-    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user): ?AbstractWorkoutFormModel
+    public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel
     {
         if ($user) {
             $workoutModel                    
@@ -40,16 +53,26 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
 
         switch ($workoutModel->getType()) {
             case 'Movement':
-                return $this->fillMovementProperties($workoutModel);
+                $workoutModel = $this->fillMovementProperties($workoutModel);
+                break;
             case 'MovementSet':
-                return $this->fillMovementSetProperties($workoutModel);
+                $workoutModel = $this->fillMovementSetProperties($workoutModel);
+                break;
             case 'Bodyweight':
-                return $this->fillBodyweightProperties($workoutModel);
+                $workoutModel = $this->fillBodyweightProperties($workoutModel);
+                break;
+            default:
+                $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity type name: %s!!', $workoutModel->getType()));
+                return null;
         }
 
-        $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity type name: %s!!', $workoutModel->getType()));
+        if ($image) {
+            $subdirectory = $workoutModel->getUser()->getLogin();
+            $newFilename = $this->workoutsImagesManager->uploadImage($image, $workoutModel->getImageFilename(), $subdirectory);
+            $workoutModel->setImageFilename($newFilename);
+        }
 
-        return null;
+        return $workoutModel;
     }
 
     private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): ?AbstractWorkoutFormModel

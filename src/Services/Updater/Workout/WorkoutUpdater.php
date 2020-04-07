@@ -40,6 +40,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
             ->setStartAt($dataModel->getStartAt())
             ->setDurationSecondsTotal($dataModel->getDurationSecondsTotal())
             ->setDistanceTotal($dataModel->getDistanceTotal())
+            ->setImageFilename($dataModel->getImageFilename())
             ;
 
         return $workout;
@@ -57,6 +58,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
             ->setStartAt($dataModel->getStartAt())
             ->setDurationSecondsTotal($dataModel->getDurationSecondsTotal())
             ->setRepetitionsTotal($dataModel->getRepetitionsTotal())
+            ->setImageFilename($dataModel->getImageFilename())
             ;
 
         return $workout;
@@ -114,6 +116,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
             ->setStartAt($dataModel->getStartAt())
             ->setDurationSecondsTotal($dataModel->getDurationSecondsTotal())
             ->setDistanceTotal($dataModel->getDistanceTotal())
+            ->setImageFilename($dataModel->getImageFilename())
             ;
         
         return $workout;

@@ -23,6 +23,7 @@ class MovementSetWorkoutModelSpecificFactory implements WorkoutModelFactoryInter
             //->setDurationSecondsTotal($workout->getDurationSecondsTotal())
             ->setStartAt($workout->getStartAt())
             ->setType($workout->getActivity()->getType())
+            ->setImageFilename($workout->getImageFilename())
             ;
 
         $movementSetCollection = $workout->getMovementSets();

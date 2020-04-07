@@ -52,3 +52,12 @@ services:
         resource: '../src/MessageHandler/Query'
         autoconfigure: false
         tags: [{ name: messenger.message_handler, bus: query.bus }]
+
+
+    App\Services\ImagesManager\UsersImagesManager: ~
+    App\Services\ImagesManager\WorkoutsImagesManager: ~
+    
+    App\Services\ImagesManager\ImagesManagerInterface $workoutsImagesManager: '@App\Services\ImagesManager\WorkoutsImagesManager'
+
+    #DEFAULT
+    App\Services\ImagesManager\ImagesManagerInterface: '@App\Services\ImagesManager\UsersImagesManager'

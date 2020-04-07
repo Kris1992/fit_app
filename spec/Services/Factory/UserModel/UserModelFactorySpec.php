@@ -28,6 +28,7 @@ class UserModelFactorySpec extends ObjectBehavior
             ->setEmail('exampleuser@fit.com')
             ->setFirstName('Adam')
             ->setSecondName('Kowalski')
+            ->saveLogin()
             ->setGender('Male')
             ->setRoles(['ROLE_USER'])
             ->setBirthdate(new \DateTime('2000-01-01'))
@@ -47,6 +48,7 @@ class UserModelFactorySpec extends ObjectBehavior
         $userModel->getWeight()->shouldReturn(80);
         $userModel->getHeight()->shouldReturn(150);
         $userModel->getImageFilename()->shouldReturn('fakename.png');
+        $userModel->getLogin()->shouldBeString();
     }
 }
 

@@ -18,12 +18,14 @@ use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Services\ModelExtender\WorkoutAverageExtender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Form\FormInterface;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ModelValidator\ModelValidatorChooser;
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
+
+use Symfony\Component\Form\FormInterface;
 
 class WorkoutController extends AbstractController
 {
@@ -119,6 +121,7 @@ class WorkoutController extends AbstractController
             throw new BadRequestHttpException('Invalid Json');    
         }
 
+        $timeline['stopDate'] .= ' 23:59:59';
         $user = $this->getUser();
         $workouts = $workoutRepository->findByUserAndDateArray($user, $timeline);
        // $workouts = $workoutRepository->findByUserAndDateArrayNative($user, $timeline);
@@ -148,6 +151,7 @@ class WorkoutController extends AbstractController
 
         $timeline['startDate'] = $days[0];
         $timeline['stopDate'] = end($days);
+        $timeline['stopDate'] .= ' 23:59:59';//To get all workouts during the last day
 
         /**
          * @var User $user
@@ -191,9 +195,7 @@ class WorkoutController extends AbstractController
     public function addPanel(Request $request)
     {
     
-        return $this->render('workout/addPanel.html.twig', [
-            
-        ]);
+        return $this->render('workout/addPanel.html.twig', []);
     }
 
     /**
@@ -207,7 +209,7 @@ class WorkoutController extends AbstractController
         $formAverage->handleRequest($request);           
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             $workoutAverageFormModel = $formAverage->getData();
-            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());  
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser(), $formAverage['imageFile']->getData());  
             
             if($workoutAverageFormModel) {
                 //Validation Model data
@@ -259,8 +261,7 @@ class WorkoutController extends AbstractController
         $formSpecific->handleRequest($request);
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
             $workoutSpecificModel = $formSpecific->getData();
-            
-            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
+            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser(), $formSpecific['imageFile']->getData());
 
             if ($workoutSpecificModel) {
                 //Validation Model data
@@ -298,21 +299,6 @@ class WorkoutController extends AbstractController
 
         return $this->render('workout/add_specific.html.twig', [
             'workoutSpecificDataForm' => $formSpecific->createView(),
-        ]);
-    }
-
-     /**
-     * @Route("/workout/add_drawed", name="workout_add_drawed", methods={"POST", "GET"})
-     * @IsGranted("ROLE_USER")
-     */
-    public function addDrawed(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator,string $map_api_key)
-    {
-
-
-        return $this->render('workout/add_drawed.html.twig', [
-            'map_api_key' => $map_api_key
-            //'workoutForm' => $formAverage->createView(),
-            //'workoutSpecificDataForm' => $formSpecific->createView(),
         ]);
     }
 

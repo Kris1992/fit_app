@@ -6,6 +6,7 @@ use App\Services\ModelExtender\WorkoutAverageExtender;
 use App\Services\ModelExtender\WorkoutExtenderInterface;
 use App\Form\Model\Workout\WorkoutAverageFormModel;
 use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
+use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Entity\MovementActivity;
 use App\Entity\BodyweightActivity;
 use App\Entity\MovementSetActivity;
@@ -14,6 +15,12 @@ use PhpSpec\ObjectBehavior;
 
 class WorkoutAverageExtenderSpec extends ObjectBehavior
 {
+
+    function let(ImagesManagerInterface $workoutsImagesManager)
+    {
+        $this->beConstructedWith($workoutsImagesManager);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(WorkoutAverageExtender::class);
@@ -35,7 +42,7 @@ class WorkoutAverageExtenderSpec extends ObjectBehavior
             ->setActivity($activity)
             ;
 
-        $this->fillWorkoutModel($workoutModel, null)->shouldBe(null);
+        $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
     }
 
     function it_is_able_to_extend_movement_workout_average_model_with_user()
@@ -55,7 +62,7 @@ class WorkoutAverageExtenderSpec extends ObjectBehavior
             ->setActivity($activity)
             ;
 
-        $workout = $this->fillWorkoutModel($workoutModel, $user);
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
         $workout->shouldBeAnInstanceOf(WorkoutAverageFormModel::class);
         $workout->getUser()->shouldBeAnInstanceOf(User::class);
         $workout->getActivity()->shouldBeAnInstanceOf(MovementActivity::class);
@@ -81,7 +88,7 @@ class WorkoutAverageExtenderSpec extends ObjectBehavior
             ->setActivity($activity)
             ;
 
-        $workout = $this->fillWorkoutModel($workoutModel, $user);
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
         $workout->shouldBeAnInstanceOf(WorkoutAverageFormModel::class);
         $workout->getUser()->shouldBeAnInstanceOf(User::class);
         $workout->getActivity()->shouldBeAnInstanceOf(BodyweightActivity::class);
@@ -117,7 +124,7 @@ class WorkoutAverageExtenderSpec extends ObjectBehavior
             ->addMovementSet($movementSetModel)
             ;
 
-        $workout = $this->fillWorkoutModel($workoutModel, null);
+        $workout = $this->fillWorkoutModel($workoutModel, null, null);
         $workout->shouldBeAnInstanceOf(WorkoutAverageFormModel::class);
         $workout->getUser()->shouldBe(null);
         $workout->getActivity()->shouldBeAnInstanceOf(MovementSetActivity::class);

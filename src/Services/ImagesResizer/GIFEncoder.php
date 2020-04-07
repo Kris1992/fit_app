@@ -1,5 +1,7 @@
 <?php
-namespace App\Services\ImagesManager;
+
+namespace App\Services\ImagesResizer;
+
 /*
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::

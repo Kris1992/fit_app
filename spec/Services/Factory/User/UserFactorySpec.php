@@ -51,6 +51,7 @@ class UserFactorySpec extends ObjectBehavior
         $user->getSecondName()->shouldReturn('Kowalski');
         $user->getGender()->shouldReturn('Male');
         $user->isAdmin()->shouldReturn(false);
+        $user->getLogin()->shouldBeString();
     }
 
     function it_should_be_able_to_create_admin($passwordEncoder)

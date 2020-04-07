@@ -16,6 +16,12 @@
                                 'name': 'workout_average_data_form'
                                 }
                             }) }}
+                                {% if workoutForm.id is defined %}
+                                    {{ form_row(workoutForm.id, {
+                                        'label' : 'ID: ',
+                                        attr: { class: 'form-id-js' }
+                                    }) }}
+                                {% endif %}
                                 {{ form_row(workoutForm.activity, {
                                     attr: { 
                                         'data-workout-sets-url': path('api_workout_sets_form'),
@@ -28,6 +34,41 @@
                                         'label' : 'User: '
                                     }) }}
                                 {% endif %}
+                                
+                                {{ form_row(workoutForm.imageFile, {
+                                    'label' : 'Workout image: ',
+                                    attr: {
+                                        'placeholder': 'Select workout image',
+                                    }
+                                }) }}
+
+                                {% if workoutForm.vars.data.imageFilename is defined and workoutForm.vars.data.imageFilename is not null %}
+                                    <div id="uploaded_image">
+                                        <p>Already uploaded:</p>
+                                        <div class="imageForm-container position-relative">
+                                            <img class="imageForm rounded" src="{{ uploaded_asset(workoutForm.vars.data.thumbImagePath) }}" alt="Workout image">
+                                            <div class="image-toolbar">
+                                                <a href="{{ uploaded_asset(workoutForm.vars.data.imagePath) }}" target="_blank">
+                                                    <span class="fa fa-search-plus position-absolute link-show"></span>
+                                                </a>
+                                                {% if is_granted('ROLE_ADMIN') %}
+                                                    <a 
+                                                        href="{{ path('api_admin_delete_workout_image', 
+                                                        { id: workoutForm.vars.data.id }) }}"
+                                                        id="delete-image"
+                                                    >
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a> 
+                                                {% else %}
+                                                    <a href="#" id="delete-image">
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>      
+                                {% endif %}
+
                                 {{ form_row(workoutForm.startAt, {
                                     'label' : 'Date: '
                                 }) }}

@@ -4,6 +4,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\WorkoutRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -20,6 +21,7 @@ use App\Services\ModelValidator\ModelValidatorChooser;
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -62,7 +64,7 @@ class AdminWorkoutController extends AbstractController
         
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             $workoutAverageFormModel = $formAverage->getData();
-            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null);
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null, $formAverage['imageFile']->getData());
 
             if($workoutAverageFormModel) {
                 //Validation Model data
@@ -116,7 +118,7 @@ class AdminWorkoutController extends AbstractController
         
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
             $workoutSpecificModel = $formSpecific->getData();
-            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, null);
+            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, null, $formSpecific['imageFile']->getData());
 
             if ($workoutSpecificModel) {
                 //Validation Model data
@@ -163,15 +165,16 @@ class AdminWorkoutController extends AbstractController
     public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
-        
+
         try {
             $activity = $workout->getActivity();
             $workoutModelFactory = WorkoutModelFactory::chooseFactory($activity->getType(), 'Average');
             $workoutAverageFormModel = $workoutModelFactory->create($workout);
         
             $formAverage = $this->createForm(WorkoutAverageDataFormType::class, $workoutAverageFormModel, [
-                'is_admin' => true
-            ]);
+                    'is_admin' => true
+                ]
+            );
         } catch (\Exception $e) {
             $formAverage = $this->createForm(WorkoutAverageDataFormType::class, null, [
                 'is_admin' => true
@@ -182,7 +185,7 @@ class AdminWorkoutController extends AbstractController
         $formAverage->handleRequest($request);
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             //$workoutModel = $formAverage->getData(); //form handles modeldata so we don't need it
-            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel,null);
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null, $formAverage['imageFile']->getData());
 
             if ($workoutAverageFormModel) {
                 //Validation Model data
@@ -249,12 +252,12 @@ class AdminWorkoutController extends AbstractController
                 'is_admin' => true
             ]);
             $this->addFlash('warning', $e->getMessage());
-        }
+        } //catch error TO DO
     
         $formSpecific->handleRequest($request);
 
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
-            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel,null);
+            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel,null, $formSpecific['imageFile']->getData());
 
             if ($workoutSpecificFormModel) {
                 //Validation Model data
@@ -314,6 +317,7 @@ class AdminWorkoutController extends AbstractController
      */
     public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository)
     {
+        //tutaj message bus i usuwanie zdjęć później
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
@@ -351,6 +355,43 @@ class AdminWorkoutController extends AbstractController
 
         $this->addFlash('warning','Nothing to do');
         return $this->redirectToRoute('admin_workout_list');
+    }
+
+     /**
+     * @Route("/api/admin/workout/{id}/delete_image", name="api_admin_delete_workout_image",
+     * methods={"DELETE"})
+     */
+    public function deleteWorkoutImageAction(Request $request, ImagesManagerInterface $workoutsImagesManager, EntityManagerInterface $entityManager, Workout $workout): Response
+    {
+
+        $data = json_decode($request->getContent(), true);
+    
+        if($data === null) {
+            throw new BadRequestHttpException('Invalid Json');    
+        }
+
+        $workoutId = $workout->getId();
+        $subdirectory = $workout->getUser()->getLogin();
+
+        //double check that everything is ok
+        if($workoutId == $data['id']) {
+            $imageFilename = $workout->getImageFilename();
+            if(!empty($imageFilename)) {
+                $isDeleted = $workoutsImagesManager->deleteImage($imageFilename, $subdirectory);
+                if ($isDeleted) {
+                    $workout->setImageFilename(null);
+                    $entityManager->persist($workout);
+                    $entityManager->flush();
+                }
+                return new JsonResponse(Response::HTTP_OK);
+            }
+        }
+
+        $responseMessage = [
+            'errorMessage' => 'Image not found!'
+        ];
+
+        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
     }
 
 }

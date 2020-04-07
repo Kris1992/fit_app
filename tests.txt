@@ -9,3 +9,7 @@ symfony composer req phpunit --dev
 composer require behat/mink-selenium2-driver
 
 
+
+php bin/console messenger:consume async_priority_high async
+./vendor/bin/phpspec run  spec/Services/ModelValidator
+./vendor/bin/phpspec describe App/Services/ModelValidator/ModelValidatorChooser

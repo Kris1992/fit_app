@@ -19,6 +19,7 @@ class WeightWorkoutFactory implements WorkoutFactoryInterface {
             ->setStartAt($activityArray['speedAverageMin'])
             ->setDurationSeconds($activityArray['speedAverageMax'])
             ->setDistance($activityArray['intensity'])
+            ->setImageFilename($workoutModel->getImageFilename())
             ;
 
         return $workout;

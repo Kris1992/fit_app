@@ -33,4 +33,5 @@ interface FilesManagerInterface
      */
     public function getAbsolutePath(string $path): string;
 
+
 }

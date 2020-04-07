@@ -129,7 +129,7 @@ class AbstractActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string
+     * @return Array[]
      */
     public function findUniqueNamesAlphabetical()
     {
@@ -141,6 +141,20 @@ class AbstractActivityRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return string
+     */
+    public function findUniqueNamesAlphabeticalByType($type)
+    {
+        return $this->createQueryBuilder('a')
+            ->select('DISTINCT a.name')
+            ->andWhere('a.type LIKE :type')
+            ->setParameter('type', $type)
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
    
 
 

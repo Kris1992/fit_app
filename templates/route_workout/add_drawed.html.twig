@@ -1,0 +1,130 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Add Workout{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/_map.css') }}">
+{% endblock %}
+
+{% block section_class %}addWorkoutDrawedOnMap{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-12 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <div class="row m-1">
+            <div class="col-12">
+                <h2 class="text-green text-center">Draw route on map</h2>
+            </div>
+            <div class="col-sm-12 col-md-8">
+                <div id="mapContainer" class="col-12 p-0">
+                    <div id="mapBar">
+                        <div class="col">
+                            <div class="row text-center">
+                                <div id="geolocation" class="col-md-6 border border-secondary">
+                                    <div class="input-group my-2">
+                                        <input type="search" name="geolocationSearch" class="form-control" placeholder="e.g street, city, country" id="geolocation-js">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button" role="button" id="search-button-js">
+                                                <span class="fas fa-search-location"></span>
+                                            </button>
+                                            <button class="btn btn-danger" type="button" data-toggle="tooltip" data-placement="top" title="Show/Hide marker" id="toogle-marker-js">
+                                                <span class="fas fa-map-marker"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="routeDistance" class="col-md-6 border border-secondary">
+                                    <strong>
+                                        <span class="d-block text-uppercase">Distance</span>
+                                    </strong>
+                                    <span class="d-block" id="distance-js">0 km</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--TO DELETE -->
+                <div class="col-12 my-3" id="foto">
+                    
+                </div>
+                <!-- -->
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div id="mapPanel" class="card text-white">
+                    <div class="card-header bg-primary text-center">
+                        <h5 class="card-title text-uppercase">Markers options</h5>
+                    </div>
+                    <div class="card-body bg-secondary">
+                        <div class="form-group text-center">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="marker_mode">
+                                <label class="form-check-label text-uppercase" for="marker_mode">
+                                    Put marker after click
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-block btn-outline-warning text-uppercase" id="remove-last-js">
+                                    Remove last
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-block btn-outline-danger text-uppercase" id="remove-all-js">
+                                    Reset all
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card text-white bg-warning my-2 fade show text-center" style="display: none;" id="info-panel">
+                    <div class="card-header pt-0">
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-link float-right p-0" id="remove-message-js">
+                                    <span class="fas fa-times text-danger" style="font-size: 12px;"></span>
+                                </button>
+                            </div>
+                            <div class="col-12 card-title text-uppercase mb-0">
+                                <h5>Informations</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body text-uppercase" id="info-message-js">
+                        
+                    </div>
+                </div>
+                <div class="card text-white bg-info">
+                    {{ include('forms/workout_map_data_form.html.twig', {
+                        header_text: 'Input data'
+                    }) }}
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+   {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        window.apikey = {{ map_api_key|json_encode|raw }};
+    </script>
+    <script src="{{ asset('js/_mapDraw.js') }}" type="text/javascript"></script>
+    <script>
+    $(document).ready(function() {
+        $('.js-datepicker').datetimepicker({
+            format:'Y-m-d H:i'
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    </script>
+
+{% endblock %}

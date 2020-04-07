@@ -26,3 +26,5 @@ behat.yml
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+/trash

@@ -38,6 +38,7 @@ class MovementWorkoutModelSpecificFactorySpec extends ObjectBehavior
             ->setDurationSecondsTotal(3600)
             ->setStartAt(new \DateTime())
             ->setDistanceTotal(10.0)
+            ->setImageFilename('test.jpeg')
             ;
 
         $workoutModel = $this->create($workout);
@@ -48,6 +49,7 @@ class MovementWorkoutModelSpecificFactorySpec extends ObjectBehavior
         $workoutModel->getDurationSecondsTotal()->shouldReturn(3600);
         $workoutModel->getDistanceTotal()->shouldReturn(10.0);
         $workoutModel->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
+        $workoutModel->getImageFilename()->shouldReturn('test.jpeg');
     }
     
 }

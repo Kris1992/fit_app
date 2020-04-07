@@ -52,6 +52,7 @@ class MovementSetWorkoutModelAverageFactorySpec extends ObjectBehavior
             ->setDurationSecondsTotal(3600)
             ->setStartAt(new \DateTime())
             ->addMovementSet($movementSet)
+            ->setImageFilename('test.jpeg')
             ;
         
         $workoutModel = $this->create($workout);
@@ -61,6 +62,7 @@ class MovementSetWorkoutModelAverageFactorySpec extends ObjectBehavior
         $workoutModel->getDurationSecondsTotal()->shouldReturn(3600);
         $workoutModel->getStartAt()->shouldReturnAnInstanceOf('\DateTime');
         $workoutModel->getType()->shouldReturn('MovementSet');
+        $workoutModel->getImageFilename()->shouldReturn('test.jpeg');
         
         $sets = $workoutModel->getMovementSets();
         $sets[0]->getWorkout()->shouldBeAnInstanceOf(WorkoutAverageFormModel::class);

@@ -17,6 +17,7 @@ class UserModelFactory implements UserModelFactoryInterface
             ->setEmail($user->getEmail())
             ->setFirstName($user->getFirstName())
             ->setSecondName($user->getSecondName())
+            ->setLogin($user->getLogin())
             ->setGender($user->getGender())
             ->setBirthdate($user->getBirthdate())
             ->setWeight($user->getWeight())

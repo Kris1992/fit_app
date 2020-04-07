@@ -67,6 +67,11 @@ class Workout
     private $repetitionsTotal;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageFilename;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\MovementSet", mappedBy="workout", 
      * orphanRemoval=true, cascade={"persist", "refresh"})
      */
@@ -92,7 +97,6 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
-
 
 
 
@@ -317,6 +321,18 @@ class Workout
     public function setRepetitionsTotal(?int $repetitionsTotal): self
     {
         $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
 
         return $this;
     }

@@ -82,6 +82,13 @@ class AdminAccountController extends AbstractController
         //$userRepository = $this->getDoctrine()->getRepository(User::class);
         //$user = $user_rep->find($id);
 
+        $imageFilename = $user->getImageFilename();
+        $subdirectory = $user->getLogin();
+
+        if(!empty($imageFilename)) {
+            $messageBus->dispatch(new DeleteUserImage($user->getId(), $imageFilename, $subdirectory));
+        }
+
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($user);
         $entityManager->flush();
@@ -95,7 +102,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete_selected", name="admin_account_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository)
+    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository, MessageBusInterface $messageBus)
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {
@@ -104,6 +111,11 @@ class AdminAccountController extends AbstractController
                 $users = $userRepository->findAllByIds($ids);
                 if($users) {
                     foreach ($users as $user) {
+                        $imageFilename = $user->getImageFilename();
+                        if(!empty($imageFilename)) {
+                            $messageBus->dispatch(new DeleteUserImage($user->getId(), $imageFilename, $subdirectory));
+                            //change to clear folders (workouts and users) by login
+                        }
                         $entityManager->remove($user);
                     }
                     $entityManager->flush();
@@ -152,10 +164,10 @@ class AdminAccountController extends AbstractController
         $userId = $user->getId();
 
         //double check that everything is ok
-        if($userId == $data['userId']) {
+        if($userId == $data['id']) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
-                $messageBus->dispatch(new DeleteUserImage($userId));
+                $messageBus->dispatch(new DeleteUserImage($userId, null, null));
                 return new JsonResponse(Response::HTTP_OK);
             }
         }

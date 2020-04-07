@@ -22,6 +22,7 @@ class BodyweightWorkoutModelSpecificFactory implements WorkoutModelFactoryInterf
             ->setStartAt($workout->getStartAt())
             ->setType($workout->getActivity()->getType())
             ->setRepetitionsTotal($workout->getRepetitionsTotal())
+            ->setImageFilename($workout->getImageFilename())
             ;
 
         return $workoutModel;

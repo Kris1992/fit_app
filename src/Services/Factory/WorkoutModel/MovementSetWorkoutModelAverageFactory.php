@@ -23,6 +23,7 @@ class MovementSetWorkoutModelAverageFactory implements WorkoutModelFactoryInterf
             ->setDurationSecondsTotal($workout->getDurationSecondsTotal())
             ->setStartAt($workout->getStartAt())
             ->setType($workout->getActivity()->getType())
+            ->setImageFilename($workout->getImageFilename())
             ;
 
         $movementSetCollection = $workout->getMovementSets();

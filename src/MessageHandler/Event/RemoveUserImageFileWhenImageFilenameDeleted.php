@@ -17,6 +17,9 @@ class RemoveUserImageFileWhenImageFilenameDeleted implements MessageHandlerInter
 
     public function __invoke(UserImageFilenameDeletedEvent $event)
     {
-        $this->imagesManager->deleteUserImage($event->getFilename());
+        $isDeleted = $this->imagesManager->deleteImage($event->getFilename(), $event->getSubdirectory());
+        if(!$isDeleted) {
+            throw new \Exception("For some reason ImagesManager didn't delete user image");   
+        }
     }
 }

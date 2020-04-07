@@ -33,11 +33,14 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\NotBlank
-     * @Assert\Email(message = "Please enter e-mail")
      * @Groups("main")
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
+    private $login;
 
     /**
      * @ORM\Column(type="json")
@@ -128,6 +131,19 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function saveLogin(): self
+    {
+        $login = $this->getFirstName().'_'.$this->getSecondName().'-'.uniqid(); 
+        $this->login = $login;
 
         return $this;
     }
@@ -302,7 +318,8 @@ class User implements UserInterface
         return $this;
     }
 
-        public function getImagePath()
+        //is used?
+    public function getImagePath()
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
     }

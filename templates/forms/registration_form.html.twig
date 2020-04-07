@@ -8,12 +8,13 @@
                             }) }}
                                 {% if registrationForm.id is defined %}
                                     {{ form_row(registrationForm.id, {
-                                        'label' : 'ID: '
+                                        'label' : 'ID: ',
+                                        attr: { class: 'form-id-js' }
                                     }) }}
                                 {% endif %}
 
                                 {{ form_row(registrationForm.email, {
-                                    'label' : 'E-mail : ',
+                                    'label' : 'E-mail: ',
                                     attr: { placeholder: 'Email' }
                                 }) }}
 
@@ -24,11 +25,9 @@
                                 {% endif %}
 
                                 {{ form_row(registrationForm.imageFile, {
-                                    'label' : 'Your image : ',
+                                    'label' : 'Your image: ',
                                     attr: {
-                                        'placeholder': 'Select an article image',
-                                        'class': 'd-none'
-
+                                        'placeholder': 'Select an account image',
                                     }
                                 }) }}
 

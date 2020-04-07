@@ -20,6 +20,7 @@ class MovementSetWorkoutFactory implements WorkoutFactoryInterface {
             ->setDistanceTotal($workoutModel->getDistanceTotal())
             ->setBurnoutEnergyTotal($workoutModel->getBurnoutEnergyTotal())
             ->setStartAt($workoutModel->getStartAt())
+            ->setImageFilename($workoutModel->getImageFilename())
             ;
 
         $movementSetCollectionModel = $workoutModel->getMovementSets();

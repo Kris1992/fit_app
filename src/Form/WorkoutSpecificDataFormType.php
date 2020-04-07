@@ -10,6 +10,7 @@ use App\Entity\AbstractActivity;
 use App\Entity\MovementActivity;
 use App\Repository\UserRepository;
 use App\Repository\AbstractActivityRepository;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -22,6 +23,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Validator\Constraints\Image;
 
 
 class WorkoutSpecificDataFormType extends AbstractType
@@ -39,6 +41,18 @@ class WorkoutSpecificDataFormType extends AbstractType
         $workout = $options['data'] ?? null;
         $isEdit = $workout && $workout->getId();
         
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M',
+                'mimeTypes' => [
+                    'image/jpeg',
+                    'image/png',
+                    'image/gif'
+                ]
+
+            ])
+        ];
+
         $builder
         //datatransformer zamiast zapisywać do workout name?
         //zrobić kolejną tabele workoutdata i tam wrzucić do abstract duration, startAt, energy?
@@ -48,6 +62,11 @@ class WorkoutSpecificDataFormType extends AbstractType
                 'choices' => $this->getActivityUniqueName(),
                 'placeholder' => 'Choose an activity',
                 'invalid_message' => 'Invalid activity!',
+            ])
+            ->add('imageFile', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => $imageConstraints
             ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',
@@ -105,6 +124,12 @@ class WorkoutSpecificDataFormType extends AbstractType
             }
         );*/
         
+        if ($isEdit) {
+            $builder
+                ->add('id', HiddenType::class)
+                ;
+        }
+
         if ($options['is_admin']) {
             $builder
                 ->add('user', UserSelectTextType::class, [

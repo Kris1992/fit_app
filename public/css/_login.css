@@ -37,13 +37,9 @@
 .form-larger .form-control:focus {
     z-index: 2;
 }
-input[type=radio] {
-	margin: 5px;
-}
 input[type=email],
 input[type=password],
-input[type=text]
-{
+input[type=text] {
 	color: #666;
 	border: 2px solid #ddd;
 	border-radius: 5px;
@@ -53,8 +49,7 @@ input[type=text]
 }
 input[type=email]:focus,
 input[type=password]:focus,
-input[type=text]:focus
-{
+input[type=text]:focus {
 	-webkit-box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
 	-moz-box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
 	box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
@@ -62,58 +57,55 @@ input[type=text]:focus
 	background-color: #e9f3e9;
 	color: #428c42;
 }
-legend
-{
+legend {
 	font-size: 17px;
 }
-.btn-green
-{
+.btn-green {
 	background-color: #36b03c;
 	color: white;
 	cursor: pointer;
 	letter-spacing: 2px;
 	outline: none;
 }
-.btn-green:hover
-{
+.btn-green:hover {
 	background-color: #37b93d;
 }
-.btn-green:focus
-{
+.btn-green:focus {
 	-webkit-box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 	-moz-box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 	box-shadow: 0px 0px 15px 5px rgba(204,204,204,0.9);
 }
-.imageForm-container
-{
+.imageForm-container {
     width: 120px;
     height: 100%;
-
 }
-.image-toolbar .link-show
-{
+.custom-file-label {
+    height: auto;
+}
+.custom-file-label.uploaded:after {
+    content: 'change' !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.image-toolbar .link-show {
     right: 0px;
     top: 0px;
 }
-.image-toolbar .link-delete
-{
+.image-toolbar .link-delete {
     right: 0px;
     bottom: 0px;
 }
-.image-toolbar .link-delete:hover
-{
+.image-toolbar .link-delete:hover {
     color: #f48159;
 }
-.imageForm
-{
+.imageForm {
 	width: 100px;
 	height: 100%;
 }
-.image-toolbar a.disabled
-{
+.image-toolbar a.disabled {
     color: #dddddd;
 }
-
-
 
 
