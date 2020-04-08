@@ -29,4 +29,16 @@ class FoldersManager implements FoldersManagerInterface
         }
     }
 
+    /**
+     * createFolder Check required folders exsists (if not create it)
+     * @param  string $folderPath Path to required folders
+     * @return void             
+     */
+    public function createFolders(string $foldersPath): void
+    {
+        if(!is_dir($foldersPath)) {
+            mkdir($foldersPath, 0777, true);
+        }
+    }
+
 }

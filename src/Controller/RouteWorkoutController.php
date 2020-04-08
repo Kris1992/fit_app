@@ -9,7 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Form\WorkoutWithMapFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use App\Services\FileDecoder\FileDecoderInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+use App\Services\Factory\Workout\WorkoutFactory;
+use App\Services\ModelValidator\ModelValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Services\ModelExtender\WorkoutSpecificExtender;
 
 use Symfony\Component\Form\FormInterface;
 
@@ -33,7 +40,7 @@ class RouteWorkoutController extends AbstractController
     /**
      * @Route("api/route/workout/add_drawed", name="api_route_workout_add_drawed")
      */
-    public function addDrawedAction(Request $request, FileDecoderInterface $base64Decoder)
+    public function addDrawedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
     {
         $data = json_decode($request->getContent(), true);
 
@@ -47,29 +54,61 @@ class RouteWorkoutController extends AbstractController
         if (!$form->isValid()) {
             $errors = $this->getErrorsFromForm($form);
 
-            return $this->json(
-            $errors,
-            400
-            );
+            return new JsonResponse($errors, Response::HTTP_BAD_REQUEST);
         }
 
-        $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser());
+        $user = $this->getUser();
+        $workoutSpecificModel = $form->getData();
+
+        $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModelWithMap($workoutSpecificModel, $user, $data);
 
         if ($workoutSpecificModel) {
+            $isValid = $modelValidator->isValid($workoutSpecificModel, ['route_model']);
 
-        }
+            if ($isValid) {
+                try {
+                    $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
+                    $workout = $workoutFactory->create($workoutSpecificModel);
 
-        //$workoutSpecificModel = $form->getData();
-        //In future create for each user unique login
-        //$imageDestination = '/workouts_images/'.$user->getSecondName().'/';
-        //$filePath = $base64Decoder->decode($data['image'], $imageDestination);
-        
+                    $em->persist($workout);
+                    $em->flush();
+                    
+                    $response = [
+                        'url' => $this->generateUrl(
+                                    'workout_list', 
+                                    [], 
+                                    UrlGeneratorInterface::ABSOLUTE_URL
+                                )
+                    ];
+
+                    $this->addFlash('success', 'Workout was created!!');
+
+                    return new JsonResponse($response, Response::HTTP_OK);
+                } catch (\Exception $e) {
+                    $responseMessage = [
+                        'errorMessage' => $e->getMessage()
+                    ];
+
+                    return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+                }
+
+            } else {
+                $errors = $modelValidator->getErrors();
+
+                //Return just first one error
+                $responseMessage = [
+                        'errorMessage' => $errors[0]->getMessage()
+                ];
+
+                return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+            }
+        }        
     
+        $responseMessage = [
+            'errorMessage' => 'Cannot add workout. Check data and try again'
+        ];
 
-
-        //return $this->render('route_workout/addDrawed.html.twig', [
-            
-        //]);
+        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
     }
 
     

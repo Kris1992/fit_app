@@ -88,6 +88,18 @@ class UsersImagesManager implements ImagesManagerInterface
     }
 
     /**
+     * resizeImageFromPath Resize and compress image from absolute path to original one
+     * @param  string $absolutePath Absolute path to image to resize
+     * @param  int    $newWidth     New width
+     * @return string If image was completely resized return filename
+     * @throws Exception If the given path is not a file
+     */
+    public function resizeImageFromPath(string $absolutePath, int $newWidth): string
+    {
+        //To implement
+    }
+
+    /**
      * uploadFile Function which take care about upload image process
      * @param  File   $file      Uploaded file
      * @param  string $directory Destination directory
@@ -121,7 +133,7 @@ class UsersImagesManager implements ImagesManagerInterface
         }
 
         $path = $this->uploadsDirectory.'/'.$directory.'/'.$newFilename;
-        $this->imagesResizer->compressImage($path, $extension, 100);
+        $this->imagesResizer->compressImage($path, $extension, $newWidth);
 
         return $newFilename;
     }

@@ -2,6 +2,8 @@
 
 namespace App\Services\FileDecoder;
 
+use App\Services\FoldersManager\FoldersManagerInterface;
+
 /** 
  *  Encode file from base64
  */
@@ -9,10 +11,17 @@ class Base64FileDecoder implements FileDecoderInterface
 {
 
     private $uploadsDirectory;
+    private $foldersManager;
 
-    public function __construct(string $uploadsDirectory)
+    /**
+     * Base64FileDecoder Constructor
+     * @param FoldersManagerInterface $foldersManager   
+     * @param string                  $uploadsDirectory 
+     */
+    public function __construct(FoldersManagerInterface $foldersManager, string $uploadsDirectory)
     {
         $this->uploadsDirectory = $uploadsDirectory;
+        $this->foldersManager = $foldersManager;
     }
 
     public function decode(string $encodedString, string $tagetPath): ?string
@@ -24,7 +33,7 @@ class Base64FileDecoder implements FileDecoderInterface
         }
         
         $this->createDir($tagetPath);
-        $imagePath = $this->uploadsDirectory.'/'.$tagetPath.uniqid().'.jpeg';
+        $imagePath = $this->uploadsDirectory.'/'.$tagetPath.uniqid().'.png';
         $openFile = fopen($imagePath, 'wb');
         fwrite($openFile, $image);
         fclose($openFile);
@@ -39,22 +48,8 @@ class Base64FileDecoder implements FileDecoderInterface
      */
     private function createDir(string $folderStructure): void
     {
-        dump($folderStructure);
         $destinationFolders = $this->uploadsDirectory.'/'.$folderStructure;
-        $this->createFolders($destinationFolders);
-    }
-
-    /**
-     * createFolder Check required folders exsists (if not create it)
-     * @param  string $folderPath Path to required folders
-     * @return void             
-     */
-    private function createFolders(string $foldersPath): void
-    {
-        if(!is_dir($foldersPath)) {
-            mkdir($foldersPath, 0777, true);
-
-        }
+        $this->foldersManager->createFolders($destinationFolders);
     }
 
 }

@@ -21,6 +21,11 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
         $this->workoutsImagesManager = $workoutsImagesManager;
     }
 
+    public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
+    {
+        
+    }
+
     public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel
     {
 

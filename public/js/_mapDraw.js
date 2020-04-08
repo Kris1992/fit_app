@@ -7,6 +7,7 @@ var searchMarker;
 var markers = [];
 var waypoints = [];
 var routePolylines = [];
+var distanceTotal = null;
 
 // map instantiate must be global too
 var map = new H.Map(
@@ -137,13 +138,14 @@ function calculateDistance(isRemovedMarker = false)
 
 function showDistance(routeData)
 {
-    var distanceTotal = routeData.summary.distance;
+    var routeDistanceTotal = routeData.summary.distance;
+    distanceTotal = (routeDistanceTotal/1000);
     console.log('route data:');
     console.log(routeData);
-    if (distanceTotal < 1000) {
-        document.getElementById('distance-js').innerHTML = distanceTotal+" m";
+    if (routeDistanceTotal < 1000) {
+        document.getElementById('distance-js').innerHTML = routeDistanceTotal+" m";
     } else {
-        document.getElementById('distance-js').innerHTML = (distanceTotal/1000)+" km";
+        document.getElementById('distance-js').innerHTML = distanceTotal+" km";
     }
 }
 
@@ -154,9 +156,11 @@ function resetDistance()
 
 function getLocationFromSearch()
 {
-    disableSearchButton();
-    var locationSearch = document.getElementById("geolocation-js").value;
+    var $searchButton = $("#search-button-js");
 
+    disableButton($searchButton);
+
+    var locationSearch = document.getElementById("geolocation-js").value;
     if (locationSearch) {
         searchService.geocode({
             q: locationSearch
@@ -168,37 +172,34 @@ function getLocationFromSearch()
                 setMapView(item.position);
                 searchMarker = new H.map.Marker(item.position);
                 map.addObject(searchMarker);
-                enableSearchButton();
+                enableButton($searchButton);
             });
         }, (error) => {
             showMapResponse('Cannot find this place.');
-            enableSearchButton();
+            enableButton($searchButton);
         });
     } else {
         showMapResponse('You cannot search empty field');
-        enableSearchButton();
+        enableButton($searchButton);
     }   
 }
 
-function disableSearchButton()
+function disableButton($button)
 {   
-    var $searchButton = document.getElementById("search-button-js");
-    $searchButton.disabled = true;
-    $searchButton.innerHTML = '<span class="fas fa-spinner fa-spin"></span>';
+    $button.prop('disabled', true);
+    $button.append('<span class="fas fa-spinner fa-spin"></span>');
 }
 
-function enableSearchButton()
+function enableButton($button)
 {
-    var $searchButton = document.getElementById("search-button-js");
-    $searchButton.disabled = false;
-    $searchButton.innerHTML = '<span class="fas fa-search-location"></span>';   
+    $button.prop('disabled', false);
+    $button.children('.fa-spinner').remove();
 }
 
 function showMapResponse(message)
 {   
     $("#info-message-js").html(message);
-    $('#info-panel').fadeIn('slow');
-    
+    $('#info-panel').fadeIn('slow');    
 }
 
 function removeMapResponse()
@@ -260,8 +261,9 @@ function removeAllWaypointsMarkers()
 
 function sendData(event)
 {
-
+    disableButton($(event.target));
     event.preventDefault();
+    removeFormErrors();
     if (waypoints.length > 1) {
         
         const $form = $('.js-new-workout-form');
@@ -280,22 +282,40 @@ function sendData(event)
             } else {
                 formData['formData'][fieldData.name] = fieldData.value;
             }
+            if (!fieldData.value) {
+                enableButton($(event.target));
+                showMapResponse('Form data is missing');
+                return;
+            }
         }
+        
         var url = document.getElementById('continue-js').getAttribute('data-url');
         map.capture((canvas) => {
             if (canvas) {
                 var mapImage = canvas.toDataURL();
                 formData['waypoints'] = waypoints;
+                formData['distanceTotal'] = distanceTotal;
                 formData['image'] = mapImage;
 
-                saveWorkout(formData,url);
+                saveWorkout(formData,url).then((result) => {
+                    window.location.href = result.url;
+                }).catch((errorData) => {
+                    if (errorData.errorMessage) {
+                        showMapResponse(errorData.errorMessage);
+                    } else {
+                        mapErrorsToForm(errorData);
+                    }                    
+                });
             } else {
                 showMapResponse('Capturing is not supported');
             }
         }, []);
+
     } else {
         showMapResponse('Draw your route first');   
     }
+
+    enableButton($(event.target));
 }
 
 //config
@@ -319,28 +339,74 @@ function setCustomMarker() {
 }
 //End of custom marker
 
-
-
-
-
-
-
-
 function saveWorkout(data, url) {
     return new Promise( (resolve, reject) => {
         $.ajax({
             url,
             method: 'POST',
             data: JSON.stringify(data)
-        });//.then(function(data, textStatus, jqXHR) {
-                   // $.ajax({
-                    //    url: jqXHR.getResponseHeader('Location')
-                   // }).then(function(data) {
-                   //     resolve(data);
-                   // });
-               // }).catch(function(jqXHR) {
-               //     const errorData = JSON.parse(jqXHR.responseText);
-               //     reject(errorData);
-               // });
+        }).then((result) => {
+            resolve(result);
+        }).catch((jqXHR) => {
+            let statusError = [];
+            statusError = getStatusError(jqXHR);
+            if(statusError != null) {
+                reject(statusError);
+            } else {
+                const errorData = JSON.parse(jqXHR.responseText);
+                reject(errorData);
+            }
+        });
     });
+}
+
+function getStatusError(jqXHR) {
+    if(jqXHR.status === 0) {
+        return {
+            "errorMessage":"Cannot connect. Verify Network."
+        }
+    } else if(jqXHR.status == 404) {
+        return {
+            "errorMessage":"Requested not found."
+        }
+    } else if(jqXHR.status == 500) {
+        return {
+            "errorMessage":"Internal Server Error"
+        }
+    } else if(jqXHR.status > 400) {
+        return {
+            "errorMessage":"Error. Contact with admin."
+        }
+    }
+    return null;
+}
+
+function mapErrorsToForm(errorData)
+{
+    var $form = $('.js-new-workout-form');
+
+    for (let element of $form.find(':input')) {
+        let fieldName = $(element).attr('name');
+        const $fieldWrapper = $(element).closest('.form-group');
+
+        if(fieldName == 'durationSecondsTotal[hour]') {
+            fieldName = 'durationSecondsTotal';
+        }
+
+        if (!errorData[fieldName]) {
+            continue;
+        }
+
+        const $error = $('<span class="js-field-error help-block text-danger"></span>');
+        $error.html(errorData[fieldName]);
+        $fieldWrapper.append($error);
+        $fieldWrapper.addClass('has-error');
+    }
+}
+
+function removeFormErrors() {
+    var $form = $('.js-new-workout-form');
+
+    $form.find('.js-field-error').remove();
+    $form.find('.form-group').removeClass('has-error');
 }

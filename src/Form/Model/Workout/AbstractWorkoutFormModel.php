@@ -13,37 +13,41 @@ abstract class AbstractWorkoutFormModel
     protected $id;
 
     /**
-     * @Assert\NotBlank(message="Cannot configure user", groups={"model", "bodyweight_model"})
+     * @Assert\NotBlank(message="Cannot configure user", groups={"model", "bodyweight_model", 
+     * "route_model"})
      */
     protected $user;
 
     /**
      * @Assert\NotBlank(message="Cannot configure activity", groups={"model", 
-     * "bodyweight_model"})
+     * "bodyweight_model", "route_model"})
      */
     protected $activity;
 
     /**
      * @Assert\NotBlank(message="Your burnout Energy is too small", groups={"model", 
-     * "bodyweight_model"})
+     * "bodyweight_model", "route_model"})
      * @Assert\GreaterThan(message="Your burnout Energy is too small", value=0, 
-     * groups={"model", "bodyweight_model"})
+     * groups={"model", "bodyweight_model", "route_model"})
      */
     protected $burnoutEnergyTotal;
 
     /**
      * @Assert\NotBlank(message="Please enter date of start", groups={"average_sets", 
-     * "specific_sets", "Default", "route_map"})
+     * "specific_sets", "Default", "route_map", "route_model"})
      */
     protected $startAt;
     
     /**
      * @Assert\NotBlank(message="Please enter time", groups={"model", "bodyweight_model",
-     *  "Default"})
-     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default", "route_map"})
+     *  "Default", "route_model"})
+     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default", "route_map", "route_model"})
      */
     protected $durationSecondsTotal;
 
+    /**
+     *  @Assert\NotBlank(message="Map missing", groups={"route_model"})
+     */
     protected $imageFilename;
 
     //helpers

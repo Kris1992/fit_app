@@ -9,6 +9,8 @@ use App\Repository\MovementActivityRepository;
 use App\Repository\AbstractActivityRepository;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\FileDecoder\FileDecoderInterface;
+
 
 use App\Repository\BodyweightActivityRepository;
 use Psr\Log\LoggerInterface;
@@ -19,6 +21,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
     private $activityRepository;
     private $bodyweightRepository;
     private $workoutsImagesManager;
+    private $base64Decoder;
     private $logger;
 
     /**
@@ -34,6 +37,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         AbstractActivityRepository $activityRepository,
         BodyweightActivityRepository $bodyweightRepository,
         ImagesManagerInterface $workoutsImagesManager,
+        FileDecoderInterface $base64Decoder,
         LoggerInterface $logger
     )
     {
@@ -41,8 +45,32 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         $this->activityRepository = $activityRepository;
         $this->bodyweightRepository = $bodyweightRepository;
         $this->workoutsImagesManager = $workoutsImagesManager;
+        $this->base64Decoder = $base64Decoder;
         $this->logger = $logger;
     } 
+
+    public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
+    {   
+        if ($data['image'] || $data['distanceTotal']) {
+            $imageDestination = $this->workoutsImagesManager::WORKOUTS_IMAGES.'/'.$user->getLogin().'/';
+            $filePath = $this->base64Decoder->decode($data['image'], $imageDestination);
+            if ($filePath) {
+                //$mapImage = new File($filePath);
+                $workoutModel->setDistanceTotal($data['distanceTotal']);
+
+                try {
+                    $newFilename = $this->workoutsImagesManager->resizeImageFromPath($filePath, 150);
+                } catch (\Exception $e) {
+                    return null;
+                }
+                $workoutModel->setImageFilename($newFilename);
+
+                return $this->fillWorkoutModel($workoutModel, $user, null);
+            }
+        }
+
+        return null;
+    }
 
     public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel
     {

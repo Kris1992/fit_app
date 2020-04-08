@@ -10,8 +10,8 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
 {
 
     /**
-     * @Assert\NotBlank(message="Please enter distance", groups={"movement", "model"})
-     * @Assert\GreaterThan(value=0, groups={"movement", "model"})
+     * @Assert\NotBlank(message="Please enter distance", groups={"movement", "model", "route_model"})
+     * @Assert\GreaterThan(value=0, groups={"movement", "model", "route_model"})
      */
     private $distanceTotal;
 

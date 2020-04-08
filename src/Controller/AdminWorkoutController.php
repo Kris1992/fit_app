@@ -79,7 +79,7 @@ class AdminWorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout was created!! ');
+                        $this->addFlash('success', 'Workout was created!!');
                         return $this->redirectToRoute('admin_workout_list');
                     } catch (\Exception $e) {
                         $this->addFlash('warning', $e->getMessage());

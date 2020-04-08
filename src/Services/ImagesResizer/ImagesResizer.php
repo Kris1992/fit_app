@@ -42,6 +42,7 @@ class ImagesResizer implements ImagesResizerInterface
      * @param  string $extension Extension of file
      * @param  int $newWidth  New width of image
      * @return void           
+     * @throws Exception
      */
     public function compressImage(string $source, string $extension, int $newWidth): void
     {

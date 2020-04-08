@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class WorkoutWithMapFormType extends AbstractType
 {
@@ -48,6 +49,12 @@ class WorkoutWithMapFormType extends AbstractType
                     'class'=>'form-inline'
                     ]
                 ])
+            ->add('type', HiddenType::class, [
+                'data' => 'Movement',
+                'attr' => [
+                    'readonly' => true,
+                ],
+            ])
         ;
     }
 

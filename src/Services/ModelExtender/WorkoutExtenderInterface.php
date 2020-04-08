@@ -21,4 +21,16 @@ interface WorkoutExtenderInterface
      * not supported or activity doesn't exist in db 
      */
     public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel;
+
+    /**
+     * fillWorkoutModelWithMap  Extends workout model by fill  all missing data with map data
+     * @param  AbstractWorkoutFormModel  $workoutModel Model with workout data get from form
+     * @param  User $user User object whose is owner of workout
+     * @param  Array $data Rest needed data in array (e.g encoded image in base64, distanceTotal, route 
+     * data )
+     * @return AbstractWorkoutFormModel|null Return filled up workout model or null if cannot complete 
+     * all workout data
+     */
+    public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel;
+
 }
