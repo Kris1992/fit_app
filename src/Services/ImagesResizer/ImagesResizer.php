@@ -73,7 +73,8 @@ class ImagesResizer implements ImagesResizerInterface
             } elseif ($extension === 'gif') {
                 $gifDecoder = new GIFDecoder(fread(fopen($source, "rb"), filesize($source)));
                 $delays = $gifDecoder->GIFGetDelays();
-                $tempPath = $filePath.self::TEMP_GIF.'/';
+                $tempPath = $filePath.'/'.self::TEMP_GIF.'/';
+                $this->foldersManager->createFolder($tempPath);
             
                 $iterator = 1;
 
@@ -101,6 +102,7 @@ class ImagesResizer implements ImagesResizerInterface
                 fwrite($fpThumb, $gifEncoder->GetAnimation());
                 fclose($fpThumb);
 
+                dump($tempPath);
                 $this->foldersManager->clearFolder($tempPath);
             } elseif($extension === 'png') {
                 $image = imagecreatefrompng($source);

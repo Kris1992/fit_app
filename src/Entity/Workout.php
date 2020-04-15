@@ -7,8 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Validator\Constraints as AcmeAssert;
+
+use App\Services\ImagesManager\WorkoutsImagesManager;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WorkoutRepository")
@@ -68,6 +69,7 @@ class Workout
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"main"})
      */
     private $imageFilename;
 
@@ -150,7 +152,7 @@ class Workout
         return $this->time;
     }
 
-    public function setLinks(string $type,string $url): self
+    public function setLinks(string $type, string $url): self
     {
         $this->links[$type] = $url;
 
@@ -335,6 +337,16 @@ class Workout
         $this->imageFilename = $imageFilename;
 
         return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

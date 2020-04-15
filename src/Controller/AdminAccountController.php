@@ -16,6 +16,7 @@ use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
+use App\Message\Command\DeleteUserFolders;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -82,12 +83,8 @@ class AdminAccountController extends AbstractController
         //$userRepository = $this->getDoctrine()->getRepository(User::class);
         //$user = $user_rep->find($id);
 
-        $imageFilename = $user->getImageFilename();
         $subdirectory = $user->getLogin();
-
-        if(!empty($imageFilename)) {
-            $messageBus->dispatch(new DeleteUserImage($user->getId(), $imageFilename, $subdirectory));
-        }
+        $messageBus->dispatch(new DeleteUserFolders($subdirectory));
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($user);
@@ -111,11 +108,10 @@ class AdminAccountController extends AbstractController
                 $users = $userRepository->findAllByIds($ids);
                 if($users) {
                     foreach ($users as $user) {
-                        $imageFilename = $user->getImageFilename();
-                        if(!empty($imageFilename)) {
-                            $messageBus->dispatch(new DeleteUserImage($user->getId(), $imageFilename, $subdirectory));
-                            //change to clear folders (workouts and users) by login
-                        }
+                        //clear users files (all images and folders)
+                        $subdirectory = $user->getLogin();
+                        $messageBus->dispatch(new DeleteUserFolders($subdirectory));
+                        
                         $entityManager->remove($user);
                     }
                     $entityManager->flush();
@@ -160,14 +156,14 @@ class AdminAccountController extends AbstractController
         if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
-
+        
         $userId = $user->getId();
 
         //double check that everything is ok
         if($userId == $data['id']) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
-                $messageBus->dispatch(new DeleteUserImage($userId, null, null));
+                $messageBus->dispatch(new DeleteUserImage($userId));
                 return new JsonResponse(Response::HTTP_OK);
             }
         }

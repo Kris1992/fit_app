@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-use App\Services\UploadImagesHelper;
+//use App\Services\UploadImagesHelper;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -319,7 +319,7 @@ class User implements UserInterface
     }
 
         //is used?
-    public function getImagePath()
+    /*public function getImagePath()
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
     }
@@ -327,7 +327,7 @@ class User implements UserInterface
     public function getThumbImagePath()
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
-    }
+    }*/
 
     public function increaseFailedAttempts(): ?int
     {

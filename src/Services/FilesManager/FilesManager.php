@@ -6,6 +6,7 @@ use League\Flysystem\FilesystemInterface;
 use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
+use App\Services\FoldersManager\FoldersManagerInterface;
 use Psr\Log\LoggerInterface;
 use Gedmo\Sluggable\Util\Urlizer;
 
@@ -13,6 +14,7 @@ class FilesManager implements FilesManagerInterface {
 
     private $publicFilesystem;
     private $logger;
+    private $foldersManager;
     private $uploadsDirectory;
 
     /**
@@ -23,10 +25,11 @@ class FilesManager implements FilesManagerInterface {
      *@param string $uploadsDirectory Path to uploads directory
      *
      */
-    public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger, string $uploadsDirectory)  
+    public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger, FoldersManagerInterface $foldersManager, string $uploadsDirectory)  
     {
         $this->publicFilesystem = $publicUploadsFilesystem;
         $this->logger = $logger;
+        $this->foldersManager = $foldersManager;
         $this->uploadsDirectory = $uploadsDirectory;
     }
 
@@ -89,19 +92,7 @@ class FilesManager implements FilesManagerInterface {
     private function createDir(string $folderName): void
     {
         $destinationFolder = $this->uploadsDirectory.'/'.$folderName;
-        $this->createFolder($destinationFolder);
-    }
-
-    /**
-     * createFolder Check required folder exsists (if not create it)
-     * @param  string $folderPath Path to required folder
-     * @return void             
-     */
-    private function createFolder(string $folderPath): void
-    {
-        if(!is_dir($folderPath)) {
-         mkdir($folderPath);
-        }
+        $this->foldersManager->createFolder($destinationFolder);
     }
 
     /**

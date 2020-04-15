@@ -32,30 +32,23 @@ class DeleteUserImageHandler implements  MessageSubscriberInterface//, LoggerAwa
 
     public function __invoke(DeleteUserImage $deleteUserImage)
     {
-        $filenameGiven = $deleteUserImage->getFilename();
-        $subdirectoryGiven = $deleteUserImage->getSubdirectory();
-        //If filename is given user was deleted so don't need to clear filename data from db
-        if($filenameGiven && $subdirectoryGiven) {
-            $this->eventBus->dispatch(new UserImageFilenameDeletedEvent($filenameGiven, $subdirectoryGiven));
-        } else {
-            $userId = $deleteUserImage->getUserId();
-            $user = $this->userRepository->findOneBy(['id' => $userId]);
-            $filename = $user->getImageFilename();
-            $subdirectory = $user->getLogin();
+        $userId = $deleteUserImage->getUserId();
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+        $filename = $user->getImageFilename();
+        $subdirectory = $user->getLogin();
 
-            if(!$filename || !$subdirectory) {
-                if($this->logger) {
-                    $this->logger->alert('Image filename or subdirectory is missing!');
-                }
-                throw new \Exception("Cannot delete user image: Image filename or subdirectory is missing!");
+        if(!$filename || !$subdirectory) {
+            if($this->logger) {
+                $this->logger->alert('Image filename or subdirectory is missing!');
             }
-
-            $user->setImageFilename(null);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-
-            $this->eventBus->dispatch(new UserImageFilenameDeletedEvent($filename, $subdirectory));
+            throw new \Exception("Cannot delete user image: Image filename or subdirectory is missing!");
         }
+
+        $user->setImageFilename(null);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->eventBus->dispatch(new UserImageFilenameDeletedEvent($filename, $subdirectory));
     }
 
     public static function getHandledMessages(): iterable

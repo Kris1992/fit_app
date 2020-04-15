@@ -2,12 +2,12 @@
 
 namespace App\Services\FoldersManager;
 
+
 /**
  *  Manage folders (create, clear)
  */
 interface FoldersManagerInterface
 {   
-
 
     /**
      * createFolder Check required folder exists (if not create it) (just for single folder in path!) 
@@ -29,5 +29,12 @@ interface FoldersManagerInterface
      * @return void             
      */
     public function createFolders(string $foldersPath): void;
+
+    /**
+     * deleteFolder Delete given by absolute path folder (if it exist) 
+     * @param  string $folderPath Absolute path to folder
+     * @return void
+     */
+    public function deleteFolder(string $folderPath): void;
 
 }

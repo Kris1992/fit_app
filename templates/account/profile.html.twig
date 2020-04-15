@@ -98,7 +98,11 @@
                             <div class="card-body">
                                 <div class="card-text row">
                                     <div class="workout-stat col-md-3">
-                                        <img src="https://via.placeholder.com/150">
+                                        {% if workout.imageFilename is not null %} 
+                                            <img src="{{ uploaded_asset(workout.thumbImagePath) }}" alt="Workout image"> 
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/150" alt="Workout image">
+                                        {% endif %}            
                                     </div>
                                     <div class="workout-stat col-md-9">
                                         <div class="col-12">
@@ -162,7 +166,11 @@
         <div class="card-body">
             <div class="card-text row">
                 <div class="workout-stat col-md-3">
-                    <img src="https://via.placeholder.com/150">
+                    <% if (imageFilename) { %>
+                        <img src="<%= links.thumbImagePath %>" alt="Workout image">
+                    <% } else { %>
+                        <img src="https://via.placeholder.com/150" alt="Workout image">
+                    <% } %>
                 </div>
                 <div class="workout-stat col-md-9">
                     <div class="col-12">

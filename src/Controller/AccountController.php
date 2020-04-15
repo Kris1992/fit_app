@@ -193,7 +193,7 @@ class AccountController extends AbstractController
         if($userId == $data['id']) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
-                $messageBus->dispatch(new DeleteUserImage($userId, null, null));
+                $messageBus->dispatch(new DeleteUserImage($userId));
                 return new JsonResponse(Response::HTTP_OK);
             }
         }

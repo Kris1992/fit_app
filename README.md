@@ -66,15 +66,12 @@ Have fun!
 
 TO DO
 
-## TO DO 
+## Next Week Patch (introduction to SCRUM flow) 
 
-- import activities from file
-- add tracking system to registry workout
-- take care about profile
-- Add tests
-- Introduce to curiosity system
+- ADD integration and functional tests 
+- ADD tracking route in real time
+- Refactor mailer service
 
-And a lot of more
 
 ## Have Ideas, Feedback or an Issue?
 

@@ -11,13 +11,10 @@ use App\Form\WorkoutWithMapFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Services\ModelExtender\WorkoutSpecificExtender;
-
 use Symfony\Component\Form\FormInterface;
 
 class RouteWorkoutController extends AbstractController

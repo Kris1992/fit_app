@@ -48,14 +48,14 @@ class WorkoutsImagesManager implements ImagesManagerInterface
      * uploadImage Upload workout image and compress it to smaller one thumb image if it is too large
      * @param  File    $file             Uploaded file
      * @param  string  $existingFilename Filename of image which was uploaded before[optional]
-     * @param  string  $subDirectory     Subdirectory for image[optional]
+     * @param  string  $subdirectory     Subdirectory for image[optional]
      * @param  integer $newWidth         Width of compressed image [optional]
      * @return string                    New filename
      */
-    public function uploadImage(File $file, ?string $existingFilename, ?string $subDirectory, $newWidth = 150): string
+    public function uploadImage(File $file, ?string $existingFilename, ?string $subdirectory, $newWidth = 150): string
     {
-        if($subDirectory) {
-            $directory =  self::WORKOUTS_IMAGES.'/'.$subDirectory;
+        if($subdirectory) {
+            $directory =  self::WORKOUTS_IMAGES.'/'.$subdirectory;
             $newFilename = $this->uploadFile($file, $directory, $newWidth);
         } else {
             $this->logger->alert('Workouts image uploader: Subdirectory missing, cannot upload image!!');
@@ -63,7 +63,7 @@ class WorkoutsImagesManager implements ImagesManagerInterface
         }
         
         if ($existingFilename) {
-           $result = $this->deleteOldImage($existingFilename, $subDirectory);
+           $result = $this->deleteOldImage($existingFilename, $subdirectory);
            if(!$result) {
                 $this->logger->alert(sprintf('User upload new file but deleting old one fails. Check file: "%s" exist!!', $existingFilename));
            }
@@ -75,13 +75,13 @@ class WorkoutsImagesManager implements ImagesManagerInterface
     /**
      * deleteUserImage Delete user images (original and compressed) from server 
      * @param  string $existingFilename Filename of image to delete
-     * @param  string  $subDirectory     Subdirectory for image[optional]
+     * @param  string  $subdirectory     Subdirectory for image[optional]
      * @return bool                   
      */
-    public function deleteImage(string $existingFilename, ?string $subDirectory): bool
+    public function deleteImage(string $existingFilename, ?string $subdirectory): bool
     {
-        if ($existingFilename && $subDirectory) {
-           return $this->deleteOldImage($existingFilename, $subDirectory);
+        if ($existingFilename && $subdirectory) {
+           return $this->deleteOldImage($existingFilename, $subdirectory);
         }
         return false;
     }
@@ -107,6 +107,12 @@ class WorkoutsImagesManager implements ImagesManagerInterface
         }
         
         return $filename;
+    }
+
+    public function getPublicPath(string $path): string
+    {
+        return $this->requestStackContext
+            ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
     }
 
     /**
@@ -151,18 +157,18 @@ class WorkoutsImagesManager implements ImagesManagerInterface
     /**
      * deleteOldImage  Delete images (original and compressed) from server
      * @param  string $existingFilename Filename of image
-     * @param  string  $subDirectory     Subdirectory for image
+     * @param  string  $subdirectory     Subdirectory for image
      * @return bool
      */
-    private function deleteOldImage(string $existingFilename, string $subDirectory): bool
+    private function deleteOldImage(string $existingFilename, string $subdirectory): bool
     {
-        if (!$subDirectory) {
+        if (!$subdirectory) {
             return false;
         }
 
         try {
-            $result = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subDirectory.'/'.$existingFilename);
-            $resultThumb = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subDirectory.'/'.self::THUMB_IMAGES.'/'.$existingFilename);
+            $result = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
+            $resultThumb = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subdirectory.'/'.self::THUMB_IMAGES.'/'.$existingFilename);
 
             if ($result === false || $resultThumb === false) {
                 throw new \Exception(sprintf('Could not delete old uploaded file "%s"', $existingFilename));
@@ -187,12 +193,6 @@ class WorkoutsImagesManager implements ImagesManagerInterface
         $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
         
         return $clearFilename;
-    } 
-
-    public function getPublicPath(string $path): string
-    {
-        return $this->requestStackContext
-            ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
     }
 
 }

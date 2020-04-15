@@ -14,19 +14,19 @@ interface ImagesManagerInterface
      * uploadImage Upload image and compress it to smaller one thumb image if it is too large
      * @param  File    $file             Uploaded file
      * @param  string  $existingFilename Filename of image which was uploaded before[optional]
-     * @param  string  $subDirectory     Subdirectory for image[optional]
+     * @param  string  $subdirectory     Subdirectory for image[optional]
      * @param  integer $newWidth         Width of compressed image [optional]
      * @return string                    New filename
      */
-    public function uploadImage(File $file, ?string $existingFilename, ?string $subDirectory, int $newWidth): string;
+    public function uploadImage(File $file, ?string $existingFilename, ?string $subdirectory, int $newWidth): string;
 
     /**
      * deleteImage Delete images (original and compressed) from server 
      * @param  string $existingFilename Filename of image to delete
-     * @param  string  $subDirectory     Subdirectory for image[optional]
+     * @param  string  $subdirectory     Subdirectory for image[optional]
      * @return bool                   
      */
-    public function deleteImage(string $existingFilename, ?string $subDirectory): bool;
+    public function deleteImage(string $existingFilename, ?string $subdirectory): bool;
 
     /**
      * resizeImageFromPath Resize and compress image from absolute path to original one

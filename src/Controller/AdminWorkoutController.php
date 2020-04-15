@@ -22,6 +22,8 @@ use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Command\DeleteWorkoutImage;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -301,8 +303,15 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/delete/{id}", name="admin_workout_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, Workout $workout, EntityManagerInterface $em)
+    public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
     {
+
+        if ($workout->getImageFilename()) {
+            //clear users files (all images and folders)
+            $subdirectory = $workout->getUser()->getLogin();
+            $messageBus->dispatch(new DeleteWorkoutImage($subdirectory, $workout->getImageFilename()));
+        }
+        
         $em->remove($workout);
         $em->flush();
     
@@ -315,9 +324,9 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/delete_selected", name="admin_workout_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository)
+    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository, MessageBusInterface $messageBus)
     {
-        //tutaj message bus i usuwanie zdjęć później
+
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
@@ -325,6 +334,12 @@ class AdminWorkoutController extends AbstractController
                 $workouts = $workoutRepository->findAllByIds($ids);
                 if($workouts) {
                     foreach ($workouts as $workout) {
+                        if ($workout->getImageFilename()) {
+                            //clear users files (all images and folders)
+                            $subdirectory = $workout->getUser()->getLogin();
+                            $messageBus->dispatch(new DeleteWorkoutImage($subdirectory, $workout->getImageFilename()));
+                        }
+                        
                         $entityManager->remove($workout);
                     }
                     $entityManager->flush();

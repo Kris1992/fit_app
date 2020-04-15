@@ -18,12 +18,14 @@ use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Services\ModelExtender\WorkoutAverageExtender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ModelValidator\ModelValidatorChooser;
 use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Updater\Workout\WorkoutUpdaterInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Command\DeleteWorkoutImage;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 use Symfony\Component\Form\FormInterface;
 
@@ -305,9 +307,15 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, Workout $workout, EntityManagerInterface $em)
+    public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
+
+        if ($workout->getImageFilename()) {
+            //clear users files (all images and folders)
+            $subdirectory = $workout->getUser()->getLogin();
+            $messageBus->dispatch(new DeleteWorkoutImage($subdirectory, $workout->getImageFilename()));
+        }
 
         $em->remove($workout);
         $em->flush();
@@ -515,13 +523,13 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/workouts_get_after_date", name="api_workouts_get_after_date", 
      * methods={"POST"})
      */
-    public function getWorkoutsAfterDateAction(Request $request, WorkoutRepository $workoutRepository)
+    public function getWorkoutsAfterDateAction(Request $request, WorkoutRepository $workoutRepository, ImagesManagerInterface $workoutsImagesManager)
     {
         /** @var User $user */
         $user = $this->getUser();
         $date = json_decode($request->getContent(), true);
         if(!strtotime($date)){
-            return new JsonResponse(['message' => 'Wrong date format. Cannot load more data.'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Nothing to load.'], Response::HTTP_BAD_REQUEST);
         }
 
         $workouts = $workoutRepository->findByUserBeforeDate($user, $date, 10);
@@ -534,6 +542,14 @@ class WorkoutController extends AbstractController
             $startAt = $workout->getStartAt();
             $startAt = date_format($startAt, 'Y-m-d H:i');
             $workout->setStartDate($startAt);
+            $workout->setLinks(
+                'thumbImagePath', 
+                $workoutsImagesManager->getPublicPath($workout->getThumbImagePath())
+            );
+            $workout->setLinks(
+                'imagePath', 
+                $workoutsImagesManager->getPublicPath($workout->getImagePath())
+            );
         }
 
         return $this->json(

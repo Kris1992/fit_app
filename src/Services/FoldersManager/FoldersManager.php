@@ -12,7 +12,7 @@ class FoldersManager implements FoldersManagerInterface
     */
     public function clearFolder(string $dirPath): void
     {
-        foreach(glob($dirpath.'*.*') as $file){
+        foreach(glob($dirPath.'*.*') as $file){
             unlink($file);
         }
     }
@@ -38,6 +38,30 @@ class FoldersManager implements FoldersManagerInterface
     {
         if(!is_dir($foldersPath)) {
             mkdir($foldersPath, 0777, true);
+        }
+    }
+
+    /**
+     * deleteFolder Delete given by absolute path folder (if it exist) 
+     * @param  string $folderPath Absolute path to folder
+     * @return void
+     */
+    public function deleteFolder(string $folderPath): void
+    {
+        if (is_dir($folderPath)) {
+            $directory = opendir($folderPath);
+            while(false !== ($file = readdir($directory)) ) {
+                if (($file != '.') && ( $file != '..')) {
+                    $full = $folderPath.'/'.$file;
+                    if (is_dir($full)) {
+                        $this->deleteFolder($full);
+                    } else {
+                        unlink($full);
+                    }
+                }
+            }
+            closedir($directory);
+            rmdir($folderPath);
         }
     }
 
