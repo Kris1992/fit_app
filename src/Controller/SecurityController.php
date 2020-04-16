@@ -4,24 +4,14 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-
 //register
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Entity\User;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Component\HttpFoundation\Request;
 use App\Security\LoginFormAuthenticator;
 use App\Form\UserRegistrationFormType;
-use App\Form\Model\UserRegistrationFormModel;
-
-use App\Services\UploadImagesHelper;
-
-use ReCaptcha\ReCaptcha;
-
-
-
+use App\Entity\User;
+use App\Services\UserRegister\UserRegistrationInterface;
 
 class SecurityController extends AbstractController
 {
@@ -51,84 +41,45 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UploadImagesHelper $uploadImagesHelper, string $secret_key)
+    public function register(Request $request, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UserRegistrationInterface $userRegistrationInterface)
     {
 
         $form = $this->createForm(UserRegistrationFormType::class);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
-                $isHuman = $this->checkCatchpa($request, $secret_key);
-                if ($isHuman->isSuccess()) {
-
-                    $userModel = new UserRegistrationFormModel();
-                    $userModel = $form->getData();
-
-                    $user = new User();
-                    $user->setEmail($userModel->getEmail());
-                    $user->setFirstName($userModel->getFirstName());
-                    $user->setSecondName($userModel->getSecondName());
-                    $user->setGender($userModel->getGender());
-                    $user->setRoles(['ROLE_USER']);
-
-
-                    /** @var UploadedFile $uploadedFile */
-                    $uploadedFile = $form['imageFile']->getData();
-
-                    if($uploadedFile)
-                    {
-                        $newFilename = $uploadImagesHelper->uploadUserImage($uploadedFile, null);
-
-                        $user->setImageFilename($newFilename);
-                    }
-
             
-                    $user->setPassword($passwordEncoder->encodePassword(
-                    $user,
-                    $userModel->getPlainPassword()
-                    ));
-            
-                    if (true === $userModel->getAgreeTerms())//to make sure it's valid data
-                    {
-                        $user->agreeToTerms();
-                    }
+            /** @var UserRegistrationFormModel $userModel */
+            $userModel = $form->getData();
 
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($user);
-                    $em->flush();
+            try {
+                $user = $userRegistrationInterface->register(
+                            $request, 
+                            $userModel, 
+                            $form['imageFile']->getData()
+                        );
+            } catch (\Exception $e) {
+                return $this->render('security/register.html.twig', [
+                    'registrationForm' => $form->createView(),
+                    'ReCaptchaError' => $e->getMessage()
+                ]);
+            }
 
-                    return $guardHandler->authenticateUserAndHandleSuccess(
-                        $user,
-                        $request,
-                        $formAuthenticator,
-                        'main' // firewall name
-                    );
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
 
-                    } 
-                    else {
-                        //$errors = $isHuman->getErrorCodes();
-                        $message = 'The ReCaptcha was not entered correctly!';
-                        
-                        return $this->render('security/register.html.twig', [
-                            'registrationForm' => $form->createView(),
-                            'ReCaptchaError' => $message
-                        ]);
-                    }
+            return $guardHandler->authenticateUserAndHandleSuccess(
+                $user,
+                $request,
+                $formAuthenticator,
+                'main' // firewall name
+            );
         }
-
 
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
-    }
-
-    private function checkCatchpa(Request $request, string $secret_key)
-    {
-        $recaptcha = new ReCaptcha($secret_key);
-        return $isHuman = $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME'])
-                ->verify($request->get('g-recaptcha-response'), $_SERVER['REMOTE_ADDR']);
-
     }
 
 }

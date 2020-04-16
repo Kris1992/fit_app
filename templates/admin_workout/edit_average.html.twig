@@ -1,0 +1,47 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Edit Workout{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+{% endblock %}
+
+{% block section_class %}editWorkout{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <ul class="nav nav-pills nav-fill">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ path('admin_workout_edit', { id: workoutId }) }}">Average data</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('admin_workout_specific_edit', { id: workoutId }) }}">Specific data</a>
+            </li>
+        </ul>
+        {{ include('forms/workout_average_data_form.html.twig', {
+            header_text: 'Edit Workout',
+            button_text: 'Update'
+        }) }}
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/_formHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_workoutSets.js') }}"></script>
+
+    <!-- Upload image -->
+    <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        
+        $('.js-datepicker').datetimepicker({
+            format:'Y-m-d H:i'
+        });
+    });
+    </script>
+{% endblock %}

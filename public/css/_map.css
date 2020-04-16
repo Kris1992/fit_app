@@ -1,0 +1,14 @@
+#mapContainer {
+    height: 600px;
+    background-color: gray;
+}
+
+#mapBar {
+    z-index: 999;  
+    width: 100%; 
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    background-color: rgba(00, 130, 130, 0.8);
+    color: white;
+}

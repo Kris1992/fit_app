@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-use App\Services\UploadImagesHelper;
+//use App\Services\UploadImagesHelper;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -19,6 +19,8 @@ use App\Services\UploadImagesHelper;
  *     fields={"email"},
  *     message= "This e-mail address is already registered!"
  * )
+ * @ORM\Table(name="user", indexes={@ORM\Index(columns={"first_name", "second_name"}, 
+ * flags={"fulltext"})})
  */
 class User implements UserInterface
 {
@@ -31,11 +33,14 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\NotBlank
-     * @Assert\Email(message = "Please enter e-mail")
      * @Groups("main")
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
+    private $login;
 
     /**
      * @ORM\Column(type="json")
@@ -112,7 +117,6 @@ class User implements UserInterface
         $this->workouts = new ArrayCollection();
         $this->curiosities = new ArrayCollection();
     }
-    
 
     public function getId(): ?int
     {
@@ -127,6 +131,19 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function saveLogin(): self
+    {
+        $login = $this->getFirstName().'_'.$this->getSecondName().'-'.uniqid(); 
+        $this->login = $login;
 
         return $this;
     }
@@ -164,6 +181,14 @@ class User implements UserInterface
     {
         return $this->roles[0];
     }
+
+    public function isAdmin(): bool
+    {
+        if ($this->getRole() === 'ROLE_ADMIN') {
+            return true;
+        }
+        return false;
+    } 
 
     /**
      * @see UserInterface
@@ -293,7 +318,8 @@ class User implements UserInterface
         return $this;
     }
 
-        public function getImagePath()
+        //is used?
+    /*public function getImagePath()
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
     }
@@ -301,7 +327,7 @@ class User implements UserInterface
     public function getThumbImagePath()
     {
         return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
-    }
+    }*/
 
     public function increaseFailedAttempts(): ?int
     {
@@ -399,7 +425,5 @@ class User implements UserInterface
 
         return $this;
     }
-
-
 
 }

@@ -4,6 +4,7 @@ namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 use App\Repository\UserRepository;
 
@@ -17,13 +18,26 @@ class UniqueUserValidator extends ConstraintValidator
         $this->userRepository = $userRepository;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($object, Constraint $constraint)
     {
-        $existingUser = $this->userRepository->findOneBy([
-            'email' => $value->getEmail()
-        ]);
+        if (!$constraint instanceof UniqueUser) {
+            throw new UnexpectedTypeException($constraint, UniqueUser::class);
+        }
 
-        if (!$existingUser || $existingUser->getId() == $value->getId()) {
+        $field = $constraint->field;
+        $method = 'get';
+        $method .= ucfirst($field);
+        
+        $array[$field] = $object->$method();
+
+        //property cannot be null live it to notBlank assert
+        if ($array[$field] === null || $array[$field] === '') {
+            return;
+        }
+        
+        $existingUser = $this->userRepository->findOneBy($array);
+
+        if (!$existingUser || $existingUser->getId() == $object->getId()) {
             return;
         }
 

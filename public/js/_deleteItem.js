@@ -1,3 +1,5 @@
+'use strict';
+
 const items = document.getElementById('list');
 
 if(items) {

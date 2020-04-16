@@ -1,0 +1,32 @@
+{% block workout_form %}
+<div class="card-header">
+    <h5 class="card-title text-center text-uppercase">{{ header_text }}</h4>
+</div>
+<div class="card-body">
+{{ form_start(workoutForm,{
+    'attr': {'class': 'js-new-workout-form'}
+    }) 
+}}
+    {{ form_row(workoutForm.activityName, {
+        attr: {
+            'class': 'form-control-lg'
+        },
+        'label' : 'Activity: '
+    }) }}
+
+    {{ form_row(workoutForm.durationSecondsTotal, {
+        'label' : 'Duration: '
+    }) }}
+
+    {{ form_row(workoutForm.startAt, {
+        'label' : 'Date: '
+    }) }}
+
+    <button type="submit" class="btn btn-block btn-primary mt-2" id="continue-js" data-url="{{ path('api_route_workout_add_drawed') }}">Save</button>
+
+{{ form_end(workoutForm) }}
+</div>
+{% endblock %}
+
+
+

@@ -20,16 +20,11 @@ class UniqueUser extends Constraint
      */
 
     public $errorPath;
-    public $fields = [];
+    public $field;
 	
 	public function getRequiredOptions()
 	{
-		return ['fields'];
-	}
-
-	public function getDefaultOption()
-	{
-		return 'fields';
+		return ['field', 'errorPath'];
 	}
 
 	/**
@@ -40,5 +35,5 @@ class UniqueUser extends Constraint
 		return self::CLASS_CONSTRAINT;
 	}
 
-     public $message = 'This e-mail address is already registered!';
+    public $message = 'This e-mail address is already registered!';
 }

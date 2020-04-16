@@ -11,14 +11,13 @@ class BasicActivityFormModel implements \ArrayAccess
      */
     protected $type;
 
-    public function getId()
+    protected $id;
+
+    public function getId(): ?int
     {
-        /* 
-        return null because that model is used only for create and we need getId() function to 
-        check is edit
-        */
+        //just for bind form option isEdit
         return null;
-    }
+    }    
 
     public function getType(): ?string
     {

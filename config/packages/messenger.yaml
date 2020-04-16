@@ -28,10 +28,13 @@ framework:
 
         routing:
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
-            'App\Message\Command\DeleteUserImage': [async, async_priority_high]
+            'App\Message\Command\DeleteUserImage': async_priority_high
             'App\Message\Event\UserImageFilenameDeletedEvent': async
 
+            'App\Message\Command\DeleteUserFolders': async
+            'App\Message\Event\UserFoldersDeletedEvent': async
+
+            'App\Message\Command\DeleteWorkoutImage': async
 
 
 

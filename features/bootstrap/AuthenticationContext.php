@@ -4,7 +4,6 @@ use Behat\Behat\Context\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
-
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
@@ -12,7 +11,6 @@ use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
 
 /**
  * This context class contains the definitions of the steps used by the demo
@@ -36,6 +34,11 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
      * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
+
+    /**
+     * @var currentUser
+     */
+    private $currentUser;
 
     public function __construct(
         KernelInterface $kernel, 
@@ -62,21 +65,46 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
     {
      
         $user = new \App\Entity\User();
-        $user->setEmail($email);
-        $user->setFirstName('Admin');
-        $user->setSecondName('Admin');
-        $user->setGender('male');
-        $user->setPassword($this->passwordEncoder->encodePassword(// just for the first test
+        $user
+            ->setEmail($email)
+            ->setFirstName('Admin')
+            ->setSecondName('Admin')
+            ->setGender('male')
+            ->setRoles([('ROLE_ADMIN')])
+            ->agreeToTerms()
+            ; 
+        $user->saveLogin();
+        $user->setPassword($this->passwordEncoder->encodePassword(
                 $user,
-                'admin01'
+                $password
             ));
-        $user->setRoles([('ROLE_ADMIN')]);
-        $user->agreeToTerms(); 
+        
         $em = $this->kernel->getContainer()->get('doctrine')->getManager();
         $em->persist($user);
         $em->flush();
 
         return $user;
+    }
+
+    /**
+     * @Given I am logged in as an admin
+     */
+    public function iAmLoggedInAsAnAdmin()
+    {
+        $this->currentUser = $this->thereIsAnAdminUserWithPassword('admin0@fit.com', 'admin01');
+        $this->visitPath('/login');
+
+        $this->getPage()->fillField('email', 'admin0@fit.com');
+        $this->getPage()->fillField('password', 'admin01');
+        $this->getPage()->pressButton('Sign in');        
+    }
+
+    /**
+     * @When I click :linkName
+     */
+    public function iClick($linkName)
+    {
+        $this->getPage()->clickLink($linkName);
     }
 
 
@@ -105,5 +133,11 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         return;
     }
 
-
+    /**
+     * @return \Behat\Mink\Element\DocumentElement
+     */
+    private function getPage()
+    {
+        return $this->getSession()->getPage();
+    }
 }

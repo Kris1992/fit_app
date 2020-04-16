@@ -1,3 +1,5 @@
+'use strict';
+
 $(document).ready(function() {
     var $typeSelect = $('.js-activity-form-type');
     var $specificActivityForm = $('.js-specific-activity-form');

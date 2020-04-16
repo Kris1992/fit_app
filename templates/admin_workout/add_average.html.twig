@@ -1,0 +1,46 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Add Workout{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/algolia-autocomplete.css') }}">
+{% endblock %}
+
+{% block section_class %}addWorkout{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        {{ include('forms/workout_average_data_form.html.twig', {
+            header_text: 'Add workout',
+            button_text: 'Add'
+        }) }}
+
+        <div class="card-footer text-center">
+            <a href="{{ path('admin_workout_add_specific') }}">You had more specific data??</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
+    <script src="{{ asset('js/algolia-autocomplete.js') }}"></script>
+    <script type="module" src="{{ asset('js/_formHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_workoutSets.js') }}"></script>
+    
+    <!-- Upload image -->
+    <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        
+        $('.js-datepicker').datetimepicker({
+            format:'Y-m-d H:i'
+        });
+    });
+    </script>
+{% endblock %}

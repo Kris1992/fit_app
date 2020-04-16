@@ -21,12 +21,35 @@ class UserRepository extends ServiceEntityRepository
 
 
     /**
-    * @return Query
-    */
+     * findAllQuery Find all Users or if searchTerms are not empty find all users with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function findAllQuery(string $searchTerms)
+    {   
+        if ($searchTerms) {
+            return $this->searchByTermsQuery($searchTerms);
+        }
+        return $this->createQueryBuilder('u')
+            ->getQuery()
+        ;
+        
+    }
 
-    public function findAllQuery()
+    /**
+     * searchByTermsQuery Find all users with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function searchByTermsQuery(string $searchTerms)
     {
         return $this->createQueryBuilder('u')
+            ->where('MATCH_AGAINST(u.firstName, u.secondName) AGAINST(:searchTerms boolean)>0')
+            ->orWhere('u.email LIKE :emailTerms')
+            ->setParameters([
+                'searchTerms' => $searchTerms.'*',
+                'emailTerms' => '%'.$searchTerms.'%'
+            ])
             ->getQuery()
         ;
     }
@@ -43,6 +66,23 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * findAllByIds Find all users with given ids
+     * @param  array  $arrayIds Array with at least one id
+     * @return User[]
+     */
+    public function findAllByIds(array $arrayIds)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id IN(:ids)')
+            ->setParameter('ids', $arrayIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
 
     
     // /**

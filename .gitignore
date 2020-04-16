@@ -12,6 +12,7 @@
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 /public/uploads/users_images/*
+/public/uploads/workouts_images/*
 
 ###> behat/symfony2-extension ###
 behat.yml
@@ -26,3 +27,5 @@ behat.yml
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+/trash

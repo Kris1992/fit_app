@@ -15,4 +15,5 @@ class DeleteUserImage
     {
         return $this->userId;
     }
+    
 }

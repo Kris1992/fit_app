@@ -2,11 +2,14 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Validator\Constraints as AcmeAssert;
+
+use App\Services\ImagesManager\WorkoutsImagesManager;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WorkoutRepository")
@@ -38,7 +41,7 @@ class Workout
      * @ORM\Column(type="integer")
      * @Groups("main")
      */
-    private $burnoutEnergy;
+    private $burnoutEnergyTotal;
 
     /**
      * @ORM\Column(type="datetime")
@@ -51,7 +54,36 @@ class Workout
      * @AcmeAssert\NotZeroDuration()
      * @Groups({"main", "input"})
      */
-    private $durationSeconds;
+    private $durationSecondsTotal;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     * @Groups("main")
+     */
+    private $distanceTotal;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $repetitionsTotal;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"main"})
+     */
+    private $imageFilename;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MovementSet", mappedBy="workout", 
+     * orphanRemoval=true, cascade={"persist", "refresh"})
+     */
+    private $movementSets;
+
+    public function __construct()
+    {
+        $this->movementSets = new ArrayCollection();
+    }
+
 
 
     /// Helper variables
@@ -67,6 +99,9 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
+
+
+
  
     /**
      * transformSaveTimeToString Transform time from seconds to string format H:i:s
@@ -74,7 +109,7 @@ class Workout
      */
     public function transformSaveTimeToString(): self
     {
-        $seconds = $this->getDurationSeconds();
+        $seconds = $this->getDurationSecondsTotal();
         $array['hour'] = (int)($seconds / (60 * 60));
         $array['minute'] = (int)(($seconds / 60) % 60);
         $array['second'] = (int)($seconds % 60);
@@ -104,8 +139,6 @@ class Workout
     }
 
 
-
-
     //setTime to delete
     public function setTime(string $time): self
     {
@@ -119,7 +152,7 @@ class Workout
         return $this->time;
     }
 
-    public function setLinks(string $type,string $url): self
+    public function setLinks(string $type, string $url): self
     {
         $this->links[$type] = $url;
 
@@ -143,18 +176,43 @@ class Workout
         return $this->startDate;
     }
 
-    public function calculateSaveBurnoutEnergy(): self
+    public function setBurnoutEnergyTotal(int $burnoutEnergyTotal): self
+    {
+        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
+
+        return $this;   
+    }
+
+
+
+    // Used in Fixtures
+    public function calculateSaveBurnoutEnergyTotal(): self
     {
         $activity = $this->activity;
         $activityEnergy = $activity->getEnergy();
 
-        $workoutDuration = $this->durationSeconds;
-        $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
+        $workoutDurationTotal = $this->durationSecondsTotal;
+        $burnoutEnergyTotal = $activityEnergy * ($workoutDurationTotal/(60*60));
 
-        $this->burnoutEnergy = $burnoutEnergy;
+        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
 
         return $this;
     }
+
+    public function calculateSaveDistanceTotal(): self
+    { 
+        $activity = $this->activity;
+        $speedDiff = $activity->getSpeedAverageMax() - $activity->getSpeedAverageMin();
+        $speed = $activity->getSpeedAverageMin() + ($speedDiff / 2);
+
+        $distanceTotal = $speed * ($this->getDurationSecondsTotal() / 3600);
+
+        $this->distanceTotal = $distanceTotal;
+
+        return $this;
+
+    }
+    //end of fixtures
 
     public function getId(): ?int
     {
@@ -166,7 +224,7 @@ class Workout
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -178,16 +236,16 @@ class Workout
         return $this->activity;
     }
 
-    public function setActivity(?AbstractActivity $activity): self
+    public function setActivity(AbstractActivity $activity): self
     {
         $this->activity = $activity;
 
         return $this;
     }
 
-    public function getBurnoutEnergy(): ?int
+    public function getBurnoutEnergyTotal(): ?int
     {
-        return $this->burnoutEnergy;
+        return $this->burnoutEnergyTotal;
     }
 
     public function getStartAt(): ?\DateTimeInterface
@@ -202,15 +260,93 @@ class Workout
         return $this;
     }
 
-    public function getDurationSeconds(): ?int
+    public function getDurationSecondsTotal(): ?int
     {
-        return $this->durationSeconds;
+        return $this->durationSecondsTotal;
     }
 
-    public function setDurationSeconds(int $durationSeconds): self
+    public function setDurationSecondsTotal(int $durationSecondsTotal): self
     {
-        $this->durationSeconds = $durationSeconds;
+        $this->durationSecondsTotal = $durationSecondsTotal;
 
         return $this;
     }
+
+    public function getDistanceTotal(): ?float
+    {
+        return $this->distanceTotal;
+    }
+
+    public function setDistanceTotal(?float $distanceTotal): self
+    {
+        $this->distanceTotal = $distanceTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MovementSet[]
+     */
+    public function getMovementSets(): Collection
+    {
+        return $this->movementSets;
+    }
+
+    public function addMovementSet(MovementSet $movementSet): self
+    {
+        if (!$this->movementSets->contains($movementSet)) {
+            $this->movementSets[] = $movementSet;
+            $movementSet->setWorkout($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovementSet(MovementSet $movementSet): self
+    {
+        if ($this->movementSets->contains($movementSet)) {
+            $this->movementSets->removeElement($movementSet);
+            // set the owning side to null (unless already changed)
+            if ($movementSet->getWorkout() === $this) {
+                $movementSet->setWorkout(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRepetitionsTotal(): ?int
+    {
+        return $this->repetitionsTotal;
+    }
+
+    public function setRepetitionsTotal(?int $repetitionsTotal): self
+    {
+        $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+    }
+
 }

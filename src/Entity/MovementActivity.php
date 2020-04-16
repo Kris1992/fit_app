@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MovementActivityRepository")
  */
@@ -13,21 +14,38 @@ class MovementActivity extends AbstractActivity
     /**
      * @ORM\Column(type="float")
      */
-    protected $speedAverage;
+    protected $speedAverageMin;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $speedAverageMax;
 
     /**
      * @ORM\Column(type="string", length=25)
      */
     protected $intensity;
 
-    public function getSpeedAverage(): ?float
+    public function getSpeedAverageMin(): ?float
     {
-        return $this->speedAverage;
+        return $this->speedAverageMin;
     }
 
-    public function setSpeedAverage(float $speedAverage): self
+    public function setSpeedAverageMin(float $speedAverageMin): self
     {
-        $this->speedAverage = $speedAverage;
+        $this->speedAverageMin = $speedAverageMin;
+
+        return $this;
+    }
+
+    public function getSpeedAverageMax(): ?float
+    {
+        return $this->speedAverageMax;
+    }
+
+    public function setSpeedAverageMax(float $speedAverageMax): self
+    {
+        $this->speedAverageMax = $speedAverageMax;
 
         return $this;
     }

@@ -1,0 +1,8 @@
+formatter.name: pretty
+suites:
+    default:
+        namespace: App
+        psr4_prefix: App
+    #factories:
+    #    namespace: App\Services\Factory
+    #    psr4_prefix: App\Services\Factory

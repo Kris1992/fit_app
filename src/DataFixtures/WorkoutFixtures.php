@@ -5,15 +5,36 @@ namespace App\DataFixtures;
 use App\Entity\Workout;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 {
+
+    private static $movementActivities = [
+        'running_activity',
+        'cycling_activity',
+    ];
+
+    private static $bodyweightActivities = [
+        'pumpup_activity',
+    ];
+
     public function getDependencies()
     {
         return [
             UserFixtures::class,
-            MovementActivityFixtures::class
+            MovementActivityFixtures::class,
+            MovementSetActivityFixtures::class,
+            BodyweightActivityFixtures::class,
         ];
+    }
+
+    private $workoutsImagesManager;
+
+    public function __construct(ImagesManagerInterface $workoutsImagesManager)
+    {
+        $this->workoutsImagesManager = $workoutsImagesManager;
     }
 
     protected function loadData(ObjectManager $manager)
@@ -23,10 +44,31 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
-                ->setActivity($this->getRandomReference('movement_activity'))
-                ->setDurationSeconds($this->faker->numberBetween($min = 1, $max = 86399))
+                ->setActivity($this->getRandomReference($this->faker->randomElement(self::$movementActivities)))
+                ->setDurationSecondsTotal($this->faker->numberBetween($min = 1, $max = 86399))
                 /* max time -> 23:59:59 */ 
-                ->calculateSaveBurnoutEnergy()
+                ->calculateSaveDistanceTotal()
+                ->calculateSaveBurnoutEnergyTotal()
+                ->setStartAt($this->faker->dateTime)
+                ;
+
+            $imageFilename = $this->uploadFakeImage($workout->getUser()->getLogin());
+            $workout
+                ->setImageFilename($imageFilename)
+                ;
+
+            return $workout;
+        });
+
+        $this->createMany(10, 'bodyweight_workout', function($i) 
+        {
+            $workout = new Workout();
+            $workout
+                ->setUser($this->getRandomReference('main_users'))
+                ->setActivity($this->getRandomReference($this->faker->randomElement(self::$bodyweightActivities)))
+                ->setDurationSecondsTotal($this->faker->numberBetween($min = 1, $max = 86399))
+                /* max time -> 23:59:59 */ 
+                ->calculateSaveBurnoutEnergyTotal()
                 ->setStartAt($this->faker->dateTime)
                 ;
 
@@ -34,5 +76,15 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
         });
 
         $manager->flush();
+    }
+
+    private function uploadFakeImage(string $subdirectory): string
+    {
+        $randomImage = 'image'.$this->faker->numberBetween(0, 3).'.jpg';
+        $imagePath = __DIR__.'/workout_images/'.$randomImage;
+
+        return $this->workoutsImagesManager
+            ->uploadImage(new File($imagePath), null, $subdirectory)
+            ;
     }
 }

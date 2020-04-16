@@ -1,6 +1,10 @@
 {% extends 'content_base.html.twig' %}
 
 {% block title %}Activity list{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.css">
+{% endblock %}
 
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
@@ -9,57 +13,72 @@
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	    <h2 class="text-green">All Activities ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-4 mx-auto">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
 	    <div class="table-responsive">
-		    <table class="table table-hover" id="list">
-		        <thead>
-		            <tr>
-		            	<th {% if pagination.isSorted('a.id') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, '#', 'a.id') }}
-		            	</th>
-                        <th {% if pagination.isSorted('a.type') %} class="sorted" {% endif %}>
-                            {{ knp_pagination_sortable(pagination, 'Type', 'a.type') }}
-                        </th>
-		            	<th {% if pagination.isSorted('a.name') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Name', 'a.name') }}
-		            	</th>
-                        <th>
-                            Intensity
-                        </th>
-		            	<th {% if pagination.isSorted('a.energy') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Energy', 'a.energy') }}
-		            	</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            {% for activity in pagination %}
-		                <tr>
-		                	<td>{{ activity.id }}</td>
-                            <td>{{ activity.type }}</td>
-		                    <td>{{ activity.name }}</td>
-                            <td>
-                                {% if activity.intensity is defined %}
-                                    {{ activity.intensity }}
-                                {% endif %}
-                            </td>
-		                    <td>{{ activity.energy }}</td>
-                            <td class="links-table">
-                                <div class="link-wrapper">
-                                    <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
-                                        <span class="fa fa-pencil-alt"></span>
-                                    </a>
-                                </div>
-                                <div class="link-wrapper">
-                                    <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
-                                        <span class="fa fa-trash-alt"></span>
-                                    </a>
-                                </div>
-		                    </td>
-		                   
-		                </tr>
-		            {% endfor %}
-		        </tbody>
-		    </table>
-
+            <form action="{{ path('admin_activity_delete_selected') }}" method="POST">
+    		    <table class="table table-hover" id="list">
+    		        <thead>
+    		            <tr>
+                            <th></th>
+    		            	<th {% if pagination.isSorted('a.id') %} class="sorted" {% endif %}>
+    		            		{{ knp_pagination_sortable(pagination, '#', 'a.id') }}
+    		            	</th>
+                            <th {% if pagination.isSorted('a.type') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Type', 'a.type') }}
+                            </th>
+    		            	<th {% if pagination.isSorted('a.name') %} class="sorted" {% endif %}>
+    		            		{{ knp_pagination_sortable(pagination, 'Name', 'a.name') }}
+    		            	</th>
+                            <th>
+                                Intensity
+                            </th>
+    		            	<th {% if pagination.isSorted('a.energy') %} class="sorted" {% endif %}>
+    		            		{{ knp_pagination_sortable(pagination, 'Energy', 'a.energy') }}
+    		            	</th>
+    		            </tr>
+    		        </thead>
+    		        <tbody>
+    		            {% for activity in pagination %}
+    		                <tr>
+                                <td><input type="checkbox" name="deleteId[]" value="{{ activity.id }}"></td>
+    		                	<td>{{ activity.id }}</td>
+                                <td>{{ activity.type }}</td>
+    		                    <td>{{ activity.name }}</td>
+                                <td>
+                                    {% if activity.intensity is defined %}
+                                        {{ activity.intensity }}
+                                    {% endif %}
+                                </td>
+    		                    <td>
+                                    {% if activity.energy == 1 %}
+                                        -----
+                                    {% else %}
+                                        {{ activity.energy }}
+                                    {% endif%}
+                                </td>
+                                <td class="links-table">
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+                                            <span class="fa fa-pencil-alt"></span>
+                                        </a>
+                                    </div>
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                            <span class="fa fa-trash-alt"></span>
+                                        </a>
+                                    </div>
+    		                    </td>              
+    		                </tr>
+    		            {% endfor %}
+    		        </tbody>
+    		    </table>
+                <input type="hidden" name="token" value="{{ csrf_token('delete_multiple') }}"/>
+                <button type="submit" class="btn btn-danger">Delete checked</button>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#importActivity">Import from file</button>
+            </form>
+            {% include 'forms/csv_modal_form.html.twig' %}
 		</div>
 		<div class="navigation">
 
@@ -78,5 +97,44 @@
 
 {% block javascripts %}
 {{ parent() }}
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+<script type="text/javascript" src="{{ asset('js/_importActivities.js') }}"></script>
+<script type="text/template" id="result-template-js">
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th class="table-success text-success">Imported</th>
+            <th class="table-danger text-danger">Invalid</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="table-success text-success"><%= valid %></td>
+            <td class="table-danger text-danger"><%= invalid %></td>
+        </tr>
+    </tbody>
+</table>
+
+<% if (invalid > 0) { %>
+<table class="table table-hover text-center text-danger table-danger">
+    <thead>
+        <tr>
+            <th>Row</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% _.each(invalidRows, function(row) { %>
+            <tr>
+                <td><%= row.id %></td>
+                <td><%= row.message %></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+<% } %>
+</script>
 <script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
 {% endblock %}

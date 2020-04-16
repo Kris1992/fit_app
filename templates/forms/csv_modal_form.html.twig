@@ -1,0 +1,33 @@
+{% block csv_file_form %}
+<!-- Modal template -->
+<div class="modal fade" id="importActivity" tabindex="-1" role="dialog" aria-labelledby="importActivityModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Import Activities</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ path('api_admin_activity_import') }}" class="dropzone js-dropzone">
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                    </div>
+                </form>
+                <div id="table-result-js">
+                </div>
+                <div class="alert alert-info text-center" role="alert">
+                    <span>CSV file must extends this <a href="{{ path('api_admin_activity_download_template')}}" class="alert-link">template</a></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

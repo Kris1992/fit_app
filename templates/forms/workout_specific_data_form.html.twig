@@ -1,0 +1,81 @@
+{% block workout_specific_data_form %}
+
+                    <div class="card-body">
+                        <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+                        {% if errors is defined %}
+                            <ul>
+                                {% for error in errors %}
+                                    <li class="color-fire">{{ error.message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                            {{ form_start(workoutSpecificDataForm, {
+                                'attr': {'class': 'form-signin js-new-workout-form',
+                                'data-url': path('workout_add'),
+                                'name': 'workout_specific_data_form'
+                                }
+                            }) }}
+                                {% if workoutSpecificDataForm.id is defined %}
+                                    {{ form_row(workoutSpecificDataForm.id, {
+                                        'label' : 'ID: ',
+                                        attr: { class: 'form-id-js' }
+                                    }) }}
+                                {% endif %}
+                                {{ form_row(workoutSpecificDataForm.activityName, {
+                                    'label' : 'Activity: ',
+                                    attr: { 
+                                        'data-specific-workout-url': path('api_workout_specific_form'),
+                                        'class': 'js-activity-name-form form-control-lg'
+                                    }
+                                }) }}
+                                {%  if workoutSpecificDataForm.user is defined %}
+                                    {{ form_row(workoutSpecificDataForm.user, {
+                                        'label' : 'User: '
+                                    }) }}
+                                {% endif %}
+
+                                {{ form_row(workoutSpecificDataForm.imageFile, {
+                                    'label' : 'Workout image: ',
+                                    attr: {
+                                        'placeholder': 'Select workout image',
+                                    }
+                                }) }}
+
+                                {% if workoutSpecificDataForm.vars.data.imageFilename is defined and workoutSpecificDataForm.vars.data.imageFilename is not null %}
+                                    <div id="uploaded_image">
+                                        <p>Already uploaded:</p>
+                                        <div class="imageForm-container position-relative">
+                                            <img class="imageForm rounded" src="{{ uploaded_asset(workoutSpecificDataForm.vars.data.thumbImagePath) }}" alt="Workout image">
+                                            <div class="image-toolbar">
+                                                <a href="{{ uploaded_asset(workoutSpecificDataForm.vars.data.imagePath) }}" target="_blank">
+                                                    <span class="fa fa-search-plus position-absolute link-show"></span>
+                                                </a>
+                                                {% if is_granted('ROLE_ADMIN') %}
+                                                    <a 
+                                                        href="{{ path('api_admin_delete_workout_image', 
+                                                        { id: workoutSpecificDataForm.vars.data.id }) }}"
+                                                        id="delete-image"
+                                                    >
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a> 
+                                                {% else %}
+                                                    <a href="#" id="delete-image">
+                                                        <span class="fa fa-trash position-absolute link-delete"></span>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {{ form_row(workoutSpecificDataForm.startAt, {
+                                    'label' : 'Date: '
+                                }) }}
+                                <div class="js-additional-data-workout-specific-form">
+                                    {% include './forms/workout_specific_additional_data_form.html.twig' %}
+                                </div>
+                                <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
+                            
+                            {{ form_end(workoutSpecificDataForm) }}
+                    </div>
+{% endblock %}

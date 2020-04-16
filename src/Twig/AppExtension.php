@@ -4,13 +4,10 @@ namespace App\Twig;
 
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Psr\Container\ContainerInterface;
-
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-
-use App\Services\UploadImagesHelper;
 use Twig\TwigFunction;
-
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 class AppExtension extends AbstractExtension implements ServiceSubscriberInterface
 {
@@ -22,11 +19,10 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
         $this->container = $container;
     }
 
-
     public static function getSubscribedServices()
     {
         return [
-            UploadImagesHelper::class
+            ImagesManagerInterface::class
         ];
     }
 
@@ -39,8 +35,7 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
     public function getUploadedAssetPath(string $path): string
     {
         return $this->container
-            ->get(UploadImagesHelper::class)
+            ->get(ImagesManagerInterface::class)
             ->getPublicPath($path);
-        
     }
 }

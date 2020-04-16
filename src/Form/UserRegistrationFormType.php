@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Form\Model\UserRegistrationFormModel;
+use App\Form\Model\User\UserRegistrationFormModel;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,11 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-
-
-
 use Symfony\Component\Validator\Constraints\Image;
-
 
 class UserRegistrationFormType extends AbstractType
 {
@@ -31,7 +27,6 @@ class UserRegistrationFormType extends AbstractType
 
         $user = $options['data'] ?? null;
         $isEdit = $user && $user->getId();
-        //dd($isEdit);
 
         $imageConstraints = [
             new Image([
@@ -65,8 +60,7 @@ class UserRegistrationFormType extends AbstractType
             ;
 
 
-        if ($isEdit == false)
-        {
+        if ($isEdit == false) {
             $builder
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -74,9 +68,7 @@ class UserRegistrationFormType extends AbstractType
                 'first_options' => [ 'help' => 'Password should contain at least 2 numbers and 3 letters' ]
             ])
             ->add('agreeTerms', CheckboxType::class);
-        }
-        else
-        {
+        } else {
             $builder
                 ->add('id', HiddenType::class)
                 ->add('birthdate', BirthdayType::class, [
@@ -95,8 +87,7 @@ class UserRegistrationFormType extends AbstractType
                 ]);
         }
 
-        if($options['is_admin'])
-        {
+        if($options['is_admin']) {
             $builder
             ->add('role', ChoiceType::class, [
                 'choices'  => [

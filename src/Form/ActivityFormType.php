@@ -13,9 +13,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Range;
-
+use App\Form\Model\Activity\MovementActivityFormModel;
+use App\Form\Model\Activity\AbstractActivityFormModel;
+use App\Form\Model\Activity\BodyweightActivityFormModel;
 
 class ActivityFormType extends AbstractType
 {
@@ -31,7 +31,6 @@ class ActivityFormType extends AbstractType
                 'disabled' => $isEdit
             ])
             ->add('name', TextType::class)
-            ->add('energy', IntegerType::class)
         ;
 
         $builder->addEventListener(
@@ -66,30 +65,41 @@ class ActivityFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => null
+            'data_class' => null,
         ]);
     }
 
 
     private function setupSpecificActivityField(FormInterface $form, ?string $type)
     {   
+        $form
+            ->add('energy', IntegerType::class)
+            ;
         switch ($type) {
             case 'Movement':
                 $form
                     ->add('intensity', ChoiceType::class, [
                         'placeholder' => 'Choose intensity',
-                        'choices' => $this->getChoices('movement_instensity'),
+                        'choices' => $this->getChoices('movement_intensity'),
                     ])
-                    ->add('speedAverage', NumberType::class, [
-                        'constraints' => [
-                            new NotBlank(),
-                            new Range([
-                                'min' => 1,
-                                'max' => 20
-                            ]),
-                        ],
-                    ])
+                    ->add('speedAverageMin', NumberType::class)
+                    ->add('speedAverageMax', NumberType::class)
                 ;
+                break;
+            case 'MovementSet':
+                $form
+                    ->remove('energy')//this type of activity don't need energy (Energy from sets activities will be used)
+                    ;
+                break;
+            case 'Bodyweight':
+                $form
+                    ->add('repetitionsAvgMin', IntegerType::class)
+                    ->add('repetitionsAvgMax', IntegerType::class)
+                    ->add('intensity', ChoiceType::class, [
+                        'placeholder' => 'Choose intensity',
+                        'choices' => $this->getChoices('bodyweight_intensity'),
+                    ])
+                    ;
                 break;
             case 'Weight':
                 $form
@@ -104,20 +114,11 @@ class ActivityFormType extends AbstractType
     {   
         switch ($fieldName) {
             case 'activity_type':
-                return $choices = [
-                    'Weight' => 'Weight',
-                    'Movement (running, cycling etc.)' => 'Movement',
-                ];
-                break;
-            case 'movement_instensity':
-                return $choices = [
-                    'Very slow' => 'Very slow',
-                    'Slow' => 'Slow',
-                    'Normal' => 'Normal',
-                    'Fast' => 'Fast',
-                    'Very fast' => 'Very fast',
-                ];
-                break;
+                return AbstractActivityFormModel::getAvaibleTypes();
+            case 'movement_intensity':
+                return MovementActivityFormModel::getAvaibleIntensities();
+            case 'bodyweight_intensity':
+                return BodyweightActivityFormModel::getAvaibleIntensities();
         }
     }
 

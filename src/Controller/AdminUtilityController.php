@@ -7,10 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Symfony\Component\HttpFoundation\Request;
-
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -23,8 +20,13 @@ class AdminUtilityController extends AbstractController
     public function getUsersApi(UserRepository $userRepository, Request $request)
     { 
         $users = $userRepository->findAllMatching($request->query->get('query'));
-        return $this->json([
-            'users' => $users
-        ], 200, [], ['groups' => ['main']]);
+        return $this->json(
+            [
+                'users' => $users
+            ], 
+            200, 
+            [], 
+            ['groups' => ['main']]
+        );
     }
 }

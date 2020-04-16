@@ -4,9 +4,6 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
-
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -17,8 +14,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discriminator")
  * @ORM\Entity(repositoryClass="App\Repository\AbstractActivityRepository")
+ *
+ * @ORM\Table(name="abstract_activity", indexes={@ORM\Index(columns={"name", "type"}, 
+ * flags={"fulltext"})})
  */
-abstract class AbstractActivity implements \ArrayAccess
+abstract class AbstractActivity implements \ArrayAccess //  
 {
     /**
      * @ORM\Id()
@@ -46,7 +46,7 @@ abstract class AbstractActivity implements \ArrayAccess
     protected $energy;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Workout", mappedBy="activity")
+     * @ORM\OneToMany(targetEntity="App\Entity\Workout", mappedBy="activity", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $workouts;
 

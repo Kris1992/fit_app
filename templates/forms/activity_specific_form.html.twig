@@ -1,15 +1,47 @@
-{# Movement #}
-{%  if activityForm.speedAverage is defined %}
-    {{ form_row(activityForm.speedAverage, {
-        'label' : 'Average speed: '
-    }) }}
+{%  if activityForm.energy is defined %}
+{{ form_row(activityForm.energy, {
+    'label' : 'Energy [kcal]: ',
+    attr: { placeholder: 'Energy per hour' }
+}) }}
 {% endif %}
+
+{# Movement #}
 {%  if activityForm.intensity is defined %}
     {{ form_row(activityForm.intensity, {
         'attr': {'class': 'form-control-lg'},
         'label' : 'Intensity: ',
     }) }}
 {% endif %}
+
+{%  if activityForm.speedAverageMin is defined %}
+    {{ form_row(activityForm.speedAverageMin, {
+        'label' : 'Lowest average speed [km/h]: '
+    }) }}
+{% endif %}
+
+{%  if activityForm.speedAverageMax is defined %}
+    {{ form_row(activityForm.speedAverageMax, {
+        'label' : 'Largest average speed [km/h]: '
+    }) }}
+{% endif %}
+
+{# Bodyweight #}
+
+{%  if activityForm.repetitionsAvgMin is defined %}
+    {{ form_row(activityForm.repetitionsAvgMin, {
+        'label' : 'Minimum repetitions per hour: '
+    }) }}
+{% endif %}
+{%  if activityForm.repetitionsAvgMax is defined %}
+    {{ form_row(activityForm.repetitionsAvgMax, {
+        'label' : 'Maximum repetitions per hour: '
+    }) }}
+{% endif %}
+
+
+
+
+
 
 {# Weight #}
 

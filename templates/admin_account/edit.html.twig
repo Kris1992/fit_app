@@ -4,7 +4,8 @@
 {% block title %}Edit Account{% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/_uploadImageForm.js') }}"></script>
+    <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
 {% endblock %}
 {% block stylesheets %}
     {{ parent() }}

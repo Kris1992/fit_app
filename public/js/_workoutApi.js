@@ -156,16 +156,16 @@
         	event.preventDefault();
         	const $form = $(event.currentTarget);
         	const formData = {};
-            formData['durationSeconds'] = {};
+            formData['durationSecondsTotal'] = {};
 
         	for(let fieldData of $form.serializeArray()){
         		
-        		if(fieldData.name == 'durationSeconds[hour]'){
-        			formData['durationSeconds']['hour'] = fieldData.value;
-        		} else if(fieldData.name == 'durationSeconds[minute]') {
-        			formData['durationSeconds']['minute'] = fieldData.value;
-        		} else if(fieldData.name == 'durationSeconds[second]') {
-                    formData['durationSeconds']['second'] = fieldData.value;
+        		if(fieldData.name == 'durationSecondsTotal[hour]'){
+        			formData['durationSecondsTotal']['hour'] = fieldData.value;
+        		} else if(fieldData.name == 'durationSecondsTotal[minute]') {
+        			formData['durationSecondsTotal']['minute'] = fieldData.value;
+        		} else if(fieldData.name == 'durationSecondsTotal[second]') {
+                    formData['durationSecondsTotal']['second'] = fieldData.value;
                 } else {
         			formData[fieldData.name] = fieldData.value;
         		}
@@ -181,10 +181,8 @@
         }
 
         _saveWorkout(data, $form) {
-        	
         	return new Promise(function(resolve, reject) {
                 const url = $form.data('url');
-
                 $.ajax({
                     url,
                     method: 'POST',
@@ -258,7 +256,7 @@
 				</td>
 				<td>
 					<div class="form-group">
-						<input type="text" name="durationSeconds" required="required" class="form-control form-control-sm" value="${data[2]}">
+						<input type="text" name="durationSecondsTotal" required="required" class="form-control form-control-sm" value="${data[2]}">
 					</div>
 				</td>
 				<td>${data[3]}</td>
@@ -311,7 +309,7 @@
         	const $row = $link.closest('tr');
         	const url = $row.find('.js-submit-edit-workout').data('url');
 
-        	const duration = $row.find('[name=durationSeconds]').val();
+        	const duration = $row.find('[name=durationSecondsTotal]').val();
         	const durationArray = duration.split(':');
         	const ex = new RegExp(/^0{1}.{1}/);
         	for (var i = 0; i < 3; i++) {
@@ -321,13 +319,13 @@
         	}
 
         	const inputsData = {};
-            inputsData['durationSeconds'] = {};
+            inputsData['durationSecondsTotal'] = {};
 
             inputsData['activity'] = $row.find('[name=activity]').children("option:selected").val();
         	inputsData['startAt'] = $row.find('[name=startAt]').val();
-        	inputsData['durationSeconds']['hour'] = durationArray[0];
-            inputsData['durationSeconds']['minute'] = durationArray[1];
-        	inputsData['durationSeconds']['second'] = durationArray[2];
+        	inputsData['durationSecondsTotal']['hour'] = durationArray[0];
+            inputsData['durationSecondsTotal']['minute'] = durationArray[1];
+        	inputsData['durationSecondsTotal']['second'] = durationArray[2];
 
             inputsData['_token'] = $('#_token').val();
         	
@@ -366,7 +364,7 @@
 				<td>${data['id']}</td>
 				<td data-id="${data['activity']['id']}">${data['activity']['name']}</td>
 				<td class="js-duration">${data['time']}</td>
-				<td class="js-energy">${data['burnoutEnergy']}</td>
+				<td class="js-energy">${data['burnoutEnergyTotal']}</td>
                 <td>${data['startDate']}</td>
 				<td class="links-table">
                     <div class="link-wrapper">
@@ -404,8 +402,8 @@
                 	let fieldName = $(element).attr('name');
                 	const $fieldWrapper = $(element).closest('.form-group');
 
-                    if(fieldName == 'durationSeconds[hour]') {
-                        fieldName = 'durationSeconds';
+                    if(fieldName == 'durationSecondsTotal[hour]') {
+                        fieldName = 'durationSecondsTotal';
                     }
 
                 	if (!errorData[fieldName]) {
@@ -553,7 +551,7 @@
 
         _getDataFromFields(today) {
             const inputsData = {};
-            inputsData['durationSeconds'] = {};
+            inputsData['durationSecondsTotal'] = {};
 
             var $selectInput = this.$nowWorkoutWrapper.find('#js-workout-now-activity');
             inputsData['activity'] = $selectInput.val();
@@ -561,9 +559,9 @@
             var durationString = this.$nowWorkoutWrapper.find('#js-workout-now-duration').val();
             const durationArray = durationString.split(' ');
 
-            inputsData['durationSeconds']['hour'] = durationArray[0];
-            inputsData['durationSeconds']['minute'] = durationArray[2];
-            inputsData['durationSeconds']['second'] = durationArray[4];
+            inputsData['durationSecondsTotal']['hour'] = durationArray[0];
+            inputsData['durationSecondsTotal']['minute'] = durationArray[2];
+            inputsData['durationSecondsTotal']['second'] = durationArray[4];
             inputsData['startAt'] = today;
 
             inputsData['_token'] = $('#_token').val();

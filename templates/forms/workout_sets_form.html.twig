@@ -1,0 +1,36 @@
+{%  if workoutForm.durationSecondsTotal is defined %}
+    {{ form_row(workoutForm.durationSecondsTotal, {
+        'label' : 'Duration: '
+    }) }}
+{% endif %}
+{%  if workoutForm.type is defined %}
+    {{ form_row(workoutForm.type) }}
+{% endif %}
+
+{# Movement Sets #}
+{%  if workoutForm.movementSets is defined %}
+    <div class="form-error color-fire">
+        {%  if workoutForm.movementSets.parent.vars.errors[0] is defined %}
+            {{ workoutForm.movementSets.parent.vars.errors[0].message }}
+        {% endif %}
+    </div>
+    <div id="workout_sets" 
+    data-prototype="{{ form_widget(workoutForm.movementSets.vars.prototype)|e }}"
+    >
+        {% do workoutForm.movementSets.setRendered() %}
+        {% for row in workoutForm.movementSets %}
+            <div class="card my-2 card-js">
+                <div class="card-header bg-info text-white">
+                    <strong>SET {{row.vars.name}}</strong>
+                </div>
+                <div class="card-body">
+                    {{ form_row(row) }}
+                </div>
+                <div class="card-footer bg-secondary text-center">
+                    <a href="#" class="btn btn-danger remove-js">Remove set</a>
+                </div>
+                
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
