@@ -5,6 +5,8 @@ namespace App\DataFixtures;
 use App\Entity\Workout;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 {
@@ -28,6 +30,13 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
         ];
     }
 
+    private $workoutsImagesManager;
+
+    public function __construct(ImagesManagerInterface $workoutsImagesManager)
+    {
+        $this->workoutsImagesManager = $workoutsImagesManager;
+    }
+
     protected function loadData(ObjectManager $manager)
     {
         $this->createMany(10, 'movement_workout', function($i) 
@@ -41,6 +50,11 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
                 ->calculateSaveDistanceTotal()
                 ->calculateSaveBurnoutEnergyTotal()
                 ->setStartAt($this->faker->dateTime)
+                ;
+
+            $imageFilename = $this->uploadFakeImage($workout->getUser()->getLogin());
+            $workout
+                ->setImageFilename($imageFilename)
                 ;
 
             return $workout;
@@ -62,5 +76,15 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
         });
 
         $manager->flush();
+    }
+
+    private function uploadFakeImage(string $subdirectory): string
+    {
+        $randomImage = 'image'.$this->faker->numberBetween(0, 3).'.jpg';
+        $imagePath = __DIR__.'/workout_images/'.$randomImage;
+
+        return $this->workoutsImagesManager
+            ->uploadImage(new File($imagePath), null, $subdirectory)
+            ;
     }
 }

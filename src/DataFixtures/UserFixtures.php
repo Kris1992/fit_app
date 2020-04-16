@@ -5,15 +5,20 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class UserFixtures extends BaseFixture
 {
 
 	private $passwordEncoder;
+    private $userImageManager;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, ImagesManagerInterface
+        $userImageManager)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->userImageManager = $userImageManager;
     }
 
     protected function loadData(ObjectManager $manager)
@@ -39,9 +44,13 @@ class UserFixtures extends BaseFixture
                 ->agreeToTerms()
                 ; 
 
+            $imageFilename = $this->uploadFakeImage($user->getLogin());
+            $user
+                ->setImageFilename($imageFilename)
+                ;
+
             return $user;
         });
-
 
         //admins
         
@@ -69,5 +78,15 @@ class UserFixtures extends BaseFixture
 
 
         $manager->flush();
+    }
+
+    private function uploadFakeImage(string $subdirectory): string
+    {
+        $randomImage = 'image'.$this->faker->numberBetween(0, 3).'.jpg';
+        $imagePath = __DIR__.'/user_images/'.$randomImage;
+
+        return $this->userImageManager
+            ->uploadImage(new File($imagePath), null, $subdirectory)
+            ;
     }
 }

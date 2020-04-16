@@ -29,12 +29,14 @@ class UserRegistration implements UserRegistrationInterface
 
     public function register(Request $request, UserRegistrationFormModel $userModel,?File $uploadedImage): User
     {
-        $isHuman = $this->checkCatchpa($request);
+        if ($_ENV['APP_ENV'] !== 'test') { // In test env do not run captcha validation
+            $isHuman = $this->checkCatchpa($request);
 
-        if (!$isHuman->isSuccess()) {
-            throw new \Exception('The ReCaptcha was not entered correctly!');
+            if (!$isHuman->isSuccess()) {
+                throw new \Exception('The ReCaptcha was not entered correctly!');
+            }
         }
-        
+
         $user = $this->userFactoryInterface->create($userModel, null, $uploadedImage);
 
         return $user;

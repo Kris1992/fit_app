@@ -15,4 +15,3 @@ Feature: Authentication
         And I press "admin0@fit.com"
         #And I save a screenshot to "after_login.png"
         Then I should see "Logout"
-        
