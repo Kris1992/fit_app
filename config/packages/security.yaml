@@ -16,7 +16,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
+            anonymous: lazy #true checking is logged only if it's required 
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator
