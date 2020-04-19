@@ -33,36 +33,56 @@ class WorkoutWithMapFormType extends AbstractType
                 'placeholder' => 'Choose an activity',
                 'invalid_message' => 'Invalid activity!',
             ])
-            ->add('startAt', DateTimeType::class, [
-                'input'  => 'datetime',
-                'widget' => 'single_text',
-                'html5' => false,
-                'attr' => ['class' => 'js-datepicker'],
-                'model_timezone' => 'UTC',
-                'view_timezone' => 'UTC',
-            ])
-            ->add('durationSecondsTotal', CustomTimeType::class, [
-                'placeholder' => [
-                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
-                ],
-                'attr' => [
-                    'class'=>'form-inline'
-                    ]
-                ])
             ->add('type', HiddenType::class, [
                 'data' => 'Movement',
                 'attr' => [
                     'readonly' => true,
                 ],
             ])
-        ;
+            ;
+
+        //Drawed on map route or real time tracking
+        if ($options['is_drawing']) {
+            $builder
+                ->add('startAt', DateTimeType::class, [
+                    'input'  => 'datetime',
+                    'widget' => 'single_text',
+                    'html5' => false,
+                    'attr' => ['class' => 'js-datepicker'],
+                    'model_timezone' => 'UTC',
+                    'view_timezone' => 'UTC',
+                ])
+                ->add('durationSecondsTotal', CustomTimeType::class, [
+                    'placeholder' => [
+                        'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                    ],
+                    'attr' => [
+                        'class'=>'form-inline'
+                        ]
+                    ])
+            ;
+        } else {
+            $builder
+                ->add('startAt', DateTimeType::class, [
+                    'input'  => 'datetime',
+                    'widget' => 'single_text',
+                    'html5' => false,
+                    'attr' => ['class' => 'd-none'],
+                    'model_timezone' => 'UTC',
+                    'view_timezone' => 'UTC',
+                ])
+                ->add('durationSecondsTotal', HiddenType::class)
+            ;
+        }
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => WorkoutSpecificFormModel::class,
-            'validation_groups' => ['route_map']
+            'validation_groups' => ['route_map'],
+            'is_drawing' => true
         ]);
     }
 

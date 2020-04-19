@@ -16,8 +16,5 @@ class WebContext extends RawMinkContext
         sleep(1);
         $this->getSession()->wait(10000, "document.readyState === 'complete'");
     }
-
-
-
-
+    
 }

@@ -99,7 +99,12 @@
                 </div>
                 <div class="card text-white bg-info">
                     {{ include('forms/workout_map_data_form.html.twig', {
-                        header_text: 'Input data'
+                        header_bg: '',
+                        header_text: 'Input data',
+                        button_text: 'Save',
+                        url: path('api_route_workout_add_drawed'),
+                        save_url: '',
+                        label: 'Date: '
                     }) }}
                 </div>
             </div>  

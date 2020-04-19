@@ -52,10 +52,13 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
                 ->setStartAt($this->faker->dateTime)
                 ;
 
-            $imageFilename = $this->uploadFakeImage($workout->getUser()->getLogin());
-            $workout
-                ->setImageFilename($imageFilename)
-                ;
+            //In test env we do need waste of time to upload images
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $imageFilename = $this->uploadFakeImage($workout->getUser()->getLogin());
+                $workout
+                    ->setImageFilename($imageFilename)
+                    ;
+            }
 
             return $workout;
         });

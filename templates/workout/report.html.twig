@@ -1,0 +1,100 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Wokout Report{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block section_class %}workoutReport{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-12 col-md-10 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-10">
+                    <span class="d-block text-muted text-uppercase">
+                        {{ workout.activity.name }}
+                    </span>
+                    <span class="d-block text-muted">
+                        <small>{{ workout.startAt | date('Y-m-d H:i') }}</small>
+                    </span>
+                </div>
+                <div class="col-2">
+                    <a href="{{ path('workout_list') }}" class="btn btn-primary float-right">
+                        <span class="fas fa-clipboard-list"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0 ">
+            <div class="card-text row">
+                <div class="col-md-5">
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-fire color-fire"></span>
+                        <span class="text-muted text-uppercase">
+                            {{workout.burnoutEnergyTotal }} kcal
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2">
+                        <span class="far fa-clock color-clock"></span>
+                        <span class="text-muted text-uppercase">
+                            Duration
+                            {{ workout.durationSecondsTotal | time }}
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-road color-clock"></span>
+                        <span class="text-muted text-uppercase">
+                            Distance
+                            {% if workout.distanceTotal %}
+                                {{ workout.distanceTotal | number_format(2) }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            km
+                        </span>
+                    </div>
+                    <!-- TO DO-->
+                    <div class="col-12">TO DO</div>
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-running text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Speed 
+                            ---
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-tachometer-alt text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Pace
+                            ---
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-mountain text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Min Altitude
+                            ---
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2">
+                        <span class="fas fa-mountain text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Max Altitude
+                            ---
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    {% if workout.imageFilename is not null %} 
+                        <img class="img-fluid" src="{{ uploaded_asset(workout.imagePath) }}" alt="Workout image">
+                    {% else %}
+                        <img class="img-fluid" src="https://via.placeholder.com/350" alt="Workout image">
+                    {% endif %}            
+                </div>
+            </div>
+        </div>             
+    </div>
+</div>
+
+{% endblock %}

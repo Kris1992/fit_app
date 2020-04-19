@@ -1,0 +1,99 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Add Workout{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/_map.css') }}">
+{% endblock %}
+
+{% block section_class %}addWorkoutWithTracking{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-12 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <div class="row m-1">
+            <div class="col-12">
+                <h2 class="text-green text-center">Track route</i></h2>
+            </div>
+            <div class="col-sm-12 col-md-9 pr-0">
+                <div id="mapContainer" class="col-12 p-0">
+                    <div id="mapBar">
+                        <div class="col">
+                            <div class="row text-center">
+                                <div id="routeBurnoutEnergy" class="col-3 border border-secondary">
+                                    <strong>
+                                        <span class="d-block text-uppercase">Burnout Energy</span>
+                                    </strong>
+                                    <span class="d-block" id="burnout-js">0 kcal</span>
+                                </div>
+                                <div id="routeDistance" class="col-3 border border-secondary">
+                                    <strong>
+                                        <span class="d-block text-uppercase">Distance</span>
+                                    </strong>
+                                    <span class="d-block" id="distance-js">0 km</span>
+                                </div>
+                                <div id="routeSpeedAverage" class="col-3 border border-secondary">
+                                    <strong>
+                                        <span class="d-block text-uppercase">Distance</span>
+                                    </strong>
+                                    <span class="d-block" id="speed-js">0 km/h</span>
+                                </div>
+                                <div id="routeDuration" class="col-3 border border-secondary">
+                                    <strong>
+                                        <span class="d-block text-uppercase">Time</span>
+                                    </strong>
+                                    <span class="d-block" id="duration-js"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-3 pl-0">
+                <div class="card text-white bg-warning mt-0 fade show text-center" style="display: none;" id="info-panel">
+                    <div class="card-header pt-0">
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-link float-right p-0" id="remove-message-js">
+                                    <span class="fas fa-times text-danger" style="font-size: 12px;"></span>
+                                </button>
+                            </div>
+                            <div class="col-12 card-title text-uppercase mb-0 text-danger">
+                                <h5>Warning</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body text-uppercase" id="info-message-js">
+                        
+                    </div>
+                </div>
+                <div class="card text-white bg-secondary">
+                    {{ include('forms/workout_map_data_form.html.twig', {
+                        header_bg: 'bg-primary',
+                        header_text: 'Input data',
+                        button_text: 'Choose',
+                        url: path('api_activity_get_all'),
+                        save_url: path('api_route_workout_add_tracked'),
+                        label: false
+                    }) }}
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+   {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        window.apikey = {{ map_api_key|json_encode|raw }};
+    </script>
+    <script src="{{ asset('js/_mapTrack.js') }}" type="text/javascript"></script>
+{% endblock %}

@@ -9,13 +9,12 @@ use Behat\MinkExtension\Context\MinkContext;
 use Behat\MinkExtension\Context\RawMinkContext;
 
 use Behat\Behat\Context\SnippetAcceptingContext;
-use App\Entity\User;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-//use PHPUnit_Framework_Assert as Assertions;
-//use \PHPUnit\Framework\Assert as Assertions;
-require_once __DIR__.'/../../bin/.phpunit/phpunit-7.5-0/src/Framework/Assert/Functions.php';
 
+
+/*
+                            Use this Context in features needed fixtures data
+ */
 
 /**
  * This context class contains the definitions of the steps used by the demo
@@ -61,6 +60,14 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
     {
         $purger = new ORMPurger($this->kernel->getContainer()->get('doctrine')->getManager());
         $purger->purge();
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function FunctionName($value='')
+    {
+        # code...
     }
 
     /**
@@ -112,20 +119,6 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         $this->getPage()->clickLink($linkName);
     }
 
-
-     /**
-     * Check is number of items inside table
-     * 
-     * @Then I should see :count activity
-     */
-    public function iShouldSee($count)
-    {
-        $table = $this->getPage()->find('css', 'table.table');
-        //Assertions::
-        assertNotNull($table, 'Cannot find a table!');
-        //Assertions::
-        assertCount(intval($count), $table->findAll('css', 'tbody tr'));
-    }
 
 
 

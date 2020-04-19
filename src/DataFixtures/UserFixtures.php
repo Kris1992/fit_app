@@ -44,10 +44,13 @@ class UserFixtures extends BaseFixture
                 ->agreeToTerms()
                 ; 
 
-            $imageFilename = $this->uploadFakeImage($user->getLogin());
-            $user
-                ->setImageFilename($imageFilename)
-                ;
+            //In test env we do need waste of time to upload images
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $imageFilename = $this->uploadFakeImage($user->getLogin());
+                $user
+                    ->setImageFilename($imageFilename)
+                    ;
+            }
 
             return $user;
         });
