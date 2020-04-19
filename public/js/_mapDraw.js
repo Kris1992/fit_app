@@ -31,8 +31,9 @@ initMapView();
 
 $(document).ready(function() {
     //event listeners
-    addClickEventListener(icon);
+    addClickEventListener();
     document.getElementById("search-button-js").addEventListener("click", getLocationFromSearch);
+    document.getElementById("position-button-js").addEventListener("click", showCurrentLocation);
     document.getElementById("toogle-marker-js").addEventListener("click", toggleSearchMarker);
     document.getElementById("remove-last-js").addEventListener("click", removeLastWaypointMarker);
     document.getElementById("remove-all-js").addEventListener("click", removeAllWaypointsMarkers);
@@ -40,7 +41,23 @@ $(document).ready(function() {
     document.getElementById("remove-message-js").addEventListener("click", removeMapResponse);
 });
 
-//to do wyeksportowania
+/**
+ * showCurrentLocation Shows curent location by marker on the map
+ */
+function showCurrentLocation()
+{
+    getActualPosition().then((currentPos) => {
+        var currentCoords = {
+            lat: currentPos.coords.latitude,
+            lng: currentPos.coords.longitude
+        };
+        showSearchMarker(currentCoords);
+    });
+}
+
+/**
+ * getActualPosition Get actual position of user
+ */
 function getActualPosition()
 {
     return new Promise((res, rej) => {
@@ -48,6 +65,9 @@ function getActualPosition()
     });
 }
 
+/**
+ * initMapView Set map view to user current position
+ */
 function initMapView() {
     if(navigator.geolocation) {
         getActualPosition().then((currentPos) => {
@@ -59,7 +79,10 @@ function initMapView() {
     }
 }
 
-function addClickEventListener(icon) {
+/**
+ * addClickEventListener Add click event listener to map
+ */
+function addClickEventListener() {
     map.addEventListener('tap', (evt) => {
         const marker_mode = document.getElementById('marker_mode').checked;
         if (marker_mode) {
@@ -84,6 +107,10 @@ function addClickEventListener(icon) {
     });
 }
 
+/**
+ * calculateDistance Calculate distance of drawed route
+ * @param  {Boolean} isRemovedMarker Do you want recalculate distance after remove marker? [optional]
+ */
 function calculateDistance(isRemovedMarker = false)
 {
     if (isRemovedMarker && waypoints.length == 1) {
@@ -136,6 +163,10 @@ function calculateDistance(isRemovedMarker = false)
     }
 }
 
+/**
+ * showDistance Show total distance on map panel
+ * @param  {Array} routeData Array with route data 
+ */
 function showDistance(routeData)
 {
     var routeDistanceTotal = routeData.summary.distance;
@@ -149,15 +180,34 @@ function showDistance(routeData)
     }
 }
 
+/**
+ * resetDistance Reset distance on the map panel
+ */
 function resetDistance()
 {
     document.getElementById('distance-js').innerHTML = "0 m";
 }
 
+/**
+ * showSearchMarker Show marker of search position on the map
+ * @param  {Array} coords
+ */
+function showSearchMarker(coords)
+{
+    if (searchMarker) {
+        map.removeObject(searchMarker);
+    }
+    setMapView(coords);
+    searchMarker = new H.map.Marker(coords);
+    map.addObject(searchMarker);
+}
+
+/**
+ * getLocationFromSearch Get location from search input and search position of it
+ */
 function getLocationFromSearch()
 {
     var $searchButton = $("#search-button-js");
-
     disableButton($searchButton);
 
     var locationSearch = document.getElementById("geolocation-js").value;
@@ -166,12 +216,7 @@ function getLocationFromSearch()
             q: locationSearch
         }, (result) => {
             result.items.forEach((item) => {
-                if (searchMarker) {
-                    map.removeObject(searchMarker);
-                }
-                setMapView(item.position);
-                searchMarker = new H.map.Marker(item.position);
-                map.addObject(searchMarker);
+                showSearchMarker(item.position);
                 enableButton($searchButton);
             });
         }, (error) => {
@@ -179,29 +224,44 @@ function getLocationFromSearch()
             enableButton($searchButton);
         });
     } else {
-        showMapResponse('You cannot search empty field');
+        showMapResponse('You cannot search place without name.');
         enableButton($searchButton);
     }   
 }
 
+/**
+ * disableButton Disable button
+ * @param $button JQuery handler to the button
+ */
 function disableButton($button)
 {   
     $button.prop('disabled', true);
     $button.append('<span class="fas fa-spinner fa-spin"></span>');
 }
 
+/**
+ * enableButton Enable button
+ * @param $button JQuery handler to the button
+ */
 function enableButton($button)
 {
     $button.prop('disabled', false);
     $button.children('.fa-spinner').remove();
 }
 
+/**
+ * showMapResponse Shows any informations to information panel
+ * @param  {string} message String with message to show 
+ */
 function showMapResponse(message)
 {   
     $("#info-message-js").html(message);
     $('#info-panel').fadeIn('slow');    
 }
 
+/**
+ * removeMapResponse Remove info panel message
+ */
 function removeMapResponse()
 {
     var $infoPanel = $("#info-panel");
@@ -211,6 +271,10 @@ function removeMapResponse()
     });
 }
 
+/**
+ * setMapView Set view of map
+ * @param {Array} currentCoords Array  with position coords to show on the map
+ */
 function setMapView(currentCoords) {
     if (currentCoords.latitude) {
         map.setCenter({lat: currentCoords.latitude, lng: currentCoords.longitude});
@@ -219,6 +283,9 @@ function setMapView(currentCoords) {
     }   
 }
 
+/**
+ * toggleSearchMarker Show/hide search marker
+ */
 function toggleSearchMarker()
 {
     if (searchMarker) {
@@ -230,6 +297,9 @@ function toggleSearchMarker()
     }
 }
 
+/**
+ * removeLastWaypointMarker Remove last route marker
+ */
 function removeLastWaypointMarker()
 {
     if(waypoints.length > 0) {
@@ -242,10 +312,13 @@ function removeLastWaypointMarker()
         }
         calculateDistance(true);
     } else {
-        showMapResponse('No more markers to delete');
+        showMapResponse('No more markers to delete.');
     }
 }
 
+/**
+ * removeAllWaypointsMarkers Reset route
+ */
 function removeAllWaypointsMarkers()
 {
     if(waypoints.length > 0) {
@@ -255,10 +328,14 @@ function removeAllWaypointsMarkers()
         map.removeObjects(map.getObjects());
         resetDistance();
     } else {
-        showMapResponse('No more markers to delete');
+        showMapResponse('No more markers to delete.');
     }
 }
 
+/**
+ * sendData Send workout data to server to process it
+ * @param event 
+ */
 function sendData(event)
 {
     disableButton($(event.target));
@@ -307,38 +384,22 @@ function sendData(event)
                     }                    
                 });
             } else {
-                showMapResponse('Capturing is not supported');
+                showMapResponse('Capturing is not supported.');
             }
         }, []);
 
     } else {
-        showMapResponse('Draw your route first');   
+        showMapResponse('Draw your route first.');   
     }
 
     enableButton($(event.target));
 }
 
-//config
-function configPlatform() {
-    return new H.service.Platform({
-        'apikey': window.apikey,
-    });
-}
-
-function configLayers() {
-    return platform.createDefaultLayers();
-}
-//end of config
-
-//custom marker
-function setCustomMarker() {
-    var svgMarkup = '<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg">' +
-    '<circle fill="royalblue" cx="7" cy="7" r="7" /></svg>';
-
-    return new H.map.Icon(svgMarkup);
-}
-//End of custom marker
-
+/**
+ * saveWorkout Send workout data to server and get response
+ * @param  {Array} data Array with workout data
+ * @param  {String} url Url to server method
+ */
 function saveWorkout(data, url) {
     return new Promise( (resolve, reject) => {
         $.ajax({
@@ -360,6 +421,11 @@ function saveWorkout(data, url) {
     });
 }
 
+/**
+ * getStatusError Get status error and return proper message
+ * @param jqXHR 
+ * @return {Array} Array with message
+ */
 function getStatusError(jqXHR) {
     if(jqXHR.status === 0) {
         return {
@@ -381,6 +447,10 @@ function getStatusError(jqXHR) {
     return null;
 }
 
+/**
+ * mapErrorsToForm Map errors to proper form fields
+ * @param  {Array} errorData Array with form errors
+ */
 function mapErrorsToForm(errorData)
 {
     var $form = $('.js-new-workout-form');
@@ -404,9 +474,34 @@ function mapErrorsToForm(errorData)
     }
 }
 
+/**
+ * removeFormErrors Remove all errors from form fields
+ */
 function removeFormErrors() {
     var $form = $('.js-new-workout-form');
-
     $form.find('.js-field-error').remove();
     $form.find('.form-group').removeClass('has-error');
+}
+
+/*
+            Config functions
+*/
+function configPlatform() {
+    return new H.service.Platform({
+        'apikey': window.apikey,
+    });
+}
+
+function configLayers() {
+    return platform.createDefaultLayers();
+}
+
+/**
+ * setCustomMarker Set custom marker
+ */
+function setCustomMarker() {
+    var svgMarkup = '<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle fill="royalblue" cx="7" cy="7" r="7" /></svg>';
+
+    return new H.map.Icon(svgMarkup);
 }

@@ -47,6 +47,13 @@ class ActivityController extends AbstractController
             ]
         );
 
+        if(!$activities) {
+            $responseMessage = [
+                'errorMessage' => 'This activity do not exist.'
+            ];
+            return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+        }
+
         return $this->json(
             $activities,
             200,

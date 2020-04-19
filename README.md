@@ -68,8 +68,8 @@ TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
+:heavy_check_mark: ADD tracking route in real time
 - ADD integration and functional tests 
-- ADD tracking route in real time
 - Refactor mailer service
 
 

@@ -129,7 +129,6 @@ class RouteWorkoutController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        dump($data);
         if($data === null) {
             throw new BadRequestHttpException('Invalid Json');    
         }
@@ -139,8 +138,11 @@ class RouteWorkoutController extends AbstractController
 
         if (!$form->isValid()) {
             $errors = $this->getErrorsFromForm($form);
+            $responseMessage = [
+                'errorMessage' => reset($errors)
+            ];
 
-            return new JsonResponse($errors, Response::HTTP_BAD_REQUEST);
+            return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
         }
 
         $user = $this->getUser();
@@ -161,8 +163,10 @@ class RouteWorkoutController extends AbstractController
                     
                     $response = [
                         'url' => $this->generateUrl(
-                                    'workout_list', 
-                                    [], 
+                                    'workout_report', 
+                                    [
+                                        'id' => $workout->getId()
+                                    ], 
                                     UrlGeneratorInterface::ABSOLUTE_URL
                                 )
                     ];

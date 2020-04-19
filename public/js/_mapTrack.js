@@ -225,24 +225,17 @@ function sendActivity(event)
     } else {
         var url = document.getElementById('continue-js').getAttribute('data-url');
         getActivityData(formData,url).then((result) => {
-            if(result) {
-                activityData = result;
-                addButton('button', 'success', 'Start tracking', 'trackme-js');
-                /*
-                If I add event listener by JQuery and use remove on element the 
-                listener will be destroyed too
-                */
+            activityData = result;
+            var isDuplicate = addButton('button', 'success', 'Start tracking', 'trackme-js');
+            /*
+            If I add event listener by JQuery and use remove on element the 
+            listener will be destroyed too
+            */
+            if (!isDuplicate) {
                 $("#trackme-js").on("click", startTrackPosition);
-            } else {
-                // to na serwerze jak pusta tablica to return json+problem
-                //showMapResponse('Choose proper activity.');
             }
         }).catch((errorData) => {
-            if (errorData.errorMessage) {
-                showMapResponse(errorData.errorMessage);
-            } else {
-                mapErrorsToForm(errorData);
-            }                    
+            showMapResponse(errorData.errorMessage);                    
         });
     }
     
@@ -354,40 +347,42 @@ function restartTracking(event)
  * @param event
  */
 function stopTracking(event)
-{
-    //tutaj dodać też warunek że distance i duration musi być większe od 0
+{   
     event.preventDefault();
     counterPaused = true;
-    navigator.geolocation.clearWatch(watchID);
-    disableElement($(event.target));
-    disableElement($('#pause-track-js'), false);
-    disableElement($('#restart-track-js'), false);
-    $('#durationSecondsTotal').val(durationSecondsTotal);
+    if(distanceTotal > 0) {
+        disableElement($(event.target));
+        disableElement($('#pause-track-js'), false);
+        disableElement($('#restart-track-js'), false);
+        $('#durationSecondsTotal').val(durationSecondsTotal);
 
-    map.capture((canvas) => {
-        if (canvas) {
-            //in future better solution
-            var formData = getDataFromForm();
-            var mapImage = canvas.toDataURL();
-            formData['waypoints'] = waypoints;
-            formData['image'] = mapImage;
-            formData['distanceTotal'] = distanceTotal;
+        map.capture((canvas) => {
+            if (canvas) {
+                //in future better solution
+                var formData = getDataFromForm();
+                var mapImage = canvas.toDataURL();
+                formData['waypoints'] = waypoints;
+                formData['image'] = mapImage;
+                formData['distanceTotal'] = distanceTotal;
 
-
-            saveWorkout(formData,$('#buttons-panel-js').data('url')).then((result) => {
-                window.location.href = result.url;
-            }).catch((errorData) => {
-                if (errorData.errorMessage) {
+                saveWorkout(formData,$('#buttons-panel-js').data('url')).then((result) => {
+                    navigator.geolocation.clearWatch(watchID);
+                    window.location.href = result.url;
+                }).catch((errorData) => {
                     showMapResponse(errorData.errorMessage);
-                } else {
-                    //map only to infopanel
-                    mapErrorsToForm(errorData);
-                }                   
-            });
-        } else {
-            showMapResponse('Capturing is not supported');
+                });
+            } else {
+                showMapResponse('Capturing is not supported');
+            }
+        }, []);
+    } else {
+        showMapResponse('Your distance is equal 0.');
+        if ($('#pause-track-js').length > 0) {
+            removeElement($('#pause-track-js'));
+            addButton('button', 'info', 'Restart', 'restart-track-js', true);
+            $('#restart-track-js').on("click", restartTracking);
         }
-    }, []);
+    }
 }
 
 /**
@@ -535,6 +530,7 @@ function updateSpeedAverage()
  * @param text Text inside button
  * @param id Id of button [optional]
  * @param firstChild It should be first button in panel? [optional]
+ * @return {Boolean} Returns true if button was created before otherwise return false
  */
 function addButton(type, bootstrapType, text, id = '', firstChild = false)
 {
@@ -550,6 +546,10 @@ function addButton(type, bootstrapType, text, id = '', firstChild = false)
         } else {
             $('#buttons-panel-js').append($button);
         }
+
+        return false;
+    } else {
+        return true;
     }
 }
 
