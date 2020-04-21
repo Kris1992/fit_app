@@ -8,34 +8,39 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Services\FoldersManager\FoldersManagerInterface;
+use App\Services\ImagesManager\ImagesConstants;
 
 class UploadedImagesRemoveCommand extends Command
 {
     protected static $defaultName = 'app:uploaded-images:remove';
+    private $foldersManager;
+    private $uploadsDirectory;
+
+    public function __construct(FoldersManagerInterface $foldersManager, string $uploadsDirectory)
+    {
+        parent::__construct(null);
+        $this->foldersManager = $foldersManager;
+        $this->uploadsDirectory = $uploadsDirectory;
+    }
 
     protected function configure()
     {
         $this
             ->setDescription('Remove all uploaded images')
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
+        $userImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::USERS_IMAGES;
+        $workoutsImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::WORKOUTS_IMAGES;
 
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
+        $this->foldersManager->deleteFolder($userImagesPath);
+        $this->foldersManager->deleteFolder($workoutsImagesPath);
 
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('All uploaded images was removed successfully.');
 
         return 0;
     }

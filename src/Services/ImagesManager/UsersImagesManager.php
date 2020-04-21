@@ -14,6 +14,9 @@ use App\Services\ImagesResizer\ImagesResizerInterface;
 
 class UsersImagesManager implements ImagesManagerInterface
 {
+    /*
+    To delete const
+     */
     const USERS_IMAGES = 'users_images';
     const THUMB_IMAGES = 'thumb';
 

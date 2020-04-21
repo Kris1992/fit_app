@@ -84,9 +84,8 @@ class AccountController extends AbstractController
     /**
      * @Route("/password/reset", name="app_reset_password")
      */
-    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, /*Mailer $mail*/MailingSystemInterface $mailer, EntityManagerInterface $em)
+    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, MailingSystemInterface $mailer, EntityManagerInterface $em)
     {
-
     	if($request->isMethod('POST')) {
     		$formData = [
     			'email' => $request->request->get('email'),
@@ -114,10 +113,6 @@ class AccountController extends AbstractController
             	$em->flush();
 
                 $mailer->sendResetPasswordMessage($user);
-        		/*
-
-                $mail->sendPassword($user->getFirstName(), $formData['email'], $passToken->getToken());
-                */ 
         		$this->addFlash('success', 'Check your email! We send message to you');
         	}
     	}
@@ -128,10 +123,10 @@ class AccountController extends AbstractController
     /**
      * @Route("/password/renew/{token}", name="app_renew_password")
      */
-    public function renewPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $em, $token, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, PasswordToken $token1)
+    public function renewPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $em, $token, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, PasswordToken $passwordToken)
     {
 
-    	if(!$token1 || $token1->isExpired()) {
+    	if(!$passwordToken || $passwordToken->isExpired()) {
     		$this->addFlash('warning', 'Reset password token not exist or expired!');
 
     		return $this->redirectToRoute('app_reset_password');
@@ -142,10 +137,8 @@ class AccountController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $passwordModel = new RenewPasswordFormModel();
             $passwordModel = $form->getData();
-
-            $user = $token1->getUser();
+            $user = $passwordToken->getUser();
 
             $user->setPassword($passwordEncoder->encodePassword(
                 $user,
@@ -156,7 +149,7 @@ class AccountController extends AbstractController
             $user->resetFailedAttempts();
             $em->persist($user);
             //$em->flush();
-            //$em->remove($token1);
+            //$em->remove($passwordToken);
             $em->flush();
 
             return $guardHandler->authenticateUserAndHandleSuccess(
@@ -165,7 +158,6 @@ class AccountController extends AbstractController
                 $formAuthenticator,
                 'main' // firewall name
             );
-
         }
 
         return $this->render('account/renew_password.html.twig', [

@@ -255,7 +255,7 @@ class AdminActivityController extends AbstractController
      */
     public function downloadActivitiesTemplate(Request $request, FilesManagerInterface $filesManagerInterface)
     {
-        $templatePath = '/activity_csv/activitiesTemplate.csv';
+        $templatePath = '/templates/activitiesTemplate.csv';
         $absolutePath = $filesManagerInterface->getAbsolutePath($templatePath);
         
         return $this->file($absolutePath, 'template.csv', ResponseHeaderBag::DISPOSITION_ATTACHMENT);
