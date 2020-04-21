@@ -11,6 +11,7 @@ use App\Repository\MovementActivityRepository;
 use App\Repository\BodyweightActivityRepository;
 use App\Repository\AbstractActivityRepository;
 use Psr\Log\LoggerInterface;
+use App\Services\FileDecoder\FileDecoderInterface;
 use App\Entity\MovementActivity;
 use App\Entity\BodyweightActivity;
 use App\Entity\MovementSetActivity;
@@ -20,9 +21,9 @@ use Prophecy\Argument;
 
 class WorkoutSpecificExtenderSpec extends ObjectBehavior
 {
-    function let(MovementActivityRepository $movementRepository, AbstractActivityRepository $activityRepository, BodyweightActivityRepository $bodyweightRepository, ImagesManagerInterface $workoutsImagesManager, LoggerInterface $logger)
+    function let(MovementActivityRepository $movementRepository, AbstractActivityRepository $activityRepository, BodyweightActivityRepository $bodyweightRepository, ImagesManagerInterface $workoutsImagesManager, FileDecoderInterface $base64Decoder, LoggerInterface $logger)
     {
-        $this->beConstructedWith($movementRepository, $activityRepository, $bodyweightRepository, $workoutsImagesManager, $logger);
+        $this->beConstructedWith($movementRepository, $activityRepository, $bodyweightRepository, $workoutsImagesManager, $base64Decoder, $logger);
     }
     
     function it_is_initializable()

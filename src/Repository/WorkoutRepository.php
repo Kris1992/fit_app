@@ -24,6 +24,23 @@ class WorkoutRepository extends ServiceEntityRepository
         parent::__construct($registry, Workout::class);
     }
 
+    /**
+     * findWorkoutsFromLastWeek Find all workouts from last week by user 
+     * @param  User $user User whose is owner of workouts
+     * @return Workout[]
+     */
+    public function findWorkoutsFromLastWeek($user)
+    {
+        return $this->createQueryBuilder('w')
+            ->select('w')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere("w.startAt >= DATE_SUB(CURRENT_DATE(), 7, 'day')")
+            ->orderBy('w.startAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
      /**
      * findAllQuery Find all workouts or if searchTerms are not empty find all workouts with following data
      * @param  string $searchTerms Search word

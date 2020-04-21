@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f3f3f3;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+}
+.bg-primary {
+    background-color: #007bff;
+}
+.text-white {
+    color: #ffffff;
+    font-size: 1.25em;
+}
+.brand-icon {
+    display: inline-block;
+    vertical-align: bottom;
+    margin: 5px;
+}
+table.report-table {
+  font-family: "Times New Roman", Times, serif;
+  border: 1px solid #FFFFFF;
+  width: 350px;
+  height: 200px;
+  text-align: center;
+  border-collapse: collapse;
+}
+table.report-table td, table.report-table th {
+  border: 1px solid #FFFFFF;
+  padding: 3px 2px;
+}
+table.report-table tbody td {
+  font-size: 13px;
+}
+table.report-table tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.report-table thead {
+  background: #0B6FA4;
+  border-bottom: 5px solid #FFFFFF;
+}
+table.report-table thead th {
+  font-size: 17px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #FFFFFF;
+}
+table.report-table thead th:first-child {
+  border-left: none;
+}
+
+table.report-table tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  background: #D0E4F5;
+  border-top: 3px solid #444444;
+}
+table.report-table tfoot td {
+  font-size: 14px;
+}

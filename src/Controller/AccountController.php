@@ -14,10 +14,9 @@ use App\Repository\UserRepository;
 use App\Repository\PasswordTokenRepository;
 use App\Repository\WorkoutRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Services\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\RenewPasswordFormType;
-use App\Form\Model\RenewPasswordFormModel;
+use App\Form\Model\User\RenewPasswordFormModel;
 use App\Entity\PasswordToken;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
@@ -27,6 +26,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
+
+//use App\Services\Mailer;
+use App\Services\Mailer\MailingSystemInterface;
 
 class AccountController extends AbstractController
 {
@@ -84,7 +86,7 @@ class AccountController extends AbstractController
     /**
      * @Route("/password/reset", name="app_reset_password")
      */
-    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, Mailer $mail, EntityManagerInterface $em)
+    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, /*Mailer $mail*/MailingSystemInterface $mailer, EntityManagerInterface $em)
     {
 
     	if($request->isMethod('POST')) {
@@ -113,8 +115,12 @@ class AccountController extends AbstractController
             	}
             	$em->flush();
 
-        		$mail->sendPassword($user->getFirstName(), $formData['email'], $passToken->getToken()); 
-        		$this->addFlash('success', 'Check your email! I send message to you');
+                $mailer->sendResetPasswordMessage($user);
+        		/*
+
+                $mail->sendPassword($user->getFirstName(), $formData['email'], $passToken->getToken());
+                */ 
+        		$this->addFlash('success', 'Check your email! We send message to you');
         	}
     	}
 

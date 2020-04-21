@@ -7,3 +7,7 @@ twig:
     globals:
       public_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
     exception_controller: null
+
+    #embeded css for emails
+    paths:
+      'public/css/emails': styles
