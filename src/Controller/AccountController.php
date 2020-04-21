@@ -26,8 +26,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
-
-//use App\Services\Mailer;
 use App\Services\Mailer\MailingSystemInterface;
 
 class AccountController extends AbstractController

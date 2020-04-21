@@ -43,8 +43,23 @@ class Mailer implements MailingSystemInterface
 
     public function sendWeeklyReportMessage(User $user, array $workouts)
     {
+        $durationAllTotal = 0;
+        $distanceAllTotal = 0;
+        $energyAllTotal = 0;
+
+        foreach ($workouts as $workout) {
+            $durationAllTotal += $workout->getDurationSecondsTotal(); 
+            $energyAllTotal += $workout->getBurnoutEnergyTotal();
+            if ($workout->getDistanceTotal()) {
+                $distanceAllTotal += $workout->getDistanceTotal();
+            } 
+        }
+
         $html = $this->twig->render('emails/user_weekly_report_pdf.html.twig', [
             'workouts' => $workouts,
+            'durationAllTotal' => $durationAllTotal,
+            'distanceAllTotal' => $distanceAllTotal,
+            'energyAllTotal' => $energyAllTotal
         ]);
 
         $pdf = $this->pdf->getOutputFromHtml($html);
@@ -56,6 +71,9 @@ class Mailer implements MailingSystemInterface
             ->context([
                 'user' => $user,
                 'workouts' => $workouts,
+                'durationAllTotal' => $durationAllTotal,
+                'distanceAllTotal' => $distanceAllTotal,
+                'energyAllTotal' => $energyAllTotal
             ])
             ->attach($pdf, sprintf('weekly_report_%s.pdf', date('Y-m-d')));
         $this->mailer->send($message);
