@@ -25,7 +25,7 @@ class Mailer implements MailingSystemInterface
         $this->pdf = $pdf;
     }
 
-    public function sendResetPasswordMessage(User $user)
+    public function sendResetPasswordMessage(User $user): TemplatedEmail
     {
         $message = (new TemplatedEmail())
             ->from(new Address('krakowdev01@gmail.com', 'FitApp'))
@@ -41,7 +41,7 @@ class Mailer implements MailingSystemInterface
         return $message;
     }
 
-    public function sendWeeklyReportMessage(User $user, array $workouts)
+    public function sendWeeklyReportMessage(User $user, array $workouts): TemplatedEmail
     {
         $durationAllTotal = 0;
         $distanceAllTotal = 0;
