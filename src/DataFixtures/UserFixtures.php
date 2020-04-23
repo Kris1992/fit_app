@@ -14,8 +14,7 @@ class UserFixtures extends BaseFixture
 	private $passwordEncoder;
     private $userImageManager;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, ImagesManagerInterface
-        $userImageManager)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, ImagesManagerInterface $userImageManager)
     {
         $this->passwordEncoder = $passwordEncoder;
         $this->userImageManager = $userImageManager;

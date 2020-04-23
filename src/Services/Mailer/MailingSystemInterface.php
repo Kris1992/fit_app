@@ -14,7 +14,7 @@ interface MailingSystemInterface
     /**
      * sendResetPasswordMessage Sending email with reset password message
      * @param  User   $user User whose want reset password
-     * @return 
+     * @return TemplatedEmail
      */
     public function sendResetPasswordMessage(User $user): TemplatedEmail;
 
@@ -22,7 +22,7 @@ interface MailingSystemInterface
      * sendWeeklyReportMessage Sending email with last week workouts report to user
      * @param  User   $user     User whose will get email with report
      * @param  array  $workouts Workouts from last week
-     * @return
+     * @return TemplatedEmail
      */
     public function sendWeeklyReportMessage(User $user, array $workouts): TemplatedEmail;
 

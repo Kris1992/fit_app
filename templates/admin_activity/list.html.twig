@@ -60,12 +60,12 @@
                                 </td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}">
+                                        <a href="{{ path('admin_activity_edit', { id: activity.id }) }}" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}">
+                                        <a href="{{ path('admin_activity_delete', { id: activity.id }) }}" class="delete-item" data-name="activity" data-id="{{ activity.id }}" title="Delete">
                                             <span class="fa fa-trash-alt"></span>
                                         </a>
                                     </div>

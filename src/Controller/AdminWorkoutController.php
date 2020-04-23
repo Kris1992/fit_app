@@ -81,7 +81,7 @@ class AdminWorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout was created!!');
+                        $this->addFlash('success', 'Workout was created!');
                         return $this->redirectToRoute('admin_workout_list');
                     } catch (\Exception $e) {
                         $this->addFlash('warning', $e->getMessage());
@@ -135,7 +135,7 @@ class AdminWorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout was created!! ');
+                        $this->addFlash('success', 'Workout was created!');
                         return $this->redirectToRoute('admin_workout_list');
                     } catch (\Exception $e) {
                         $this->addFlash('warning', $e->getMessage());
@@ -200,7 +200,7 @@ class AdminWorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout is updated!');
+                        $this->addFlash('success', 'Workout was updated!');
 
                         return $this->redirectToRoute('admin_workout_edit', [
                             'id' => $workout->getId(),
@@ -272,7 +272,7 @@ class AdminWorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout is updated!');
+                        $this->addFlash('success', 'Workout was updated!');
 
                         return $this->redirectToRoute('admin_workout_specific_edit', [
                             'id' => $workout->getId(),
@@ -316,7 +316,7 @@ class AdminWorkoutController extends AbstractController
         $em->flush();
     
         $response = new Response();
-        $this->addFlash('success','Workout was deleted!!');
+        $this->addFlash('success','Workout was deleted!');
         $response->send();
         return $response;
     }
@@ -344,7 +344,7 @@ class AdminWorkoutController extends AbstractController
                     }
                     $entityManager->flush();
 
-                    $this->addFlash('success','Workouts were deleted!!');
+                    $this->addFlash('success','Workouts were deleted!');
                     return $this->redirectToRoute('admin_workout_list');
                 }
 
