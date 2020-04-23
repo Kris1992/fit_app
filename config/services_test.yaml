@@ -1,7 +1,24 @@
+parameters:
+    uploads_dir_name: 'uploads'
+    uploads_base_url: '%env(SITE_BASE_URL)%/%uploads_dir_name%'
+    uploads_directory: '%kernel.project_dir%/public/%uploads_dir_name%'
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $publicUploadsFilesystem: '@oneup_flysystem.public_uploads_filesystem_filesystem'
+            $uploadedAssetsBaseUrl: '%uploads_base_url%'
+            $uploadsDirectory: '%uploads_directory%'
 
     App\Tests\Behat\:
         resource: '../tests/Behat/*'
+
+    App\Services\ImagesManager\UsersImagesManager: ~
+    App\Services\ImagesManager\WorkoutsImagesManager: ~
+    
+    App\Services\ImagesManager\ImagesManagerInterface $workoutsImagesManager: '@App\Services\ImagesManager\WorkoutsImagesManager'
+    
+
+    #DEFAULT
+    App\Services\ImagesManager\ImagesManagerInterface: '@App\Services\ImagesManager\UsersImagesManager'

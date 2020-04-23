@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Workout;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 use Doctrine\ORM\Query\Expr\Func;
 
@@ -19,9 +19,26 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 class WorkoutRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Workout::class);
+    }
+
+    /**
+     * findWorkoutsFromLastWeek Find all workouts from last week by user 
+     * @param  User $user User whose is owner of workouts
+     * @return Workout[]
+     */
+    public function findWorkoutsFromLastWeek($user)
+    {
+        return $this->createQueryBuilder('w')
+            ->select('w')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere("w.startAt >= DATE_SUB(CURRENT_DATE(), 7, 'day')")
+            ->orderBy('w.startAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
      /**

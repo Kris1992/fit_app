@@ -13,3 +13,52 @@ composer require behat/mink-selenium2-driver
 php bin/console messenger:consume async_priority_high async
 ./vendor/bin/phpspec run  spec/Services/ModelValidator
 ./vendor/bin/phpspec describe App/Services/ModelValidator/ModelValidatorChooser
+
+,
+        {
+            "type": "vcs",
+            "url": "https://github.com/jfsenechal/SymfonyExtension.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jfsenechal/contexts.git"
+        }
+
+
+default:
+    suites:
+        default:
+            paths:
+                - '%paths.base%/features/authentication'
+            contexts:
+                - AuthenticationContext:
+                    kernel: '@kernel'
+                    passwordEncoder: '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+                - Behat\MinkExtension\Context\MinkContext
+                - SnapshotContext
+                - WebContext
+        admin_dashboard:
+            paths:
+                - '%paths.base%/features/adminDashboard'
+            contexts:
+                - AuthenticationContext:
+                    kernel: '@kernel'
+                    passwordEncoder: '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+                - FixturesContext:
+                    kernel: '@kernel'
+                - Behat\MinkExtension\Context\MinkContext
+                - SnapshotContext
+                - WebContext
+
+
+    extensions:
+        Behat\Symfony2Extension:
+            kernel:
+                bootstrap: features/bootstrap/bootstrap.php
+                class: App\Kernel
+        Behat\MinkExtension:
+            browser_name: chrome
+            base_url: https://127.0.0.1:8000
+            #goutte: ~
+            selenium2: ~
+        

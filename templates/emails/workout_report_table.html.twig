@@ -1,0 +1,39 @@
+<table class="{{ table }}">
+    <thead>
+        <tr>
+            <th>Activity</th>
+            <th>Duration</th>
+            <th>Distance</th>
+            <th>Burnout</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for workout in workouts %}
+            <tr>
+                <td>{{ workout.activity.name }}</td>
+                <td>{{ workout.durationSecondsTotal | time }}</td>
+                {% if workout.distanceTotal is not null %}
+                    <td>{{ workout.distanceTotal }}</td>
+                {% else %}
+                    <td>---</td>
+                {% endif %}
+                <td>{{ workout.burnoutEnergyTotal }}</td>
+                <td>{{ workout.startAt | date('Y-m-d H:i') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr class="table-success font-weight-bold">
+            <td>Total</td>
+            <td>{{ durationAllTotal | time }}</td>
+            {% if distanceAllTotal is not null %}
+                <td>{{ distanceAllTotal }}</td>
+            {% else %}
+                <td>---</td>
+            {% endif %}
+            <td>{{ energyAllTotal }}</td>
+            <td>{{ workouts|length }}</td>
+        </tr>
+    </tfoot>
+</table>

@@ -1,9 +1,10 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Behat\MinkExtension\Context\RawMinkContext;
+use Behat\Behat\Context\SnippetAcceptingContext;
 
 /**
  * This context class contains the definitions of the steps used by the demo
@@ -11,17 +12,17 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FeatureContext implements Context
+class HelperContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
     /**
      * @var KernelInterface
      */
-    private $kernel;
+    protected $kernel;
 
     /**
      * @var Response|null
      */
-    private $response;
+    protected $response;
 
     public function __construct(KernelInterface $kernel)
     {
@@ -29,20 +30,18 @@ class FeatureContext implements Context
     }
 
     /**
-     * @When a demo scenario sends a request to :path
+     * @return \Behat\Mink\Element\DocumentElement
      */
-    public function aDemoScenarioSendsARequestTo(string $path)
+    protected function getPage()
     {
-        $this->response = $this->kernel->handle(Request::create($path, 'GET'));
+        return $this->getSession()->getPage();
     }
 
     /**
-     * @Then the response should be received
+     * @return \Doctrine\ORM\EntityManager
      */
-    public function theResponseShouldBeReceived()
+    protected function getEntityManager()
     {
-        if ($this->response === null) {
-            throw new \RuntimeException('No response received');
-        }
+        return $this->kernel->getContainer()->get('doctrine')->getManager();
     }
 }

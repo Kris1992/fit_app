@@ -51,13 +51,14 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
 
     public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
     {   
-        if ($data['image'] || $data['distanceTotal']) {
+        if ($data['distanceTotal']) {
+            $workoutModel->setDistanceTotal($data['distanceTotal']);
+        }
+        if ($data['image']) { //|| $data['distanceTotal']) {
             $imageDestination = $this->workoutsImagesManager::WORKOUTS_IMAGES.'/'.$user->getLogin().'/';
             $filePath = $this->base64Decoder->decode($data['image'], $imageDestination);
             if ($filePath) {
                 //$mapImage = new File($filePath);
-                $workoutModel->setDistanceTotal($data['distanceTotal']);
-
                 try {
                     $newFilename = $this->workoutsImagesManager->resizeImageFromPath($filePath, 150);
                 } catch (\Exception $e) {

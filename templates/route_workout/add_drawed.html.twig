@@ -23,20 +23,23 @@
                     <div id="mapBar">
                         <div class="col">
                             <div class="row text-center">
-                                <div id="geolocation" class="col-md-6 border border-secondary">
+                                <div id="geolocation" class="col-md-8 border border-secondary">
                                     <div class="input-group my-2">
                                         <input type="search" name="geolocationSearch" class="form-control" placeholder="e.g street, city, country" id="geolocation-js">
                                         <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button" role="button" id="search-button-js">
+                                            <button class="btn btn-primary" type="button" role="button" data-toggle="tooltip" data-placement="top" title="Search place" id="search-button-js">
                                                 <span class="fas fa-search-location"></span>
                                             </button>
-                                            <button class="btn btn-danger" type="button" data-toggle="tooltip" data-placement="top" title="Show/Hide marker" id="toogle-marker-js">
+                                            <button class="btn btn-success" type="button" role="button" data-toggle="tooltip" data-placement="top" title="Show current position" id="position-button-js">
+                                                <span class="fas fa-crosshairs"></span>
+                                            </button>
+                                            <button class="btn btn-danger" type="button" role="button" data-toggle="tooltip" data-placement="top" title="Show/Hide marker" id="toogle-marker-js">
                                                 <span class="fas fa-map-marker"></span>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div id="routeDistance" class="col-md-6 border border-secondary">
+                                <div id="routeDistance" class="col-md-4 border border-secondary">
                                     <strong>
                                         <span class="d-block text-uppercase">Distance</span>
                                     </strong>
@@ -46,11 +49,6 @@
                         </div>
                     </div>
                 </div>
-                <!--TO DELETE -->
-                <div class="col-12 my-3" id="foto">
-                    
-                </div>
-                <!-- -->
             </div>
             <div class="col-sm-12 col-md-4">
                 <div id="mapPanel" class="card text-white">
@@ -88,8 +86,8 @@
                                     <span class="fas fa-times text-danger" style="font-size: 12px;"></span>
                                 </button>
                             </div>
-                            <div class="col-12 card-title text-uppercase mb-0">
-                                <h5>Informations</h5>
+                            <div class="col-12 card-title text-uppercase mb-0 text-danger">
+                                <h5>Warning</h5>
                             </div>
                         </div>
                     </div>
@@ -99,7 +97,12 @@
                 </div>
                 <div class="card text-white bg-info">
                     {{ include('forms/workout_map_data_form.html.twig', {
-                        header_text: 'Input data'
+                        header_bg: '',
+                        header_text: 'Input data',
+                        button_text: 'Save',
+                        url: path('api_route_workout_add_drawed'),
+                        save_url: '',
+                        label: 'Date: '
                     }) }}
                 </div>
             </div>  
@@ -126,5 +129,4 @@
         $('[data-toggle="tooltip"]').tooltip();
     });
     </script>
-
 {% endblock %}

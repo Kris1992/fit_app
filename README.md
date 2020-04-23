@@ -68,9 +68,10 @@ TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
-- ADD integration and functional tests 
-- ADD tracking route in real time
-- Refactor mailer service
+:heavy_check_mark: ADD tracking route in real time
+:heavy_check_mark: Refactor mailer service
+:heavy_check_mark: ADD console commands which make works with code faster
+:hourglass_flowing_sand: ADD integration and functional tests 
 
 
 ## Have Ideas, Feedback or an Issue?

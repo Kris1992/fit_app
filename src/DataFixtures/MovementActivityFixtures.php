@@ -17,8 +17,8 @@ class MovementActivityFixtures extends BaseFixture
     private static $movementIntensities = [
         [
             'name' => 'Very slow',
-            'min' => 4,
-            'max' => 6,
+            'min' => 4,//4,
+            'max' => 10,//6,
             'energy' => [
                 'min' => 650,
                 'max' => 750
@@ -26,8 +26,8 @@ class MovementActivityFixtures extends BaseFixture
         ],
         [
             'name' => 'Slow',
-            'min' => 7,
-            'max' => 9,
+            'min' => 11,//7,
+            'max' => 20,//9,
             'energy' => [
                 'min' => 751,
                 'max' => 900
@@ -35,8 +35,8 @@ class MovementActivityFixtures extends BaseFixture
         ],
         [
             'name' => 'Normal',
-            'min' => 10,
-            'max' => 12,
+            'min' => 21,//10,
+            'max' => 30,//12,
             'energy' => [
                 'min' => 901,
                 'max' => 1000
@@ -44,8 +44,8 @@ class MovementActivityFixtures extends BaseFixture
         ],
         [
             'name' => 'Fast',
-            'min' => 13,
-            'max' => 15,
+            'min' => 31,//13,
+            'max' => 40,//15,
             'energy' => [
                 'min' => 1001,
                 'max' => 1200
@@ -53,8 +53,8 @@ class MovementActivityFixtures extends BaseFixture
         ],
         [
             'name' => 'Very fast',
-            'min' => 16,
-            'max' => 18,
+            'min' => 41,//16,
+            'max' => 50,//18,
             'energy' => [
                 'min' => 1201,
                 'max' => 1300

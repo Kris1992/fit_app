@@ -1,16 +1,12 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
 /.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-###> symfony/web-server-bundle ###
-/.web-server-pid
-###< symfony/web-server-bundle ###
 /public/uploads/users_images/*
 /public/uploads/workouts_images/*
 
@@ -29,3 +25,7 @@ behat.yml
 ###< symfony/phpunit-bridge ###
 
 /trash
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

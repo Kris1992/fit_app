@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MovementActivityRepository")
@@ -13,11 +13,13 @@ class MovementActivity extends AbstractActivity
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"main"})
      */
     protected $speedAverageMin;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"main"})
      */
     protected $speedAverageMax;
 

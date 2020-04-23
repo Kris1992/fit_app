@@ -184,7 +184,7 @@ class AdminActivityController extends AbstractController
         $entityManager->flush();
 
         $response = new Response();
-        $this->addFlash('success','Activity was deleted!!');
+        $this->addFlash('success','Activity was deleted!');
         $response->send();
         return $response;
     }
@@ -205,7 +205,7 @@ class AdminActivityController extends AbstractController
                     }
                     $entityManager->flush();
 
-                    $this->addFlash('success','Activities were deleted!!');
+                    $this->addFlash('success','Activities were deleted!');
                     return $this->redirectToRoute('admin_activity_list');
                 }
 
@@ -255,7 +255,7 @@ class AdminActivityController extends AbstractController
      */
     public function downloadActivitiesTemplate(Request $request, FilesManagerInterface $filesManagerInterface)
     {
-        $templatePath = '/activity_csv/activitiesTemplate.csv';
+        $templatePath = '/templates/activitiesTemplate.csv';
         $absolutePath = $filesManagerInterface->getAbsolutePath($templatePath);
         
         return $this->file($absolutePath, 'template.csv', ResponseHeaderBag::DISPOSITION_ATTACHMENT);

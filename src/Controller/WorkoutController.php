@@ -561,6 +561,19 @@ class WorkoutController extends AbstractController
             ]
         );
     }
+
+     /**
+     * @Route("/workout/{id}/report", name="workout_report", methods={"GET"})
+     */
+    public function workoutReport(Request $request, Workout $workout)
+    {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
+
+        return $this->render('workout/report.html.twig', [
+            'workout' => $workout 
+        ]);
+    }
     
     //bind it to service
     protected function getErrorsFromForm(FormInterface $form)

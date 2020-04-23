@@ -1,18 +1,13 @@
 doctrine:
     dbal:
-        # configure these for your database server
-        driver: 'pdo_mysql'
-        server_version: '5.7'
-        #'mariadb-10.1.36'
-        charset: utf8mb4
-        default_table_options:
-            charset: utf8mb4
-            collate: utf8mb4_unicode_ci
-
         url: '%env(resolve:DATABASE_URL)%'
+
+        # IMPORTANT: You MUST configure your server version,
+        # either here or in the DATABASE_URL env var (see .env file)
+        server_version: '5.7'
     orm:
-        auto_generate_proxy_classes: false #true
-        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
             App:
@@ -27,3 +22,11 @@ doctrine:
                 date_format: App\DQL\DateFormat
             string_functions:
                 MATCH_AGAINST: App\DQL\MatchAgainst
+
+#old stuff (To delete if everything will be ok)
+#-        driver: 'pdo_mysql'
+#-        #'mariadb-10.1.36'
+#-        charset: utf8mb4
+#-        default_table_options:
+#-            charset: utf8mb4
+#-            collate: utf8mb4_unicode_ci
