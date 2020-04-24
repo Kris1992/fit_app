@@ -48,12 +48,12 @@
 
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_workout_edit', { id: workout.id }) }}">
+                                        <a href="{{ path('admin_workout_edit', { id: workout.id }) }}" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_workout_delete', { id: workout.id }) }}" class="delete-item" data-name="workout" data-id="{{ workout.id }}">
+                                        <a href="{{ path('admin_workout_delete', { id: workout.id }) }}" class="delete-item" data-name="workout" data-id="{{ workout.id }}" title="Delete">
                                             <span class="fa fa-trash-alt"></span>
                                         </a>
                                     </div>

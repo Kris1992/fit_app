@@ -68,10 +68,18 @@ TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
+:hourglass_flowing_sand: Rebuild workouts history
+:hourglass_flowing_sand: Refactor api error response (json+problem)
+:hourglass_flowing_sand: ADD possibility to add weight activities
+:hourglass_flowing_sand: ADD more info about workout in reports
+:hourglass_flowing_sand: ADD unit, integration and functional tests (every week add few) 
+
+## Last weeks updates
+
 :heavy_check_mark: ADD tracking route in real time
 :heavy_check_mark: Refactor mailer service
 :heavy_check_mark: ADD console commands which make works with code faster
-:hourglass_flowing_sand: ADD integration and functional tests 
+:heavy_check_mark: ADD functional tests to admin panel 
 
 
 ## Have Ideas, Feedback or an Issue?

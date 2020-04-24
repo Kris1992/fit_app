@@ -22,12 +22,22 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        return [
-            UserFixtures::class,
-            MovementActivityFixtures::class,
-            MovementSetActivityFixtures::class,
-            BodyweightActivityFixtures::class,
-        ];
+        //I try to resolve problem with construct UserFixtures
+        if ($_ENV['APP_ENV'] !== 'test') {
+            return [
+                UserFixtures::class,
+                MovementActivityFixtures::class,
+                MovementSetActivityFixtures::class,
+                BodyweightActivityFixtures::class,
+            ];
+        } else {
+            return [
+                //UserFixtures::class,
+                MovementActivityFixtures::class,
+                MovementSetActivityFixtures::class,
+                BodyweightActivityFixtures::class,
+            ];
+        }
     }
 
     private $workoutsImagesManager;

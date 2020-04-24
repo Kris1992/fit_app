@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Tests\Behat;
+
 use Behat\MinkExtension\Context\RawMinkContext;
 
 /**

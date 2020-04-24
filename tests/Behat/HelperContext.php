@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Tests\Behat;
+
 use Behat\Behat\Context\Context;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -18,11 +20,6 @@ class HelperContext extends RawMinkContext implements Context, SnippetAcceptingC
      * @var KernelInterface
      */
     protected $kernel;
-
-    /**
-     * @var Response|null
-     */
-    protected $response;
 
     public function __construct(KernelInterface $kernel)
     {
