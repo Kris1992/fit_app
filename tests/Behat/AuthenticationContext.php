@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Tests\Behat;
+
 use Behat\Behat\Context\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,10 +98,10 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
      */
     public function iAmLoggedInAsAnAdmin()
     {
-        $this->currentUser = $this->thereIsAnAdminUserWithPassword('admin0@fit.com', 'admin01');
+        $this->currentUser = $this->thereIsAnAdminUserWithPassword('admin0Test@fit.com', 'admin01');
         $this->visitPath('/login');
 
-        $this->getPage()->fillField('email', 'admin0@fit.com');
+        $this->getPage()->fillField('email', 'admin0Test@fit.com');
         $this->getPage()->fillField('password', 'admin01');
         $this->getPage()->pressButton('Sign in');        
     }
@@ -125,13 +127,23 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
     }
 
      /**
+     * @When I press :linkName in the row with name :name
+     */
+    public function iPressInTheRowWithName($linkName, $name)
+    {
+        $linkRow = $this->findRowByText($name);
+        Assertions::assertNotNull($linkRow, 'Cannot find proper link in the table row!');
+        $linkRow->clickLink($linkName);
+    }
+
+     /**
      * @When I press :linkName in the row with name :name and :intensity intensity
      */
     public function iPressInTheRowWithNameAndIntensity($linkName, $name, $intensity)
     {
-        $link = $this->findRowByNameAndIntensity($name, $intensity);
-        Assertions::assertNotNull($link, 'Cannot find proper link in the table row!');
-        $link->clickLink($linkName);
+        $linkRow = $this->findRowByNameAndIntensity($name, $intensity);
+        Assertions::assertNotNull($linkRow, 'Cannot find proper link in the table row!');
+        $linkRow->clickLink($linkName);
     }
 
     /**
@@ -146,6 +158,47 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         $checkbox = $this->findCheckboxWithNameAndValue($checkName, $rowData[0]);
         Assertions::assertNotNull($checkbox, 'Cannot find proper checkbox with this name!');
         $checkbox->check();
+    }
+
+    /**
+     * @When I check :checkName in the row with name :name
+     */
+    public function iCheckInTheRowWithName($checkName, $name)
+    {
+        $row = $this->findRowByText($name);
+        $rowData = explode(' ', $row->getText());
+        $checkbox = $this->findCheckboxWithNameAndValue($checkName, $rowData[0]);
+        Assertions::assertNotNull($checkbox, 'Cannot find proper checkbox with this name!');
+        $checkbox->check();
+    }
+
+
+    /**
+     * @Then I check first unchecked :checkName in the row with name :name
+     */
+    public function iCheckFirstUncheckedInTheRowWithName($checkName, $name)
+    {
+        $rows = $this->findRowsByText($name);
+        $row = $this->findRowWithUncheckedCheckbox($rows, $checkName);
+        Assertions::assertNotNull($row, 'Cannot find proper unchecked checkbox in the table row!');
+        $rowData = explode(' ', $row->getText());
+        $checkbox = $this->findCheckboxWithNameAndValue($checkName, $rowData[0]);
+        Assertions::assertNotNull($checkbox, 'Cannot find proper checkbox with this name!');
+        $checkbox->check();
+    }
+
+    private function findRowWithUncheckedCheckbox($rows, $checkName)
+    {
+        foreach ($rows as $row) {
+            $checkbox = $row->find('css', sprintf(
+                'input[type=checkbox][name="%s"]', 
+                $checkName)
+            );
+            if (!$checkbox->isChecked()) {
+               return $row; 
+            }
+        }
+        return null;
     }
 
     private function findCheckboxWithNameAndValue($checkName, $value)
@@ -170,6 +223,18 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         Assertions::assertNotEmpty($rows, 'Cannot find a table row with this text!');
         
         return $rows;
+    }
+
+     /**
+     * @param $rowText
+     * @return \Behat\Mink\Element\NodeElement
+     */
+    private function findRowByText($rowText)
+    {
+        $row = $this->getPage()->find('css', sprintf('table tr:contains("%s")', $rowText));
+        Assertions::assertNotNull($row, 'Cannot find a table row with this text!');
+        
+        return $row;
     }
 
     private function findRowByNameAndIntensity($name, $intensity)

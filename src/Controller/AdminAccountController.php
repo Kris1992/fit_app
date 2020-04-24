@@ -91,7 +91,7 @@ class AdminAccountController extends AbstractController
         $entityManager->flush();
 
         $response = new Response();
-        $this->addFlash('success','User was deleted!!');
+        $this->addFlash('success','User was deleted!');
         $response->send();
         return $response;
     }
@@ -116,7 +116,7 @@ class AdminAccountController extends AbstractController
                     }
                     $entityManager->flush();
 
-                    $this->addFlash('success','Users were deleted!!');
+                    $this->addFlash('success','Users were deleted!');
                     return $this->redirectToRoute('admin_account_list');
                 }
 

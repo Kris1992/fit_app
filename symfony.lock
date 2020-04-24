@@ -5,32 +5,14 @@
     "behat/gherkin": {
         "version": "v4.6.0"
     },
-    "behat/mink": {
-        "version": "1.7.x-dev"
-    },
-    "behat/mink-extension": {
-        "version": "2.1.x-dev"
-    },
     "behat/mink-selenium2-driver": {
-        "version": "v1.3.1"
-    },
-    "behat/symfony2-extension": {
-        "version": "2.1",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "2.1",
-            "ref": "af4f8fa93b1fee9e6f15d1e208ce743bb31cb2b2"
-        },
-        "files": [
-            "behat.yml.dist",
-            "features/bootstrap/FeatureContext.php",
-            "features/bootstrap/bootstrap.php",
-            "features/demo.feature"
-        ]
+        "version": "v1.4.0"
     },
     "behat/transliterator": {
         "version": "v1.2.0"
+    },
+    "container-interop/container-interop": {
+        "version": "1.2.0"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -125,6 +107,15 @@
     },
     "egulias/email-validator": {
         "version": "2.1.17"
+    },
+    "friends-of-behat/mink": {
+        "version": "v1.8.0"
+    },
+    "friends-of-behat/mink-browserkit-driver": {
+        "version": "v1.4.0"
+    },
+    "friends-of-behat/mink-extension": {
+        "version": "v2.4.0"
     },
     "friends-of-behat/symfony-extension": {
         "version": "2.0",

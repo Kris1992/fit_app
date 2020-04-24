@@ -50,12 +50,12 @@
     		                    <td>{{ user.gender }}</td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_account_edit', { id: user.id }) }}">
+                                        <a href="{{ path('admin_account_edit', { id: user.id }) }}" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}">
+                                        <a href="{{ path('admin_account_delete', { id: user.id }) }}" class="delete-item" data-name="user" data-id="{{ user.id }}" title="Delete">
                                             <span class="fa fa-trash-alt"></span>
                                         </a>
                                     </div>

@@ -5,13 +5,13 @@ Feature: Authentication
     
     @javascript
     Scenario: Logging in
-        Given there is an admin user "admin0@fit.com" with password "admin01"
+        Given there is an admin user "admin0Test@fit.com" with password "admin01"
         And I am on "/login"
-        And I fill in "email" with "admin0@fit.com"
+        And I fill in "email" with "admin0Test@fit.com"
         And I fill in "password" with "admin01"
         #And I save a screenshot to "before_login.png"
         And I press "Sign in"
         And I wait for the page to be loaded
-        And I press "admin0@fit.com"
+        And I press "admin0Test@fit.com"
         #And I save a screenshot to "after_login.png"
         Then I should see "Logout"

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Tests\Behat;
+
 use Symfony\Component\HttpKernel\KernelInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 //use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -25,10 +27,15 @@ class FixturesContext extends HelperContext
     {
         switch ($typeObject) {
             case 'activities':
-                $activitiesFixtures = ['BodyweightActivity', 'MovementActivity', 'MovementSetActivity', 'WeightActivity'];
-                $this->loadFixtures($activitiesFixtures);
+                $fixtures = ['BodyweightActivity', 'MovementActivity', 'MovementSetActivity', 'WeightActivity'];
+                $this->loadFixtures($fixtures);
                 break;
             case 'workouts':
+                $fixtures = ['BodyweightActivity', 'MovementActivity', 'MovementSetActivity',
+                'WeightActivity', 'User', 'Workout'];
+                $this->loadFixtures($fixtures);
+                break;
+            case 'users':
                 $this->loadFixtures(['User']);
                 break;
             default:
@@ -38,19 +45,19 @@ class FixturesContext extends HelperContext
 
     private function loadFixtures($fixturesNames)
     {
+        
         $loader = new Loader();
-        foreach ($fixturesNames as $fixture) {
-            $loader->loadFromFile(__DIR__.'/../../src/DataFixtures/'.$fixture.'Fixtures.php');
+        foreach ($fixturesNames as $fixtureName) {
+            $fixture = $this->kernel->getContainer()->get('App\DataFixtures\\'.$fixtureName.'Fixtures');
+            $loader->addFixture($fixture);
+
+            //$loader->loadFromFile(__DIR__.'/../../src/DataFixtures/'.$fixture.'Fixtures.php');
         }
 
         $executor = new ORMExecutor($this->getEntityManager());
         $executor->execute($loader->getFixtures(), true);
-
-        //$loader = new ContainerAwareLoader($this->kernel->getContainer());
-        //$loader->loadFromDirectory(__DIR__.'/../../src/DataFixtures');
-        //$executor = new ORMExecutor($this->getEntityManager());
-        //$executor->execute($loader->getFixtures(), true);
     }
+
     /**
      *BeforeScenario @fixtures
      */
