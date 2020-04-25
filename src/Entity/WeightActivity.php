@@ -13,33 +13,67 @@ class WeightActivity extends AbstractActivity
     /**
      * @ORM\Column(type="integer")
      */
-    protected $repetitions;
+    protected $repetitionsAvgMin;
 
     /**
      * @ORM\Column(type="integer")
      */
-    protected $weight;
+    protected $repetitionsAvgMax;
 
-    public function getRepetitions(): ?int
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $weightAvgMin;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $weightAvgMax;
+
+    public function getRepetitionsAvgMin(): ?int
     {
-        return $this->repetitions;
+        return $this->repetitionsAvgMin;
     }
 
-    public function setRepetitions(int $repetitions): self
+    public function setRepetitionsAvgMin(int $repetitionsAvgMin): self
     {
-        $this->repetitions = $repetitions;
+        $this->repetitionsAvgMin = $repetitionsAvgMin;
 
         return $this;
     }
 
-    public function getWeight(): ?int
+    public function getRepetitionsAvgMax(): ?int
     {
-        return $this->weight;
+        return $this->repetitionsAvgMax;
     }
 
-    public function setWeight(int $weight): self
+    public function setRepetitionsAvgMax(int $repetitionsAvgMax): self
     {
-        $this->weight = $weight;
+        $this->repetitionsAvgMax = $repetitionsAvgMax;
+
+        return $this;
+    }
+
+    public function getWeightAvgMin(): ?int
+    {
+        return $this->weightAvgMin;
+    }
+
+    public function setWeightAvgMin(int $weightAvgMin): self
+    {
+        $this->weightAvgMin = $weightAvgMin;
+
+        return $this;
+    }
+
+    public function getWeightAvgMax(): ?int
+    {
+        return $this->weightAvgMax;
+    }
+
+    public function setWeightAvgMax(int $weightAvgMax): self
+    {
+        $this->weightAvgMax = $weightAvgMax;
 
         return $this;
     }
