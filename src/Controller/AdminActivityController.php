@@ -86,7 +86,7 @@ class AdminActivityController extends AbstractController
                     $em->persist($activity);
                     $em->flush();
 
-                    $this->addFlash('success', 'Activity was created!! ');
+                    $this->addFlash('success', 'Activity was created!');
             
                     return $this->redirectToRoute('admin_activity_list');
                 } catch (\Exception $e) {

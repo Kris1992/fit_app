@@ -18,8 +18,11 @@ class WeightActivityTransformer implements ActivityTransformerInterface {
             ->setType($activity->getType())
             ->setName($activity->getName())
             ->setEnergy($activity->getEnergy())
-            ->setRepetitions($activity->getRepetitions())
-            ->setWeight($activity->getWeight());
+            ->setRepetitionsAvgMin($activity->getRepetitionsAvgMin())
+            ->setRepetitionsAvgMax($activity->getRepetitionsAvgMax())
+            ->setWeightAvgMin($activity->getWeightAvgMin())
+            ->setWeightAvgMax($activity->getWeightAvgMax())
+            ;
 
         return $weightActivityModel;
     }
@@ -28,7 +31,7 @@ class WeightActivityTransformer implements ActivityTransformerInterface {
     {
         $weightActivityModel = ArrayConverter::toObject(
             $activityData, 
-            new MovementActivityFormModel()
+            new WeightActivityFormModel()
         );
         
         return $weightActivityModel;
@@ -47,8 +50,10 @@ class WeightActivityTransformer implements ActivityTransformerInterface {
         $activity
             ->setName($activityModel->getName())
             ->setEnergy($activityModel->getEnergy())
-            ->setRepetitions($activityModel->getRepetitions())
-            ->setWeight($activityModel->getWeight());
+            ->setRepetitionsAvgMin($activityModel->getRepetitionsAvgMin())
+            ->setRepetitionsAvgMax($activityModel->getRepetitionsAvgMax())
+            ->setWeightAvgMin($activityModel->getWeightAvgMin())
+            ->setWeightAvgMax($activityModel->getWeightAvgMax())
             ;
 
         return $activity;

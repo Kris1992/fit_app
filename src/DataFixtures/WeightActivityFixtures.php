@@ -57,59 +57,6 @@ class WeightActivityFixtures extends BaseFixture
         ],
     ];
 
-
-
-
-
-/*
-    private static $weightActivityOptions = 
-    [   
-        [
-            'repetitionsAvg' => [
-                'min' => 1,
-                'max' => 50,
-            ],
-            'weightAvg' => [
-                'min' => 1,
-                'max' => 50
-            ],
-            'energy' => [
-                'min' => 100,
-                'max' => 200
-            ],
-        ],
-        [
-            'repetitionsAvg' => [
-                'min' => 51,
-                'max' => 100,
-            ],
-            'weightAvg' => [
-                'min' => 51,
-                'max' => 120
-            ],
-            'energy' => [
-                'min' => 201,
-                'max' => 200
-            ],
-        ],
-        [
-            'repetitionsAvg' => [
-                'min' => 101,
-                'max' => 300,
-            ],
-            'weightAvg' => [
-                'min' => 121,
-                'max' => 300
-            ],
-            'energy' => [
-                'min' => 301,
-                'max' => 400
-            ],
-        ],
-    ];*/
-
-
-
     protected function loadData(ObjectManager $manager)
     {
         $this->createMany(9, 'weight_activity_0', function($i)

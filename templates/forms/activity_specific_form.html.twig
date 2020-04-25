@@ -25,7 +25,7 @@
     }) }}
 {% endif %}
 
-{# Bodyweight #}
+{# Bodyweight or weight #}
 
 {%  if activityForm.repetitionsAvgMin is defined %}
     {{ form_row(activityForm.repetitionsAvgMin, {
@@ -38,20 +38,15 @@
     }) }}
 {% endif %}
 
-
-
-
-
-
 {# Weight #}
 
-{%  if activityForm.repetitions is defined %}
-    {{ form_row(activityForm.repetitions, {
-        'label' : 'Number of repetitions: '
+{%  if activityForm.weightAvgMin is defined %}
+    {{ form_row(activityForm.weightAvgMin, {
+        'label' : 'Minimum Weight: '
     }) }}
 {% endif %}
-{%  if activityForm.weight is defined %}
-    {{ form_row(activityForm.weight, {
-        'label' : 'Weight: '
+{%  if activityForm.weightAvgMax is defined %}
+    {{ form_row(activityForm.weightAvgMax, {
+        'label' : 'Maximum Weight: '
     }) }}
 {% endif %}

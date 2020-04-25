@@ -5,43 +5,79 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class WeightActivityFormModel extends AbstractActivityFormModel
 {
-	/**
-     * @Assert\NotBlank(message="Please enter number of repetitions")
-     */
-    private $repetitions;
 
     /**
-     * @Assert\NotBlank(message="Please enter weight")
-     * @Assert\Range(
-     *      min = 1,
-     *      max = 200,
-     *      minMessage = "Your load must be at least {{ limit }}kg",
-     *      maxMessage = "Your load cannot be larger than {{ limit }}kg"
-     * )
+     * @Assert\NotBlank(message="Please enter number of repetitions")
      */
-    private $weight;// change to load in future (now it is only for check it all works fine)
+    private $repetitionsAvgMin;
 
-    public function getRepetitions(): ?int
+    /**
+     * @Assert\NotBlank(message="Please enter number of repetitions")
+     * @Assert\GreaterThan(
+     *     propertyPath="repetitionsAvgMin",
+     *     message="Largest average number of repetitions must be greater than lowest"
+     *     )
+     */
+    private $repetitionsAvgMax;
+
+    /**
+     * @Assert\NotBlank(message="Please enter number of repetitions")
+     */
+    private $weightAvgMin;
+
+    /**
+     * @Assert\NotBlank(message="Please enter number of repetitions")
+     * @Assert\GreaterThan(
+     *     propertyPath="weightAvgMin",
+     *     message="Largest average weight must be greater than lowest"
+     *     )
+     */
+    private $weightAvgMax;
+
+    public function getRepetitionsAvgMin(): ?int
     {
-        return $this->repetitions;
+        return $this->repetitionsAvgMin;
     }
 
-    public function setRepetitions(int $repetitions): self
+    public function setRepetitionsAvgMin(?int $repetitionsAvgMin): self
     {
-        $this->repetitions = $repetitions;
+        $this->repetitionsAvgMin = $repetitionsAvgMin;
 
         return $this;
     }
 
-    public function getWeight(): ?int
+    public function getRepetitionsAvgMax(): ?int
     {
-        return $this->weight;
+        return $this->repetitionsAvgMax;
     }
 
-    public function setWeight(int $weight): self
+    public function setRepetitionsAvgMax(?int $repetitionsAvgMax): self
     {
-        
-        $this->weight = $weight;
+        $this->repetitionsAvgMax = $repetitionsAvgMax;
+
+        return $this;
+    }
+
+    public function getWeightAvgMin(): ?float
+    {
+        return $this->weightAvgMin;
+    }
+
+    public function setWeightAvgMin(?float $weightAvgMin): self
+    {
+        $this->weightAvgMin = $weightAvgMin;
+
+        return $this;
+    }
+
+    public function getWeightAvgMax(): ?float
+    {
+        return $this->weightAvgMax;
+    }
+
+    public function setWeightAvgMax(?float $weightAvgMax): self
+    {
+        $this->weightAvgMax = $weightAvgMax;
 
         return $this;
     }

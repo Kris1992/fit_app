@@ -21,12 +21,12 @@ class WeightActivity extends AbstractActivity
     protected $repetitionsAvgMax;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     protected $weightAvgMin;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     protected $weightAvgMax;
 
@@ -54,24 +54,24 @@ class WeightActivity extends AbstractActivity
         return $this;
     }
 
-    public function getWeightAvgMin(): ?int
+    public function getWeightAvgMin(): ?float
     {
         return $this->weightAvgMin;
     }
 
-    public function setWeightAvgMin(int $weightAvgMin): self
+    public function setWeightAvgMin(float $weightAvgMin): self
     {
         $this->weightAvgMin = $weightAvgMin;
 
         return $this;
     }
 
-    public function getWeightAvgMax(): ?int
+    public function getWeightAvgMax(): ?float
     {
         return $this->weightAvgMax;
     }
 
-    public function setWeightAvgMax(int $weightAvgMax): self
+    public function setWeightAvgMax(float $weightAvgMax): self
     {
         $this->weightAvgMax = $weightAvgMax;
 
