@@ -115,7 +115,7 @@ class AdminWorkoutController extends AbstractController
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class, null, [
             'is_admin' => true
         ]);
-    
+        
         $formSpecific->handleRequest($request);
         
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {

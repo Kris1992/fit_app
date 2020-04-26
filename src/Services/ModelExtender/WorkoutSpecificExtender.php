@@ -10,16 +10,17 @@ use App\Repository\AbstractActivityRepository;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\FileDecoder\FileDecoderInterface;
-
-
 use App\Repository\BodyweightActivityRepository;
+use App\Repository\WeightActivityRepository;
 use Psr\Log\LoggerInterface;
 
+//Rozbić to na mniejsze klasy
 class WorkoutSpecificExtender implements WorkoutExtenderInterface {
     
     private $movementRepository;
     private $activityRepository;
     private $bodyweightRepository;
+    private $weightRepository;
     private $workoutsImagesManager;
     private $base64Decoder;
     private $logger;
@@ -29,6 +30,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
      * @param MovementActivityRepository   $movementRepository   
      * @param AbstractActivityRepository   $activityRepository   
      * @param BodyweightActivityRepository $bodyweightRepository
+     * @param WeightActivityRepository $weightRepository
      * @param ImagesManagerInterface       $workoutsImagesManager 
      * @param LoggerInterface              $logger               
      */
@@ -36,6 +38,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         MovementActivityRepository $movementRepository, 
         AbstractActivityRepository $activityRepository,
         BodyweightActivityRepository $bodyweightRepository,
+        WeightActivityRepository $weightRepository,
         ImagesManagerInterface $workoutsImagesManager,
         FileDecoderInterface $base64Decoder,
         LoggerInterface $logger
@@ -44,6 +47,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         $this->movementRepository = $movementRepository;
         $this->activityRepository = $activityRepository;
         $this->bodyweightRepository = $bodyweightRepository;
+        $this->weightRepository = $weightRepository;
         $this->workoutsImagesManager = $workoutsImagesManager;
         $this->base64Decoder = $base64Decoder;
         $this->logger = $logger;
@@ -89,6 +93,9 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
                 break;
             case 'Bodyweight':
                 $workoutModel = $this->fillBodyweightProperties($workoutModel);
+                break;
+            case 'Weight':
+                $workoutModel = $this->fillWeightProperties($workoutModel);
                 break;
             default:
                 $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity type name: %s!!', $workoutModel->getType()));
@@ -188,7 +195,30 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
             return $workoutModel;
         }
 
-        $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity with name "%s" and average repetitions "%s" !!',$workoutModel->getActivityName(), $workoutModel->getRepetitionsPerHour()));
+        $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity with name "%s" and average repetitions "%d" !!',$workoutModel->getActivityName(), $workoutModel->getRepetitionsPerHour()));
+
+        return null;
+    }
+
+    private function fillWeightProperties(AbstractWorkoutFormModel $workoutModel): ?AbstractWorkoutFormModel
+    {
+
+        $activity = $this->getWeightActivity(
+            $workoutModel->getActivityName(),
+            $workoutModel->getRepetitionsPerHour(),
+            $workoutModel->getDumbbellWeight()
+        );
+
+        if ($activity) {
+            $workoutModel                    
+                ->setActivity($activity)
+                ->calculateSaveBurnoutEnergyTotal()
+                ;
+
+            return $workoutModel;
+        }
+
+        $this->logger->alert(sprintf('Workout specific extender catched try of expend unsupported activity with name "%s" and average repetitions "%d"  and weight "%d"!!',$workoutModel->getActivityName(), $workoutModel->getRepetitionsPerHour(), $workoutModel->getDumbbellWeight()));
 
         return null;
     }
@@ -218,6 +248,22 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         return $this->bodyweightRepository->findOneActivityByRepetitionsPerHourAndName(
             $activityName,
             $repetitionsPerHour
+        );
+    }
+
+    /**
+     * getWeightActivity Get weight activity by given name and repetitions by hour and dumbbell weight 
+     * @param  string $activityName Name of activity
+     * @param  int    $repetitionsPerHour Average repetitions per hour
+     * @param  float    $dumbbellWeight Average weight of dumbbell
+     * @return AbstractActivity|null
+     */
+    private function getWeightActivity(string $activityName, int $repetitionsPerHour, float $dumbbellWeight): ?AbstractActivity
+    {
+        return $this->weightRepository->findOneActivityByRepetitionsPerHourAndWeightAndName(
+            $activityName,
+            $repetitionsPerHour,
+            $dumbbellWeight
         );
     }
 

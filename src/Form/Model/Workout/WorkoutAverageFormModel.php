@@ -18,11 +18,17 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
 
     /**
      * @Assert\NotBlank(message="Cannot calculate right number of repetitions", 
-     * groups={"bodyweight_model"})
+     * groups={"bodyweight_model", "weight_model"})
      * @Assert\GreaterThan(message="Calculated number of repetitions it's not correct", 
-     * value=0, groups={"bodyweight_model"})
+     * value=0, groups={"bodyweight_model", "weight_model"})
      */
     private $repetitionsTotal;
+
+    /**
+     * @Assert\NotBlank(message="Cannot calculate right dumbbell weight", groups={"weight_model"})
+     * @Assert\GreaterThan(message="Calculated dumbbell weight it's not correct", value=0, groups={"weight_model"})
+     */
+    private $dumbbellWeight;
 
     /**
      * @Assert\Valid
@@ -115,6 +121,28 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
         $repetitionsTotal = $repetitionsPerHour * ($this->getDurationSecondsTotal() / 3600);
 
         $this->repetitionsTotal = (int)$repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getDumbbellWeight(): ?float
+    {
+        return $this->dumbbellWeight;
+    }
+
+    public function setDumbbellWeight(?float $dumbbellWeight): self
+    {
+        $this->dumbbellWeight = $dumbbellWeight;
+
+        return $this;
+    }
+
+    public function calculateSaveDumbbellWeight(): self
+    {
+        $dumbbellWeightDiff = $this->activity->getWeightAvgMax() - $this->activity->getWeightAvgMin();
+        $dumbbellWeight = $this->activity->getWeightAvgMin() + ($dumbbellWeightDiff / 2);
+
+        $this->dumbbellWeight = (int)$dumbbellWeight;
 
         return $this;
     }

@@ -7,6 +7,7 @@ use App\Services\Factory\Activity\ActivityAbstractFactory;
 use App\Services\Factory\Activity\MovementActivityFactory;
 use App\Services\Factory\Activity\MovementSetActivityFactory;
 use App\Services\Factory\Activity\BodyweightActivityFactory;
+use App\Services\Factory\Activity\WeightActivityFactory;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -32,6 +33,12 @@ class ActivityFactorySpec extends ObjectBehavior
     function it_is_able_to_create_bodyweight_activity_factory(){
         $this->beConstructedThrough('chooseFactory', ['Bodyweight']);
         $this->shouldBeAnInstanceOf(BodyweightActivityFactory::class);
+        $this->shouldImplement(ActivityAbstractFactory::class);
+    }
+
+    function it_is_able_to_create_weight_activity_factory(){
+        $this->beConstructedThrough('chooseFactory', ['Weight']);
+        $this->shouldBeAnInstanceOf(WeightActivityFactory::class);
         $this->shouldImplement(ActivityAbstractFactory::class);
     }
 

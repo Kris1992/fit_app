@@ -47,6 +47,9 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
             case 'Bodyweight':
                 $workoutModel = $this->fillBodyweightProperties($workoutModel);
                 break;
+            case 'Weight':
+                $workoutModel = $this->fillWeightProperties($workoutModel);
+                break;
             default:
                 return null;
         }
@@ -66,6 +69,17 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
         $workoutModel
             ->calculateSaveBurnoutEnergyTotal()
             ->calculateSaveDistanceTotal()
+            ;
+
+        return $workoutModel;
+    }
+
+    private function fillWeightProperties(AbstractWorkoutFormModel $workoutModel):AbstractWorkoutFormModel
+    {
+        $workoutModel
+            ->calculateSaveBurnoutEnergyTotal()
+            ->calculateSaveDumbbellWeight()
+            ->calculateSaveRepetitionsTotal()
             ;
 
         return $workoutModel;

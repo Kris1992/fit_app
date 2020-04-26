@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\AbstractActivity;
 use App\Entity\MovementActivity;
 use App\Entity\BodyweightActivity;
+use App\Entity\WeightActivity;
 use App\Repository\AbstractActivityRepository;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
@@ -220,6 +221,15 @@ class WorkoutAverageDataFormType extends AbstractType
                 $activity->getRepetitionsAvgMax()
             );
         } 
+        if($activity instanceof WeightActivity) {
+            return sprintf('%s [%d-%d kg (%d - %d repeats)]',
+                $activity->getName(),  
+                $activity->getWeightAvgMin(),
+                $activity->getWeightAvgMax(),
+                $activity->getRepetitionsAvgMin(),
+                $activity->getRepetitionsAvgMax()
+            );
+        }
         
         return sprintf('(%d) %s', $activity->getId(), $activity->getName());
     }

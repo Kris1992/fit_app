@@ -57,7 +57,7 @@ Feature: Activities Admin Panel
 
     #base on js
     @javascript
-    Scenario: Add a movement wit set activity 
+    Scenario: Add a movement with set activity 
         And I am on "/admin/activity"
         And I click "Create"
         And I select "MovementSet" from "activity_form[type]"

@@ -20,5 +20,8 @@ class ModelValidatorChooserSpec extends ObjectBehavior
 
         $validationGroup2 = $this->chooseValidationGroup(Argument::type('string'));
         $validationGroup2->shouldReturn(['model']);
+
+        $validationGroup3 = $this->chooseValidationGroup('Weight');
+        $validationGroup3->shouldReturn(['weight_model']);
     }
 }

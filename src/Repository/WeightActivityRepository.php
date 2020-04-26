@@ -19,6 +19,23 @@ class WeightActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, WeightActivity::class);
     }
 
+    public function findOneActivityByRepetitionsPerHourAndWeightAndName(string $activityName, int $repetitionsPerHour, float $dumbbellWeight)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.name LIKE :activityName')
+            ->andWhere('(a.repetitionsAvgMin <= :repetitionsPerHour) AND (a.repetitionsAvgMax >= :repetitionsPerHour) AND (a.weightAvgMin <= :dumbbellWeight) AND (a.weightAvgMax >= :dumbbellWeight)')
+            ->setParameters([
+                'activityName' => $activityName,
+                'repetitionsPerHour' => $repetitionsPerHour,
+                'dumbbellWeight' => $dumbbellWeight,
+            ])
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+        ;
+    }
+
+
     // /**
     //  * @return WeightActivity[] Returns an array of WeightActivity objects
     //  */

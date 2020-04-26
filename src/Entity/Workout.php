@@ -68,6 +68,11 @@ class Workout
     private $repetitionsTotal;
 
     /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $dumbbellWeight;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"main"})
      */
@@ -99,6 +104,8 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
+
+
 
 
 
@@ -323,6 +330,18 @@ class Workout
     public function setRepetitionsTotal(?int $repetitionsTotal): self
     {
         $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getDumbbellWeight(): ?float
+    {
+        return $this->dumbbellWeight;
+    }
+
+    public function setDumbbellWeight(?float $dumbbellWeight): self
+    {
+        $this->dumbbellWeight = $dumbbellWeight;
 
         return $this;
     }

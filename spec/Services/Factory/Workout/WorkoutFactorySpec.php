@@ -6,6 +6,7 @@ use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\Factory\Workout\MovementWorkoutFactory;
 use App\Services\Factory\Workout\MovementSetWorkoutFactory;
 use App\Services\Factory\Workout\BodyweightWorkoutFactory;
+use App\Services\Factory\Workout\WeightWorkoutFactory;
 use App\Services\Factory\Workout\WorkoutFactoryInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -32,6 +33,12 @@ class WorkoutFactorySpec extends ObjectBehavior
     function it_is_able_to_create_bodyweight_workout_factory(){
         $this->beConstructedThrough('chooseFactory', ['Bodyweight']);
         $this->shouldBeAnInstanceOf(BodyweightWorkoutFactory::class);
+        $this->shouldImplement(WorkoutFactoryInterface::class);
+    }
+
+    function it_is_able_to_create_weight_workout_factory(){
+        $this->beConstructedThrough('chooseFactory', ['Weight']);
+        $this->shouldBeAnInstanceOf(WeightWorkoutFactory::class);
         $this->shouldImplement(WorkoutFactoryInterface::class);
     }
 

@@ -17,10 +17,16 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
 
     /**
      * @Assert\NotBlank(message="Please enter number of repetitions", 
-     * groups={"bodyweight_model"})
-     * @Assert\GreaterThan(value=0, groups={"bodyweight_model"})
+     * groups={"bodyweight_model", "weight"})
+     * @Assert\GreaterThan(value=0, groups={"bodyweight_model", "weight"})
      */
     private $repetitionsTotal;
+
+    /**
+     * @Assert\NotBlank(message="Please enter dumbbell weight", groups={"weight"})
+     * @Assert\GreaterThan(message="Dumbbell weight should be greater than 0", value=0, groups={"weight"})
+     */
+    private $dumbbellWeight;
 
     /**
      * @Assert\Valid
@@ -68,6 +74,18 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
         }
 
         return null;
+    }
+
+    public function getDumbbellWeight(): ?float
+    {
+        return $this->dumbbellWeight;
+    }
+
+    public function setDumbbellWeight(?float $dumbbellWeight): self
+    {
+        $this->dumbbellWeight = $dumbbellWeight;
+
+        return $this;
     }
 
     public function getAverageSpeed(): ?float
