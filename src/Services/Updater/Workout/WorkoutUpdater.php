@@ -11,6 +11,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
     const MOVEMENT_UPDATER="Movement";
     const MOVEMENTSET_UPDATER="MovementSet";
     const BODYWEIGHT_UPDATER="Bodyweight";
+    const WEIGHT_UPDATER="Weight";
 
     public function update(AbstractWorkoutFormModel $dataModel, Workout $workout): Workout
     {
@@ -22,6 +23,8 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
                 return $this->updateMovementSetType($dataModel, $workout);
             case self::BODYWEIGHT_UPDATER:
                 return $this->updateBodyweightType($dataModel, $workout);
+            case self::WEIGHT_UPDATER:
+                return $this->updateWeightType($dataModel, $workout);
             default:
                 throw new \Exception('Unsupported type of activity');
         }
@@ -30,7 +33,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
     private function updateMovementType(AbstractWorkoutFormModel $dataModel, Workout $workout): Workout
     {
         //Prevent clear unused data
-        $workout = $this->deleteOldWorkoutData($workout, ['MovementSet', 'Bodyweight']);
+        $workout = $this->deleteOldWorkoutData($workout);
 
         //inside this function we can check update is needed (is something changed?), but for now it is ok
         $workout
@@ -49,7 +52,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
     private function updateBodyweightType(AbstractWorkoutFormModel $dataModel, Workout $workout): Workout
     {
         //Prevent clear unused data
-        $workout = $this->deleteOldWorkoutData($workout, ['Movement', 'MovementSet']);
+        $workout = $this->deleteOldWorkoutData($workout);
 
         $workout
             ->setUser($dataModel->getUser())
@@ -64,10 +67,29 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
         return $workout;
     }
 
+    private function updateWeightType(AbstractWorkoutFormModel $dataModel, Workout $workout): Workout
+    {
+        //Prevent clear unused data
+        $workout = $this->deleteOldWorkoutData($workout);
+
+        $workout
+            ->setUser($dataModel->getUser())
+            ->setActivity($dataModel->getActivity())
+            ->setBurnoutEnergyTotal($dataModel->getBurnoutEnergyTotal())
+            ->setStartAt($dataModel->getStartAt())
+            ->setDurationSecondsTotal($dataModel->getDurationSecondsTotal())
+            ->setRepetitionsTotal($dataModel->getRepetitionsTotal())
+            ->setDumbbellWeight($dataModel->getDumbbellWeight())
+            ->setImageFilename($dataModel->getImageFilename())
+            ;
+
+        return $workout;
+    }
+
     private function updateMovementSetType(AbstractWorkoutFormModel $dataModel, Workout $workout): Workout
     {
         //Prevent clear unused data
-        $workout = $this->deleteOldWorkoutData($workout, ['Bodyweight']);
+        $workout = $this->deleteOldWorkoutData($workout);
 
         $workoutMovementSets = $workout->getMovementSets();
         $modelMovementSets = $dataModel->getMovementSets();
@@ -144,24 +166,15 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
      * @param  Workout $workout Workout entity to clear unused data
      * @return Workout
      */
-    private function deleteOldWorkoutData(Workout $workout, Array $types): Workout
+    private function deleteOldWorkoutData(Workout $workout): Workout
     {
-        foreach ($types as $type) {
-            switch ($type) {
-                case 'Movement':
-                    $workout
-                        ->setDistanceTotal(null);
-                    break;
-                case 'MovementSet':
-                    $workout = $this->deleteMovementSetsData($workout);
-                    break;
-                case 'Bodyweight':
-                    $workout
-                        ->setRepetitionsTotal(null);
-                default:
-                    break;
-            }
-        }
+        //Clear all unique data (rest data will be overwritten)
+        $workout = $this->deleteMovementSetsData($workout);
+        $workout
+            ->setRepetitionsTotal(null)
+            ->setDumbbellWeight(null)
+            ->setDistanceTotal(null)
+            ;
 
         return $workout;
     }

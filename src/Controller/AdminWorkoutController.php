@@ -248,13 +248,17 @@ class AdminWorkoutController extends AbstractController
                 $workoutSpecificFormModel, [
                 'is_admin' => true
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception | \Error $e) {
             $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
                 null, [
                 'is_admin' => true
             ]);
-            $this->addFlash('warning', $e->getMessage());
-        } //catch error TO DO
+            if ($e instanceof \Error) {
+                $this->addFlash('danger', $e->getMessage());
+            } else {
+                $this->addFlash('warning', $e->getMessage());
+            }
+        }
     
         $formSpecific->handleRequest($request);
 
@@ -290,7 +294,7 @@ class AdminWorkoutController extends AbstractController
                     ]);
                 }
             } else {
-                $this->addFlash('warning', 'Cannot update this type of activity');
+                $this->addFlash('warning', 'Cannot update this type of activity.');
             }
         }
        
@@ -363,12 +367,12 @@ class AdminWorkoutController extends AbstractController
                 */
                
             } else {
-                $this->addFlash('danger','Wrong token');
+                $this->addFlash('danger','Wrong token.');
                 return $this->redirectToRoute('admin_workout_list');
             }
         }
 
-        $this->addFlash('warning','Nothing to do');
+        $this->addFlash('warning','Nothing to do.');
         return $this->redirectToRoute('admin_workout_list');
     }
 

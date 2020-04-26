@@ -9,6 +9,8 @@ use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 use App\Entity\MovementActivity;
 use App\Entity\MovementSetActivity;
 use App\Entity\MovementSet;
+use App\Entity\BodyweightActivity;
+use App\Entity\WeightActivity;
 use App\Entity\Workout;
 use App\Entity\User;
 use PhpSpec\ObjectBehavior;
@@ -63,6 +65,91 @@ class WorkoutUpdaterSpec extends ObjectBehavior
         $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
         $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
         $workoutUpdated->getDistanceTotal()->shouldReturn(12.5);
+        $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
+    }
+
+    function it_should_be_able_to_update_bodyweight_workout()
+    {
+
+        $user = new User();
+        $activity = new BodyweightActivity();
+        $activity
+            ->setType('Bodyweight')
+            ;
+        $workoutModel = new WorkoutSpecificFormModel();
+        $workoutModel
+            ->setUser($user)
+            ->setActivity($activity)
+            ->setDurationSecondsTotal(3600)
+            ->setBurnoutEnergyTotal(500)
+            ->setStartAt(new \DateTime('2011-01-01'))
+            ->setRepetitionsTotal(30)
+            ->setImageFilename('test.jpeg')
+            ;
+
+        $workout = new Workout();
+        $workout
+            ->setUser($user)
+            ->setActivity($activity)
+            ->setDurationSecondsTotal(7200)
+            ->setBurnoutEnergyTotal(1000)
+            ->setStartAt(new \DateTime('2015-05-05'))
+            ->setRepetitionsTotal(70)
+            ->setImageFilename('oldtest.jpeg')
+            ;
+
+        $workoutUpdated = $this->update($workoutModel, $workout);
+        $workoutUpdated->shouldBeAnInstanceOf(Workout::class);
+        $workoutUpdated->getUser()->shouldBeAnInstanceOf(User::class);
+        $workoutUpdated->getActivity()->shouldBeAnInstanceOf(BodyweightActivity::class);
+        $workoutUpdated->getDurationSecondsTotal()->shouldReturn(3600);
+        $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
+        $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
+        $workoutUpdated->getRepetitionsTotal()->shouldReturn(30);
+        $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
+    }
+
+    function it_should_be_able_to_update_weight_workout()
+    {
+
+        $user = new User();
+        $activity = new WeightActivity();
+        $activity
+            ->setType('Weight')
+            ;
+        $workoutModel = new WorkoutSpecificFormModel();
+        $workoutModel
+            ->setUser($user)
+            ->setActivity($activity)
+            ->setDurationSecondsTotal(3600)
+            ->setBurnoutEnergyTotal(500)
+            ->setStartAt(new \DateTime('2011-01-01'))
+            ->setRepetitionsTotal(30)
+            ->setDumbbellWeight(50.0)
+            ->setImageFilename('test.jpeg')
+            ;
+
+        $workout = new Workout();
+        $workout
+            ->setUser($user)
+            ->setActivity($activity)
+            ->setDurationSecondsTotal(7200)
+            ->setBurnoutEnergyTotal(1000)
+            ->setStartAt(new \DateTime('2015-05-05'))
+            ->setRepetitionsTotal(70)
+            ->setDumbbellWeight(25.0)
+            ->setImageFilename('oldtest.jpeg')
+            ;
+
+        $workoutUpdated = $this->update($workoutModel, $workout);
+        $workoutUpdated->shouldBeAnInstanceOf(Workout::class);
+        $workoutUpdated->getUser()->shouldBeAnInstanceOf(User::class);
+        $workoutUpdated->getActivity()->shouldBeAnInstanceOf(WeightActivity::class);
+        $workoutUpdated->getDurationSecondsTotal()->shouldReturn(3600);
+        $workoutUpdated->getBurnoutEnergyTotal()->shouldReturn(500);
+        $workoutUpdated->getStartAt()->shouldBeLike(new \DateTime('2011-01-01'));
+        $workoutUpdated->getRepetitionsTotal()->shouldReturn(30);
+        $workoutUpdated->getDumbbellWeight()->shouldReturn(50.0);
         $workoutUpdated->getImageFilename()->shouldReturn('test.jpeg');
     }
 
@@ -148,7 +235,6 @@ class WorkoutUpdaterSpec extends ObjectBehavior
             ->addMovementSet($movementSetModel)
             ->setImageFilename('test.jpeg')
             ;
-
 
         //Data belongs to old workout 
         $workout = new Workout();
