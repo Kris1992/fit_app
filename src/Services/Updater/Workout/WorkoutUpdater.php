@@ -26,7 +26,7 @@ class WorkoutUpdater implements WorkoutUpdaterInterface {
             case self::WEIGHT_UPDATER:
                 return $this->updateWeightType($dataModel, $workout);
             default:
-                throw new \Exception('Unsupported type of activity');
+                throw new \Exception('Unsupported type of activity.');
         }
     }
 

@@ -30,6 +30,7 @@ abstract class AbstractActivity implements \ArrayAccess //
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"main"})
      */
     protected $type;
 

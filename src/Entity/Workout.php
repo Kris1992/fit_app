@@ -64,11 +64,13 @@ class Workout
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups("main")
      */
     private $repetitionsTotal;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups("main")
      */
     private $dumbbellWeight;
 

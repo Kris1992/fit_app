@@ -17,9 +17,13 @@
 		    <table class="table table-hover">
 		        <thead>
 		            <tr>
-		            	<th>#</th>
+		            	<th class="d-none">#</th>
+                        <th class="d-none">Activity Type</th>
 		                <th>Activity</th>
 		                <th>Duration</th>
+                        <th>Distance</th>
+                        <th>Repetitions</th>
+                        <th>Weight</th>
                         <th>Burnout</th>
                         <th>Date</th>
 		                <th>&nbsp;</th>
@@ -28,34 +32,68 @@
 		        <tbody>
 		            {% for workout in workouts %}
 		                <tr>
-		                	<td>{{ workout.id }}</td>
-		                    <td data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
-		                    <td class="js-duration">{{ workout.durationSecondsTotal | time }}</td>
-                            <td class="js-energy">{{ workout.burnoutEnergyTotal }}</td>
-                            <td>{{ workout.startAt | date('Y-m-d H:i') }}</td>
+		                	<td class="d-none">{{ workout.id }}</td>
+                            <td class="d-none js-activity-type">{{ workout.activity.type }}</td>
+		                    <td class="align-middle js-activity-name" data-id="{{ workout.activity.id }}">{{ workout.activity.name }}</td>
+		                    <td class="js-duration align-middle">{{ workout.durationSecondsTotal | time }}</td>
+                            <td class="js-distance align-middle">
+                                {% if workout.distanceTotal is not null %}
+                                    {{ workout.distanceTotal }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                {% if workout.repetitionsTotal is not null %}
+                                    {{ workout.repetitionsTotal }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                {% if workout.dumbbellWeight is not null %}
+                                    {{ workout.dumbbellWeight }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                            <td class="js-energy align-middle">{{ workout.burnoutEnergyTotal }}</td>
+                            <td class="align-middle">{{ workout.startAt | date('Y-m-d H:i') }}</td>
 
 		                    <td class="links-table">
 		                       	<div class="link-wrapper">
-                                    <a href="#" class="js-delete-workout delete-item" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}">
+                                    <a href="#" class="js-delete-workout delete-item" data-url="{{ path('workout_delete', {id: workout.id}) }}" data-id="{{workout.id}}" data-toggle="tooltip" data-placement="left" title="Delete">
                                         <span class="fa fa-trash-alt"></span>
                                     </a>
                                 </div>
+                                {% if not workout.activity.type is same as ('MovementSet') %}
+                                    <div class="link-wrapper">
+                                        <a href="#" class="js-edit-workout" data-url="{{ path('api_workout_edit', {id: workout.id}) }}" data-toggle="tooltip" data-placement="left" title="Fast edit">
+                                            <span class="far fa-edit"></span>
+                                        </a>
+                                    </div>
+                                {% endif %}
                                 <div class="link-wrapper">
-                                    <a href="#" class="js-edit-workout" data-url="{{ path('workout_edit', {id: workout.id}) }}">
+                                    <a href="#" data-toggle="tooltip" data-placement="left" title="Full edit">
                                         <span class="fa fa-pencil-alt"></span>
                                     </a>
                                 </div>
 		                    </td>
-		                   
 		                </tr>
 		            {% endfor %}
 		        </tbody>
-		        <tfoot>
+		        <tfoot class="table-success font-weight-bold">
+                    <tr>
+                        <th colspan="8">Total</th>
+                    </tr>
 		        	<tr>
-		        		<th>Total</th>
-		        		<th class="js-total-workouts">{{ workouts|length }}</th>
+		        		<td class="js-total-workouts">{{ workouts|length }}</td>
 		        		<td class="js-total-duration">&nbsp;</td>
-		        		<td class="js-total-energy">&nbsp;</td>
+		        		<td class="js-total-distance">&nbsp;</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td class="js-total-energy">&nbsp;</td>
+                        <td colspan="2">&nbsp;</td>
 		        	</tr>
 		        </tfoot>
 		    </table>
@@ -90,8 +128,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 
-
-<script src="{{ asset('js/_workoutApi.js') }}"></script>
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_workoutApi.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
 

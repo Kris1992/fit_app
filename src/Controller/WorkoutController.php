@@ -375,7 +375,7 @@ class WorkoutController extends AbstractController
         $workout->setStartDate($startAt);
 
         $linkDelete = $this->generateUrl('workout_delete', ['id' => $workout->getId()]);
-        $linkEdit = $this->generateUrl('workout_edit', ['id' => $workout->getId()]);
+        $linkEdit = $this->generateUrl('api_workout_edit', ['id' => $workout->getId()]);
 
         $workout->setLinks('delete',$linkDelete);
         $workout->setLinks('edit',$linkEdit);
@@ -391,56 +391,73 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/api/workout/edit/{id}", name="workout_edit", methods={"PUT"})
+     * @Route("/api/workout/edit/{id}", name="api_workout_edit", methods={"PUT"})
      */
-    public function edit(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory)
     {
-        //TO DO
+
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
         $data = json_decode($request->getContent(), true);
         //dump(date_default_timezone_get());
 
         if($data === null) {
-            throw new ApiBadRequestHttpException('Invalid Json');    
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
-        $formAverage->submit($data);
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+        $formSpecific->submit($data);
 
-        if (!$formAverage->isValid()) {
-            $errors = $this->getErrorsFromForm($formAverage);
+        if (!$formSpecific->isValid()) {
+            $errors = $this->getErrorsFromForm($formSpecific);
 
-            return $this->json(
-            $errors,
-            400
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
+                null
             );
+            $jsonError->setArrayExtraData($errors);
+
+            return $jsonErrorFactory->createResponse($jsonError);
         }
 
-        $workoutAverageFormModel = $formAverage->getData();
-        $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $workout->getUser());
-                
-        //Validation Model data
-        $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-        if ($isValid) {
-            try {
-                $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
-                $em->persist($workout);
-                $em->flush();
+        $workoutSpecificModel = $formSpecific->getData();
+        $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser(), null);
 
-                $response = new Response(null, 201);
+        if ($workoutSpecificModel) {
+            //Validation Model data
+            $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificModel->getType());
+            $isValid = $modelValidator->isValid($workoutSpecificModel, $validationGroup);
 
-                $response->headers->set(
-                    'Location',
-                    $this->generateUrl('api_workout_get', ['id' => $workout->getId()])
+            if ($isValid) {
+                try {
+                    $workout = $workoutUpdater->update($workoutSpecificModel, $workout);
+                    $em->persist($workout);
+                    $em->flush();
+                    $response = new Response(null, 200);
+
+                    $response->headers->set(
+                        'Location',
+                        $this->generateUrl('api_workout_get', ['id' => $workout->getId()])
+                    );
+
+                    return $response;
+                } catch (\Exception $e) {
+                    $jsonError = new JsonErrorResponse(400, 
+                        JsonErrorResponse::TYPE_ACTION_FAILED,
+                        $e->getMessage()
+                    );
+
+                    return $jsonErrorFactory->createResponse($jsonError);
+                }
+            } else {
+                $jsonError = new JsonErrorResponse(400, 
+                    JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+                    $modelValidator->getErrorMessage()
                 );
 
-                return $response;
-            } catch (\Exception $e) {}            
+                return $jsonErrorFactory->createResponse($jsonError);
+            }
         }
-
-        //We can't display unmapped errors in list so just empty response
-        return $this->json(null, 400);
     }
 
      /**

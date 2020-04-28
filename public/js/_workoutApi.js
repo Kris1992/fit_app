@@ -1,3 +1,5 @@
+import { getStatusError } from './_apiHelper.js';
+
 'use strict';
 
 (function(window, $, Swal)
@@ -17,11 +19,6 @@
 			CalculateHelperInstances.set(this, new CalculateHelper(this.$wrapper));
             this.handleDocumentLoad();
            
-			this.$wrapper.on(
-            	'click',
-            	'tbody tr',
-            	this.handleRowClick.bind(this)
-        	);
 			this.$wrapper.on(
 				'click',
 				'.js-delete-workout',
@@ -81,12 +78,9 @@
                 newWorkoutForm: '.js-new-workout-form'
             }
         }
- 		
- 		handleRowClick() {
-            console.log('row clicked!');
-        }
 
-        handleDocumentLoad() {   
+        handleDocumentLoad() { 
+        //TO DO  
             var $options = $("#activity > option").clone();
             var input = 
             `
@@ -105,6 +99,8 @@
 
             this.$nowWorkoutWrapper.find('.js-workout-now-div').html(input);
             $('#js-workout-now-activity').append($options);
+
+            this.setTooltips();
         }
 
         handleWorkoutDelete(event) {
@@ -113,7 +109,7 @@
             const id = $link.data('id');
             Swal.fire({
   				title: 'Delete workout??',
-  				text: `Do you want delete this workout nr. ${id} ?`,
+  				text: `Do you want delete this workout?`,
   				type: 'question',
   				showCancelButton: true,
                 showLoaderOnConfirm: true,
@@ -149,18 +145,19 @@
             	CalculateHelperInstances.get(this).getTotalWorkouts()
             );
             CalculateHelperInstances.get(this).getTotalEnergy();
+            CalculateHelperInstances.get(this).getTotalDistance();
             CalculateHelperInstances.get(this).getTotalDuration();
         }
 
-        handleNewWorkoutSubmit(event){
+        handleNewWorkoutSubmit(event) {
+            //TO DO
         	event.preventDefault();
         	const $form = $(event.currentTarget);
         	const formData = {};
             formData['durationSecondsTotal'] = {};
 
-        	for(let fieldData of $form.serializeArray()){
-        		
-        		if(fieldData.name == 'durationSecondsTotal[hour]'){
+        	for(let fieldData of $form.serializeArray()) {
+        		if(fieldData.name == 'durationSecondsTotal[hour]') {
         			formData['durationSecondsTotal']['hour'] = fieldData.value;
         		} else if(fieldData.name == 'durationSecondsTotal[minute]') {
         			formData['durationSecondsTotal']['minute'] = fieldData.value;
@@ -181,6 +178,7 @@
         }
 
         _saveWorkout(data, $form) {
+            //TO DO
         	return new Promise(function(resolve, reject) {
                 const url = $form.data('url');
                 $.ajax({
@@ -201,6 +199,7 @@
         }
 
         _addRow(workout) {
+            //TO DO
   	    	const tplText = $('#js-workout-row-template').html();
         	const tpl = _.template(tplText);
             const html = tpl(workout);
@@ -209,6 +208,7 @@
         }
 
 		_clearForm() {
+            //TO DO
         	const $form = this.$wrapper.find(WorkoutApi._selectors.newWorkoutForm);
         	this._removeFormErrors($form);
 			$form[0].reset();
@@ -221,53 +221,61 @@
         }
 
         _editWorkoutToForm($link) {
-        	$link.find('.fa')
-        		.removeClass('fa-pencil-alt')
-        		.addClass('fa-save');
+        	$link.find('.far')
+        		.removeClass('far fa-edit')
+        		.addClass('fas fa-save');
         	const $row = $link.closest('tr');
         	$row.find('.js-edit-workout')
         		.removeClass('js-edit-workout')
         		.addClass('js-submit-edit-workout');
         	const $tds = $row.find('td');
         	const data = {};
-        	let activity_id = 0;
         	var i = 0;
  			for (var cell of $tds) {
  				data[i] = $(cell).html();
- 				if($(cell).data('id')) {
- 					activity_id = $(cell).data('id');
- 				}
  				i++;
  			}
 
-            data[4] = data[4].replace(" ", "T");
-
- 			var $options = $("#activity > option").clone();
-    		$options[0].text = data[1];
-        	$options[0].value = activity_id;
+            data[8] = data[8].replace(" ", "T");
         	
         	var newRow = 
         	`<tr>
-				<td>${data[0]}</td>
-				<td>
-					<div class="form-group">
-						<select name="activity" id="${data[0]}" required="required" class="form-control"></select>
-					</div>
-				</td>
-				<td>
-					<div class="form-group">
-						<input type="text" name="durationSecondsTotal" required="required" class="form-control form-control-sm" value="${data[2]}">
-					</div>
-				</td>
-				<td>${data[3]}</td>
-                <td>
+                <td class="d-none">${data[0]}</td>
+                <td class="d-none js-activity-type">${data[1]}</td>
+				<td class="align-middle js-activity-name">${data[2]}</td>
+				<td class="align-middle"> 
                     <div class="form-group">
-                        <input type="datetime-local" name="startAt" required="required" class="form-control" value="${data[4]}"></td>
+                        <input type="text" name="durationSecondsTotal" required="required" class="form-control form-control-sm" value="${data[3].trim()}">
+                    </div>
+                </td>
+                <td class="align-middle">
+                    ${data[4].trim() !== '---' ? 
+                    `<div class="form-group">
+                        <input type="number" name="distanceTotal" required="required" class="form-control form-control-sm" value="${data[4].trim()}">
+                    </div>` : '---' }
+                </td>
+                <td class="align-middle">
+                    ${data[5].trim() !== '---' ? 
+                    `<div class="form-group">
+                        <input type="number" name="repetitionsTotal" required="required" class="form-control form-control-sm" value="${data[5].trim()}">
+                    </div>` : '---' }
+                </td>
+                <td class="align-middle">
+                    ${data[6].trim() !== '---' ? 
+                    `<div class="form-group">
+                        <input type="number" name="dumbbellWeight" required="required" class="form-control form-control-sm" value="${data[6].trim()}">
+                    </div>` : '---' }
+                </td>
+				<td class="align-middle">${data[7]}</td>
+                <td class="align-middle">
+                    <div class="form-group">
+                        <input type="datetime-local" name="startAt" required="required" class="form-control" value="${data[8]}">
 				    </div>
+                </td>    
                 <td class="links-table">
-					${data[5]}
+					${data[9]}
                     <div class="link-wrapper">
-                        <a href="#" class="js-edit-workout-cancel" data-id="${data[0]}">
+                        <a href="#" class="js-edit-workout-cancel" data-toggle="tooltip" data-placement="left" title="Cancel editing" data-id="${data[0]}">
                             <span class="fa fa-times"></span>
                 	   </a>
                     </div>
@@ -276,7 +284,7 @@
         	;
 
 			$row.replaceWith(newRow);
-			$('#'+data[0]).append($options);
+            this.setTooltips();
         }
 
         handleEditWorkoutCancel(event) {
@@ -284,8 +292,8 @@
         	const $link = $(event.currentTarget);
 
         	this._getWorkout($link).then((data) => {
-        		this._EditWorkoutToText($link, data);
-        	})
+        		this._editWorkoutToText($link, data);
+        	});
         }
 
         _getWorkout($link) {
@@ -320,22 +328,44 @@
 
         	const inputsData = {};
             inputsData['durationSecondsTotal'] = {};
-
-            inputsData['activity'] = $row.find('[name=activity]').children("option:selected").val();
-        	inputsData['startAt'] = $row.find('[name=startAt]').val();
+            
+            inputsData['activityName'] = $row.find('.js-activity-name').text();
+            inputsData['type'] = $row.find('.js-activity-type').text();
+            inputsData['startAt'] = $row.find('[name=startAt]').val();
+            if ($row.find('[name=distanceTotal]').val()) {
+                inputsData['distanceTotal'] = $row.find('[name=distanceTotal]').val();
+            }
+            if ($row.find('[name=repetitionsTotal]').val()) {
+                inputsData['repetitionsTotal'] = $row.find('[name=repetitionsTotal]').val();
+            }
+            if ($row.find('[name=dumbbellWeight]').val()) {
+                inputsData['dumbbellWeight'] = $row.find('[name=dumbbellWeight]').val();
+            }
         	inputsData['durationSecondsTotal']['hour'] = durationArray[0];
             inputsData['durationSecondsTotal']['minute'] = durationArray[1];
         	inputsData['durationSecondsTotal']['second'] = durationArray[2];
-
-            inputsData['_token'] = $('#_token').val();
+            //inputsData['_token'] = $('#_token').val();
         	
             this.updateWorkout(inputsData, url).then((data) => {
-                this._EditWorkoutToText($link, data);
+                this._editWorkoutToText($link, data);
                 CalculateHelperInstances.get(this).getTotalEnergy();
+                CalculateHelperInstances.get(this).getTotalDistance();
                 CalculateHelperInstances.get(this).getTotalDuration();
             }).catch((errorData) => {
-                this._mapErrorsToForm(errorData, $row);
-            })
+                if (errorData.type === 'form_validation_error') {
+                    this._mapErrorsToForm(errorData, $row);
+                } else {
+                    this.showErrorMessage(errorData.title);
+                }   
+            });
+        }
+
+        showErrorMessage(errorMessage) {
+            Swal.fire({
+                type: 'error',
+                title: 'Oops...',
+                text: `${errorMessage}`,
+            });
         }
 
         updateWorkout(data, url) {
@@ -351,31 +381,56 @@
                         resolve(data);
                     });
                 }).catch(function(jqXHR) {
-                    const errorData = JSON.parse(jqXHR.responseText);
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
                     reject(errorData);
                 });
             });
         }
 
-        _EditWorkoutToText($link, data) {
+        _editWorkoutToText($link, data) {
         	const $row = $link.closest('tr');
         	var newRow = 
         	`<tr>
-				<td>${data['id']}</td>
-				<td data-id="${data['activity']['id']}">${data['activity']['name']}</td>
-				<td class="js-duration">${data['time']}</td>
-				<td class="js-energy">${data['burnoutEnergyTotal']}</td>
-                <td>${data['startDate']}</td>
+                <td class="d-none">${data['id']}</td>
+                <td class="d-none js-activity-type">${data['activity']['type']}</td>
+				<td class="align-middle js-activity-name" data-id="${data['activity']['id']}">${data['activity']['name']}</td>
+				<td class="align-middle js-duration">${data['time']}</td>
+                <td class="align-middle js-distance">
+                    ${data['distanceTotal'] ? 
+                        `${data['distanceTotal']}` 
+                    : '---' }
+                </td>
+                <td class="align-middle">
+                    ${data['repetitionsTotal'] ? 
+                        `${data['repetitionsTotal']}` 
+                    : '---' }
+                </td>
+                <td class="align-middle">
+                    ${data['dumbbellWeight'] ? 
+                        `${data['dumbbellWeight']}` 
+                    : '---' }
+                </td>
+				<td class="align-middle js-energy">${data['burnoutEnergyTotal']}</td>
+                <td class="align-middle">${data['startDate']}</td>
 				<td class="links-table">
                     <div class="link-wrapper">
                         <a href="#" class="js-delete-workout delete-item" data-url="${data['links']['delete']}"
-                        data-id="${data['id']}">
+                        data-id="${data['id']}" data-toggle="tooltip" data-placement="left" title="Delete">
                     	   <span class="fa fa-trash-alt"></span>
                         </a>
                     </div>
                 	<div class="link-wrapper">
-                        <a href="#" class="js-edit-workout" data-url="${data['links']['edit']}">
-                    	   <span class="fa fa-pencil-alt"></span>
+                        <a href="#" class="js-edit-workout" data-url="${data['links']['edit']}"
+                        data-toggle="tooltip" data-placement="left" title="Fast edit">
+                    	   <span class="far fa-edit"></span>
+                        </a>
+                    </div>
+                    <div class="link-wrapper">
+                        <a href="#" data-toggle="tooltip" data-placement="left" title="Full edit">
+                           <span class="fa fa-pencil-alt"></span>
                         </a>
                     </div>
 				</td>
@@ -383,6 +438,7 @@
         	;
 
 			$row.replaceWith(newRow);
+            this.setTooltips();
         }
 
         _mapErrorsToForm(errorData, $row = null, $nowWorkoutWrapper = null) {
@@ -630,6 +686,13 @@
             $('#js-workout-now-activity').append($options);
         }
 
+        setTooltips() {
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+            $('[data-toggle="tooltip"]').on('click', function () {
+                $(this).tooltip('hide')
+            });
+        }
+
 	}
 
 	class CalculateHelper
@@ -639,6 +702,7 @@
 		{
 			this.$wrapper = $wrapper;
 			this.getTotalEnergy();
+            this.getTotalDistance();
 			this.getTotalDuration();
 		}
 
@@ -656,12 +720,22 @@
 
         getTotalEnergy() {
         	let sum = 0;
-        	for (let energy of this.$wrapper.find('.js-energy') )
-        	{
+        	for (let energy of this.$wrapper.find('.js-energy')) {
         		sum = sum + parseInt($(energy).html());
         	}
         	
         	this.$wrapper.find('.js-total-energy').html(sum);
+        }
+
+        getTotalDistance() {
+            let sum = 0;
+            for (let distance of this.$wrapper.find('.js-distance')) {
+                if (parseFloat($(distance).html())) {
+                    sum = sum + parseFloat($(distance).html());
+                }
+            }
+            
+            this.$wrapper.find('.js-total-distance').html(sum);
         }
 
         getTotalDuration() {
@@ -696,4 +770,3 @@
     window.WorkoutApi = WorkoutApi;
 
 })(window, jQuery, Swal);
-

@@ -143,6 +143,7 @@ class WorkoutSpecificDataFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => WorkoutSpecificFormModel::class,
             'is_admin' => false,
+            'csrf_protection' => false,//tymczasowo
             'validation_groups' => function (FormInterface $form) {
                 $data = $form->getData();
 
