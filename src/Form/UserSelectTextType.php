@@ -52,7 +52,7 @@ class UserSelectTextType extends AbstractType
         $class = isset($attr['class']) ? $attr['class'].' ' : '';
         $class .= 'js-user-autocomplete';
         $attr['class'] = $class;
-        $attr['data-autocomplete-url'] = $this->router->generate('admin_utility_users');
+        $attr['data-autocomplete-url'] = $this->router->generate('api_admin_utility_users');
         $view->vars['attr'] = $attr;
     }
 }

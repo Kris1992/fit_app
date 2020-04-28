@@ -17,6 +17,9 @@ use App\Services\Updater\User\UserUpdaterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 use App\Message\Command\DeleteUserFolders;
+use App\Exception\Api\ApiBadRequestHttpException;
+use App\Services\JsonErrorResponse\JsonErrorResponse;
+use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -78,11 +81,8 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete/{id}", name="admin_account_delete",  methods={"DELETE"})
      */
-    public function delete(Request $request, User $user, MessageBusInterface $messageBus)//$id)
+    public function delete(Request $request, User $user, MessageBusInterface $messageBus)
     {
-        //$userRepository = $this->getDoctrine()->getRepository(User::class);
-        //$user = $user_rep->find($id);
-
         $subdirectory = $user->getLogin();
         $messageBus->dispatch(new DeleteUserFolders($subdirectory));
 
@@ -135,12 +135,12 @@ class AdminAccountController extends AbstractController
         */
 
             } else {
-                $this->addFlash('danger','Wrong token');
+                $this->addFlash('danger','Wrong token.');
                 return $this->redirectToRoute('admin_account_list');
             }
         }
 
-        $this->addFlash('warning','Nothing to do');
+        $this->addFlash('warning','Nothing to do.');
         return $this->redirectToRoute('admin_account_list');
     }
 
@@ -148,17 +148,17 @@ class AdminAccountController extends AbstractController
      * @Route("/api/admin/account/{id}/delete_user_image", name="api_admin_delete_user_image",
      * methods={"DELETE"})
      */
-    public function deleteUserImageAction(Request $request, MessageBusInterface $messageBus, User $user): Response
+    public function deleteUserImageAction(Request $request, MessageBusInterface $messageBus, User $user, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
         $data = json_decode($request->getContent(), true);
-    
-        if($data === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
         
         $userId = $user->getId();
-
+        
         //double check that everything is ok
         if($userId == $data['id']) {
             $imageFilename = $user->getImageFilename();
@@ -168,11 +168,11 @@ class AdminAccountController extends AbstractController
             }
         }
 
-        $responseMessage = [
-            'errorMessage' => 'Image not found!'
-        ];
+        $jsonError = new JsonErrorResponse(404, 
+            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
+            'Image not found.');
 
-        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+        return $jsonErrorFactory->createResponse($jsonError);
     }
     
 }

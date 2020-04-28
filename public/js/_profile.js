@@ -21,7 +21,7 @@ $(document).ready(function() {
                 addWorkoutCards(workouts);
                 removeLoadingIcon();
             }).catch((errorData) => {
-                removeLoadingIcon(errorData.message);
+                removeLoadingIcon(errorData.title);
                 observer.unobserve(section);
             });
         }
@@ -104,4 +104,3 @@ function getWorkouts() {
         });
     });
 }
-

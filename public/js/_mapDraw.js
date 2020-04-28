@@ -75,7 +75,7 @@ function initMapView() {
             setMapView(currentCoords);
         });
     }  else {
-        alert('Geolocation is not supported');
+        alert('Geolocation is not supported.');
     }
 }
 
@@ -361,7 +361,7 @@ function sendData(event)
             }
             if (!fieldData.value) {
                 enableButton($(event.target));
-                showMapResponse('Form data is missing');
+                showMapResponse('Form data is missing.');
                 return;
             }
         }
@@ -377,8 +377,8 @@ function sendData(event)
                 saveWorkout(formData,url).then((result) => {
                     window.location.href = result.url;
                 }).catch((errorData) => {
-                    if (errorData.errorMessage) {
-                        showMapResponse(errorData.errorMessage);
+                    if (errorData.type !== 'form_validation_error') {
+                        showMapResponse(errorData.title);
                     } else {
                         mapErrorsToForm(errorData);
                     }                    
@@ -427,21 +427,25 @@ function saveWorkout(data, url) {
  * @return {Array} Array with message
  */
 function getStatusError(jqXHR) {
+    if (jqXHR.getResponseHeader('content-type') === 'application/problem+json') {
+        return null;
+    }
+
     if(jqXHR.status === 0) {
         return {
-            "errorMessage":"Cannot connect. Verify Network."
+            "title":"Cannot connect. Verify Network."
         }
-    } else if(jqXHR.status == 404) {
+    } else if(jqXHR.status === 404) {
         return {
-            "errorMessage":"Requested not found."
+            "title":"Requested not found."
         }
-    } else if(jqXHR.status == 500) {
+    } else if(jqXHR.status === 500) {
         return {
-            "errorMessage":"Internal Server Error"
+            "title":"Internal Server Error"
         }
     } else if(jqXHR.status > 400) {
         return {
-            "errorMessage":"Error. Contact with admin."
+            "title":"Error. Contact with admin."
         }
     }
     return null;

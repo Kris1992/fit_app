@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
@@ -27,6 +28,8 @@ use App\Message\Command\DeleteUserImage;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
 use App\Services\Mailer\MailingSystemInterface;
+use App\Services\JsonErrorResponse\JsonErrorResponse;
+use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 class AccountController extends AbstractController
 {
@@ -113,7 +116,7 @@ class AccountController extends AbstractController
             	$em->flush();
 
                 $mailer->sendResetPasswordMessage($user);
-        		$this->addFlash('success', 'Check your email! We send message to you');
+        		$this->addFlash('success', 'Check your email! We send message to you.');
         	}
     	}
 
@@ -169,19 +172,18 @@ class AccountController extends AbstractController
 
     /**
      *
-     * @Route("/api/account/delete_user_image", name="api_delete_user_image",
-     * methods={"DELETE"})
+     * @Route("/api/account/delete_user_image", name="api_delete_user_image", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
-    public function deleteUserImageAction(Request $request, MessageBusInterface $messageBus): Response
+    public function deleteUserImageAction(Request $request, MessageBusInterface $messageBus, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
         /** @var User $user */
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
 
-        if($data === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
         $userId = $user->getId();
@@ -194,11 +196,11 @@ class AccountController extends AbstractController
             }
         }
 
-        $responseMessage = [
-            'errorMessage' => 'Image not found!'
-        ];
+        $jsonError = new JsonErrorResponse(404, 
+            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
+            'Image not found.');
 
-        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+        return $jsonErrorFactory->createResponse($jsonError);
     }
 
 }

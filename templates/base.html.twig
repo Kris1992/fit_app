@@ -50,12 +50,14 @@
 									<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="submenu" aria-haspopup="true" href="#">My Account</a>
 								{% endif %}	
 								<div class="dropdown-menu" aria-labelledby="submenu">
-									{% if is_granted('ROLE_USER') %}
+									{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 										<a class="dropdown-item" href="{{ path('app_profile') }}">Profile</a>
 										<a class="dropdown-item" href="{{ path('account_edit') }}">Settings</a>
-										<a class="dropdown-item" href="{{ path('admin_dashboard') }}">Dashboard</a>
+                                        {% if is_granted('ROLE_ADMIN') %}
+                                            <a class="dropdown-item" href="{{ path('admin_dashboard') }}">Dashboard</a>
+                                        {% endif %}
 										<a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
-									{% else %}
+                                    {% else %}
 										<a class="dropdown-item" href="{{ path('app_login') }}">Login</a>
 										<div class="dropdown-divider"></div>
 										<a class="dropdown-item" href="{{ path('app_register') }}">Register</a>

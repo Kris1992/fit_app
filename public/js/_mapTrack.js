@@ -52,7 +52,7 @@ function initMapView() {
     if(navigator.geolocation) {
         watchActualPosition();
     }  else {
-        alert('Geolocation is not supported');
+        alert('Geolocation is not supported.');
     }
 }
 
@@ -235,7 +235,7 @@ function sendActivity(event)
                 $("#trackme-js").on("click", startTrackPosition);
             }
         }).catch((errorData) => {
-            showMapResponse(errorData.errorMessage);                    
+            showMapResponse(errorData.title);                    
         });
     }
     
@@ -255,7 +255,7 @@ function getDataFromForm(fieldNames = null)
         //Group formData because I don't want allow_extra_fields in form
         formData['formData'] = {}
         for(let fieldData of $form.serializeArray()) { 
-            formData['formData'][fieldData.name] = fieldData.value;   
+            formData['formData'][fieldData.name] = fieldData.value;
         }
         return formData;    
     } else {
@@ -311,6 +311,8 @@ function startTrackPosition(event) {
     getServerDate($('#startAt').data('url')).then((today) => {
         $('#startAt').val(today);
         trackRoute();
+    }).catch((errorData) => {
+        showMapResponse(errorData.title);
     });
 }
 
@@ -369,10 +371,10 @@ function stopTracking(event)
                     navigator.geolocation.clearWatch(watchID);
                     window.location.href = result.url;
                 }).catch((errorData) => {
-                    showMapResponse(errorData.errorMessage);
+                    showMapResponse(errorData.title);
                 });
             } else {
-                showMapResponse('Capturing is not supported');
+                showMapResponse('Capturing is not supported.');
             }
         }, []);
     } else {
@@ -408,6 +410,15 @@ function getServerDate(url) {
                 method: 'GET'
             }).then(function(today) {
                 resolve(today);
+            }).catch((jqXHR) => {
+                let statusError = [];
+                statusError = getStatusError(jqXHR);
+                if(statusError != null) {
+                    reject(statusError);
+                } else {
+                    const errorData = JSON.parse(jqXHR.responseText);
+                    reject(errorData);
+                }
             });
     });
 }
@@ -444,21 +455,24 @@ function getActivityData(data, url) {
  * @return errorMessage || null
  */
 function getStatusError(jqXHR) {
+    if (jqXHR.getResponseHeader('content-type') === 'application/problem+json') {
+        return null;
+    }
     if(jqXHR.status === 0) {
         return {
-            "errorMessage":"Cannot connect. Verify Network."
+            "title":"Cannot connect. Verify Network."
         }
-    } else if(jqXHR.status == 404) {
+    } else if(jqXHR.status === 404) {
         return {
-            "errorMessage":"Requested not found."
+            "title":"Requested not found."
         }
-    } else if(jqXHR.status == 500) {
+    } else if(jqXHR.status === 500) {
         return {
-            "errorMessage":"Internal Server Error"
+            "title":"Internal Server Error."
         }
     } else if(jqXHR.status > 400) {
         return {
-            "errorMessage":"Error. Contact with admin."
+            "title":"Error. Contact with admin."
         }
     }
     return null;

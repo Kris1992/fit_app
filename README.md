@@ -70,7 +70,7 @@ TO DO
 
 :hourglass_flowing_sand: Rebuild workouts history
 :hourglass_flowing_sand: Refactor api error response (json+problem)
-:hourglass_flowing_sand: ADD possibility to add weight activities
+:heavy_check_mark: ADD possibility to add weight activities
 :hourglass_flowing_sand: ADD more info about workout in reports
 :hourglass_flowing_sand: ADD unit, integration and functional tests (every week add few) 
 

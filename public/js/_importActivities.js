@@ -31,6 +31,19 @@ function initializeDropzone() {
                     showReport(result);
                 }
             });
+            this.on('error', (file, error) => {
+                if (file && error) {
+                    try {
+                        const result = JSON.parse(error);
+                        var $msgEl = $('.dz-error-message');
+                        $msgEl.text(result.title);
+                        $msgEl.show();
+                        $msgEl.css("opacity", 1);
+                    } catch(e) {
+                        return false;
+                    }
+                }
+            });
         }
     });
 }

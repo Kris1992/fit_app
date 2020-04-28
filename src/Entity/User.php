@@ -10,8 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
-
-//use App\Services\UploadImagesHelper;
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -318,16 +317,15 @@ class User implements UserInterface
         return $this;
     }
 
-        //is used?
-    /*public function getImagePath()
+    public function getImagePath()
     {
-        return UploadImagesHelper::USERS_IMAGES.'/'.$this->getImageFilename();
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath()
     {
-        return UploadImagesHelper::USERS_IMAGES.'/'.UploadImagesHelper::THUMB_IMAGES.'/'.$this->getImageFilename();
-    }*/
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
+    }
 
     public function increaseFailedAttempts(): ?int
     {

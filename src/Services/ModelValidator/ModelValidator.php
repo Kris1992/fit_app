@@ -65,4 +65,12 @@ class ModelValidator implements ModelValidatorInterface
             return $this->formErrors;
         }
     }
+
+    public function getErrorMessage(): string
+    {
+        if (!$this->isValid) {
+            return $this->formErrors[0]->getMessage();
+        }
+    }
+
 }

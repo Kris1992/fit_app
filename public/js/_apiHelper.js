@@ -1,19 +1,23 @@
 export function getStatusError(jqXHR) {
+    if (jqXHR.getResponseHeader('content-type') === 'application/problem+json') {
+        return null;
+    }
+
     if(jqXHR.status === 0) {
         return {
-            "errorMessage":"Cannot connect. Verify Network."
+            "title":"Cannot connect. Verify Network."
         }
-    } else if(jqXHR.status == 404) {
+    } else if(jqXHR.status === 404 ) {
         return {
-            "errorMessage":"Requested not found."
+            "title":"Requested not found."
         }
-    } else if(jqXHR.status == 500) {
+    } else if(jqXHR.status === 500) {
         return {
-            "errorMessage":"Internal Server Error"
+            "title":"Internal Server Error."
         }
     } else if(jqXHR.status > 400) {
         return {
-            "errorMessage":"Error. Contact with admin."
+            "title":"Error. Contact with admin."
         }
     }
 

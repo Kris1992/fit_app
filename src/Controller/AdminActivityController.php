@@ -15,12 +15,13 @@ use App\Entity\AbstractActivity;
 use App\Services\Factory\Activity\ActivityFactory;
 use App\Form\Model\Activity\BasicActivityFormModel;
 use App\Repository\AbstractActivityRepository;
-
+use App\Exception\Api\ApiBadRequestHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 use App\Services\Transformer\Activity\ActivityTransformer;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
+use App\Services\JsonErrorResponse\JsonErrorResponse;
+use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 use App\Services\FilesManager\FilesManagerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -60,7 +61,6 @@ class AdminActivityController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
             $data = $form->getData();
 
             //Form don't let not valid type, but if developer forget about implement it in transformers or factory it will throw exception
@@ -105,11 +105,15 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("api/admin/activity/import", name="api_admin_activity_import", methods={"POST", "GET"})
      */
-    public function import(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, ActivitiesImporterInterface $activitiesImporter)
+    public function import(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, ActivitiesImporterInterface $activitiesImporter, JsonErrorResponseFactory $jsonErrorFactory)
     {
 
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->files->get('activityCSVFile');
+        if ($uploadedFile === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');
+        }
+
         $CSVFileFormModel = new CSVFileFormModel();
         $CSVFileFormModel->setUploadedFile($uploadedFile);
 
@@ -117,18 +121,26 @@ class AdminActivityController extends AbstractController
         $isValid = $modelValidator->isValid($CSVFileFormModel);
 
         if(!$isValid) {
-            $violations = $modelValidator->getErrors();
+            $violation = $modelValidator->getErrorMessage();
 
-            //Take just first violation
-            $violation = $violations[0]->getMessage();
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+                $violation
+            );
 
-            return new JsonResponse($violation, Response::HTTP_BAD_REQUEST);
+            return $jsonErrorFactory->createResponse($jsonError);
         }
         
         try {
             $result = $activitiesImporter->import($CSVFileFormModel->getUploadedFile());
         } catch (\Exception $e) {
-            return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_ACTION_FAILED,
+                $e->getMessage()
+            );
+
+            return $jsonErrorFactory->createResponse($jsonError);
         }
 
         return new JsonResponse($result, Response::HTTP_OK);
@@ -224,12 +236,12 @@ class AdminActivityController extends AbstractController
                 */
                
             } else {
-                $this->addFlash('danger','Wrong token');
+                $this->addFlash('danger','Wrong token.');
                 return $this->redirectToRoute('admin_activity_list');
             }
         }
 
-        $this->addFlash('warning','Nothing to do');
+        $this->addFlash('warning','Nothing to do.');
         return $this->redirectToRoute('admin_activity_list');
     }
 
@@ -239,6 +251,10 @@ class AdminActivityController extends AbstractController
     public function getSpecificActivityForm(Request $request)
     {
         $type = $request->query->get('type');
+
+        if ($type === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
 
         $activity = new BasicActivityFormModel();
         $activity->setType($type);
