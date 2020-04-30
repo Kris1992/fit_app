@@ -109,12 +109,27 @@
 
         </div>
 	</div>
-	<div class="col-sm-12 col-md-6 js-workout-now" data-url="{{ path('workout_add') }} ">
+	<div class="col-sm-12 col-md-6 js-workout-now" data-url="{{ path('api_workout_add_specific') }} ">
 		<div class="card card-signin">
 			<div class="card-body js-workout-now-div">
-
-
-
+                <h4 class="card-title text-center text-green text-uppercase">
+                Start exercise now
+                </h4>
+                <form method="post" class="form-signin">
+                    <div class="form-group">
+                        <label class="required" for="js-workout-now-activity">Activity: </label>
+                        <select name="activity" id="js-workout-now-activity" required="required" class="form-control-lg form-control">
+                            <option value selected>Choose an activity</option>
+                            {% for activity in movementActivities %}
+                            <option value="{{ activity.name }}">{{ activity.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="js-workout-now-wrapper">
+                        <button class="btn btn-lg btn-green btn-block text-uppercase js-start-button" type="button">Start</button>
+                    </div>
+                    <input type="hidden" name="_token" value="{{ formSpecific._token.vars.value }}" id="js-token">  
+                </form>
             </div>
 		</div>
 	</div>
@@ -130,6 +145,10 @@
 
 <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
 <script type="module" src="{{ asset('js/_workoutApi.js') }}"></script>
+
+<!-- Add average -->
+<script type="module" src="{{ asset('js/_formHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_workoutSets.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -144,31 +163,64 @@
     });
 </script>
 <script type="text/template" id="js-workout-row-template">
-        <tr>
-            <td><%= id %></td>
-            <td data-id="<%= activity.id %>"><%= activity.name %></td>
-            <td class="js-duration"><%= time %></td>
-            <td class="js-energy"><%= burnoutEnergyTotal %></td>
-            <td><%= startDate %></td>
-            <td class="links-table">
-                <div class="link-wrapper">
-                    <a href="#"
-                        class="js-delete-workout delete-item"
-                        data-url="<%= links.delete %>"
-                        data-id="<%= id %>"
-                    >
-                        <span class="fa fa-trash-alt"></span>
-                    </a>
-                </div>
-                <div class="link-wrapper">
-                    <a href="#"
-                        class="js-edit-workout"
-                        data-url="<%= links.edit %>"
-                    >
-                        <span class="fa fa-pencil-alt"></span>
-                    </a>
-                </div>
-            </td>
-        </tr>
+<tr>
+    <td class="d-none"><%= id %></td>
+    <td class="d-none js-activity-type"><%= activity.type %></td>
+    <td class="align-middle js-activity-name" data-id="<%= activity.id %>"><%= activity.name %></td>
+    <td class="js-duration align-middle"><%= time %></td>
+    <td class="js-distance align-middle">
+        <% if (distanceTotal !== null) { %>
+            <%= distanceTotal %>
+        <% } else { %>
+            ---
+        <% } %>
+    </td>
+    <td class="align-middle">
+        <% if (repetitionsTotal !== null) { %>
+            <%= repetitionsTotal %>
+        <% } else { %>
+            ---
+        <% } %>
+    </td>
+    <td class="align-middle">
+        <% if (dumbbellWeight !== null) { %>
+            <%= dumbbellWeight %>
+        <% } else { %>
+            ---
+        <% } %>
+    </td>
+    <td class="js-energy align-middle"><%= burnoutEnergyTotal %></td>
+    <td class="align-middle"><%= startDate %></td>
+    <td class="links-table">
+        <div class="link-wrapper">
+            <a href="#"
+                class="js-delete-workout delete-item"
+                data-url="<%= links.delete %>"
+                data-id="<%= id %>"
+                data-toggle="tooltip" data-placement="left" title="Delete"
+            >
+                <span class="fa fa-trash-alt"></span>
+            </a>
+        </div>
+        <% if (activity.type !== 'MovementSet') { %>
+            <div class="link-wrapper">
+                <a href="#"
+                    class="js-edit-workout"
+                    data-url="<%= links.edit %>"
+                    data-toggle="tooltip" data-placement="left" title="Fast edit"
+                >
+                    <span class="far fa-edit"></span>
+                </a>
+            </div>
+        <% } %>
+        <div class="link-wrapper">
+            <a href="#"
+                data-toggle="tooltip" data-placement="left" title="Full edit"
+            >
+                <span class="fa fa-pencil-alt"></span>
+            </a>
+        </div>
+    </td>
+</tr>
 </script>
 {% endblock %}

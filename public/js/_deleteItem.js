@@ -7,7 +7,7 @@ if(items) {
         const anchor = event.target.closest('a');
 
         if(anchor) {
-            if(anchor.className == "delete-item") {
+            if(anchor.className === "delete-item") {
                 event.preventDefault();
                 const id = anchor.getAttribute('data-id');
                 const itemName = anchor.getAttribute('data-name');
