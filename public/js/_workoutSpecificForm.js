@@ -1,4 +1,5 @@
 import { initCollections, addNewForm, addRemoveButton, handleRemoveButtonClick } from './_formHelper.js';
+import { getStatusError } from './_apiHelper.js';
 
 'use strict';
 
@@ -29,6 +30,17 @@ $(document).ready(function() {
                 if($specificWorkoutForm.find("#workout_sets").length > 0) {
                     initCollections();
                 }
+            },
+            error: function(error) {
+                let errorData = getStatusError(error);
+                if(errorData === null) {
+                    errorData = JSON.parse(error.responseText);
+                } 
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: `${errorData.title}`,
+                }); 
             }
         });
     });

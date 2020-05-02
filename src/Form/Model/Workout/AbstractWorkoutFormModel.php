@@ -4,6 +4,9 @@ namespace App\Form\Model\Workout;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
 use App\Services\ImagesManager\WorkoutsImagesManager;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 use App\Entity\User;
 use App\Entity\AbstractActivity;
 
@@ -14,34 +17,34 @@ abstract class AbstractWorkoutFormModel
 
     /**
      * @Assert\NotBlank(message="Cannot configure user", groups={"model", "bodyweight_model", 
-     * "route_model"})
+     * "route_model", "weight_model"})
      */
     protected $user;
 
     /**
      * @Assert\NotBlank(message="Cannot configure activity", groups={"model", 
-     * "bodyweight_model", "route_model"})
+     * "bodyweight_model", "weight_model", "route_model"})
      */
     protected $activity;
 
     /**
      * @Assert\NotBlank(message="Your burnout Energy is too small", groups={"model", 
-     * "bodyweight_model", "route_model"})
+     * "bodyweight_model", "route_model", "weight_model"})
      * @Assert\GreaterThan(message="Your burnout Energy is too small", value=0, 
-     * groups={"model", "bodyweight_model", "route_model"})
+     * groups={"model", "bodyweight_model", "route_model", "weight_model"})
      */
     protected $burnoutEnergyTotal;
 
     /**
      * @Assert\NotBlank(message="Please enter date of start", groups={"average_sets", 
-     * "specific_sets", "Default", "route_map", "route_model"})
+     * "specific_sets", "Default", "route_map", "route_model", "weight_model"})
      */
     protected $startAt;
     
     /**
      * @Assert\NotBlank(message="Please enter time", groups={"model", "bodyweight_model",
-     *  "Default", "route_model"})
-     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default", "route_map", "route_model"})
+     *  "Default", "route_model", "weight_model"})
+     * @AcmeAssert\NotZeroDuration(groups={"model", "bodyweight_model", "Default", "route_map", "route_model", "weight_model"})
      */
     protected $durationSecondsTotal;
 
@@ -49,6 +52,18 @@ abstract class AbstractWorkoutFormModel
      *  @Assert\NotBlank(message="Map missing", groups={"route_model"})
      */
     protected $imageFilename;
+
+    /**
+     * @Assert\Valid
+     * @Assert\Count(
+     *      min = 1,
+     *      minMessage = "You must specify at least one set",
+     *      groups={"specific_sets", "average_sets"}
+     * )
+     */
+    protected $movementSets;
+
+    protected $routeData;
 
     //helpers
     /**
@@ -60,6 +75,41 @@ abstract class AbstractWorkoutFormModel
     protected $type;
 
 
+    public function __construct()
+    {
+        $this->movementSets = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|MovementActivitySetFormModel[]
+     */
+    public function getMovementSets(): Collection
+    {
+        return $this->movementSets;
+    }
+
+    public function addMovementSet(MovementActivitySetFormModel $movementSet): self
+    {
+        if (!$this->movementSets->contains($movementSet)) {
+            $this->movementSets[] = $movementSet;
+            $movementSet->setWorkout($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovementSet(MovementActivitySetFormModel $movementSet): self
+    {
+        if ($this->movementSets->contains($movementSet)) {
+            $this->movementSets->removeElement($movementSet);
+            // set the owning side to null (unless already changed)
+            if ($movementSet->getWorkout() === $this) {
+                $movementSet->setWorkout(null);
+            }
+        }
+
+        return $this;
+    }
 
     public function setId(?int $id)
     {
@@ -182,6 +232,18 @@ abstract class AbstractWorkoutFormModel
         return $this->type;
     }
 
+    public function getRouteData(): ?RouteDataModel
+    {
+        return $this->routeData;
+    }
+
+    public function setRouteData(?RouteDataModel $routeData): self
+    {
+        $this->routeData = $routeData;
+
+        return $this;
+    }
+
     public function getImagePath(): ?string
     {
         return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
@@ -191,6 +253,5 @@ abstract class AbstractWorkoutFormModel
     {
         return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
-
 
 }

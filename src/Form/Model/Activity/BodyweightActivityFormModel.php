@@ -35,7 +35,7 @@ class BodyweightActivityFormModel extends AbstractActivityFormModel
     private $repetitionsAvgMin;
 
     /**
-     * @Assert\NotBlank(message="Please enter number of repetiotions")
+     * @Assert\NotBlank(message="Please enter number of repetitions")
      * @Assert\Range(
      *      min = 2,
      *      max = 500,

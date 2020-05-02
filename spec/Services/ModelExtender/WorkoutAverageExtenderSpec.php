@@ -9,6 +9,7 @@ use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Entity\MovementActivity;
 use App\Entity\BodyweightActivity;
+use App\Entity\WeightActivity;
 use App\Entity\MovementSetActivity;
 use App\Entity\User;
 use PhpSpec\ObjectBehavior;
@@ -94,6 +95,35 @@ class WorkoutAverageExtenderSpec extends ObjectBehavior
         $workout->getActivity()->shouldBeAnInstanceOf(BodyweightActivity::class);
         $workout->getDurationSecondsTotal()->shouldReturn(3600);
         $workout->getRepetitionsTotal()->shouldBeLike(50);
+        $workout->getBurnoutEnergyTotal()->shouldReturn(500);
+    }
+
+    function it_is_able_to_extend_weight_workout_average_model_with_user()
+    {   
+        $user = new User();
+        $activity = new WeightActivity();
+        $activity
+            ->setType('Weight')
+            ->setName('Barbell Bench Press')
+            ->setEnergy(500)
+            ->setRepetitionsAvgMin(20)
+            ->setRepetitionsAvgMax(40)
+            ->setWeightAvgMin(30.0)
+            ->setWeightAvgMax(40.0)
+            ;
+        $workoutModel = new WorkoutAverageFormModel();
+        $workoutModel
+            ->setDurationSecondsTotal(3600)
+            ->setActivity($activity)
+            ;
+
+        $workout = $this->fillWorkoutModel($workoutModel, $user, null);
+        $workout->shouldBeAnInstanceOf(WorkoutAverageFormModel::class);
+        $workout->getUser()->shouldBeAnInstanceOf(User::class);
+        $workout->getActivity()->shouldBeAnInstanceOf(WeightActivity::class);
+        $workout->getDurationSecondsTotal()->shouldReturn(3600);
+        $workout->getRepetitionsTotal()->shouldBeLike(30);
+        $workout->getDumbbellWeight()->shouldBeLike(35);
         $workout->getBurnoutEnergyTotal()->shouldReturn(500);
     }
 

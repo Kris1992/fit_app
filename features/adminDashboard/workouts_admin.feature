@@ -7,8 +7,8 @@ Feature: Workouts Admin Panel
         Given I am logged in as an admin
 
     #base on js
-    @javascript @fixtures
-    Scenario: Add a movement workout
+    @javascript @fixtures 
+    Scenario: Add a movement workout with average data
         Given Is database with "activities"
         And I am on "/admin/workout"
         And I click "Create"
@@ -25,7 +25,25 @@ Feature: Workouts Admin Panel
 
     #base on js
     @javascript @fixtures
-    Scenario: Add a bodyweight workout
+    Scenario: Add a movement workout with specific data
+        Given Is database with "activities"
+        And I am on "/admin/workout/add_specific"
+        And break
+        And I select "Cycling" from "activityName"
+        And I fill in "user" with "admin0Test@fit.com"
+        And I fill in "startAt" with "2020-04-23 16:22"
+        And I select "01" from "durationSecondsTotal[hour]"
+        And I select "00" from "durationSecondsTotal[minute]"
+        And I select "00" from "durationSecondsTotal[second]"
+        And I fill in "distanceTotal" with "15"
+        And I press "Add"
+        And I wait for the page to be loaded
+        Then I should see "Workout was created!"
+        And I should see 1 row in the table
+
+    #base on js
+    @javascript @fixtures
+    Scenario: Add a bodyweight workout with average data
         Given Is database with "activities"
         And I am on "/admin/workout"
         And I click "Create"
@@ -42,7 +60,59 @@ Feature: Workouts Admin Panel
 
     #base on js
     @javascript @fixtures
-    Scenario: Add a movement with sets workout
+    Scenario: Add a bodyweight workout with specific data
+        Given Is database with "activities"
+        And I am on "/admin/workout/add_specific"
+        And I select "Push-ups" from "activityName"
+        And I fill in "user" with "admin0Test@fit.com"
+        And I fill in "startAt" with "2020-04-23 16:22"
+        And I select "01" from "durationSecondsTotal[hour]"
+        And I select "00" from "durationSecondsTotal[minute]"
+        And I select "00" from "durationSecondsTotal[second]"
+        And I fill in "repetitionsTotal" with "70"
+        And I press "Add"
+        And I wait for the page to be loaded
+        Then I should see "Workout was created!"
+        And I should see 1 row in the table
+
+    #base on js
+    @javascript @fixtures 
+    Scenario: Add a weight workout with average data
+        Given Is database with "activities"
+        And I am on "/admin/workout"
+        And I click "Create"
+        And I select "Barbell Bench Press" from "activity"
+        And I fill in "user" with "admin0Test@fit.com"
+        And I fill in "startAt" with "2020-04-23 16:22"
+        And I select "01" from "durationSecondsTotal[hour]"
+        And I select "00" from "durationSecondsTotal[minute]"
+        And I select "00" from "durationSecondsTotal[second]"
+        And I press "Add"
+        And I wait for the page to be loaded
+        Then I should see "Workout was created!"
+        And I should see 1 row in the table
+
+    #base on js
+    @javascript @fixtures
+    Scenario: Add a weight workout with specific data
+        Given Is database with "activities"
+        And I am on "/admin/workout/add_specific"
+        And I select "Barbell Bench Press" from "activityName"
+        And I fill in "user" with "admin0Test@fit.com"
+        And I fill in "startAt" with "2020-04-23 16:22"
+        And I select "01" from "durationSecondsTotal[hour]"
+        And I select "00" from "durationSecondsTotal[minute]"
+        And I select "00" from "durationSecondsTotal[second]"
+        And I fill in "repetitionsTotal" with "50"
+        And I fill in "dumbbellWeight" with "40"
+        And I press "Add"
+        And I wait for the page to be loaded
+        Then I should see "Workout was created!"
+        And I should see 1 row in the table
+
+    #base on js
+    @javascript @fixtures
+    Scenario: Add a movement with sets workout with average data
         Given Is database with "activities"
         And I am on "/admin/workout"
         And I click "Create"
@@ -59,6 +129,31 @@ Feature: Workouts Admin Panel
         And I select "02" from "movementSets[1][durationSeconds][hour]"
         And I select "30" from "movementSets[1][durationSeconds][minute]"
         And I select "30" from "movementSets[1][durationSeconds][second]"
+        And I press "Add"
+        And I wait for the page to be loaded
+        Then I should see "Workout was created!"
+        And I should see 1 row in the table
+
+    #base on js
+    @javascript @fixtures
+    Scenario: Add a movement with sets workout with specific data
+        Given Is database with "activities"
+        And I am on "/admin/workout/add_specific"
+        And I select "Cycling circuits" from "activityName"
+        And I fill in "user" with "admin0Test@fit.com"
+        And I fill in "startAt" with "2020-04-23 16:22"
+        And I click "Add set"
+        And I select "Cycling" from "movementSets[0][activityName]"
+        And I select "01" from "movementSets[0][durationSeconds][hour]"
+        And I select "00" from "movementSets[0][durationSeconds][minute]"
+        And I select "00" from "movementSets[0][durationSeconds][second]"
+        And I fill in "movementSets[0][distance]" with "18"
+        And I click "Add set"
+        And I select "Cycling" from "movementSets[1][activityName]"
+        And I select "01" from "movementSets[1][durationSeconds][hour]"
+        And I select "00" from "movementSets[1][durationSeconds][minute]"
+        And I select "00" from "movementSets[1][durationSeconds][second]"
+        And I fill in "movementSets[1][distance]" with "18"
         And I press "Add"
         And I wait for the page to be loaded
         Then I should see "Workout was created!"
@@ -117,9 +212,3 @@ Feature: Workouts Admin Panel
         And I wait for the page to be loaded
         Then I should see "Workouts were deleted!"
 
-#nav-link
-
-   
-
-        
-        

@@ -16,7 +16,7 @@ use App\Form\Model\Workout\WorkoutSpecificFormModel;
 use App\Form\Model\Workout\WorkoutAverageFormModel;
 use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Services\ModelExtender\WorkoutAverageExtender;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\ModelValidator\ModelValidatorInterface;
@@ -26,6 +26,8 @@ use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteWorkoutImage;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\JsonErrorResponse\JsonErrorResponse;
+use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 use Symfony\Component\Form\FormInterface;
 
@@ -35,37 +37,15 @@ class WorkoutController extends AbstractController
      * @Route("/workout/list", name="workout_list")
      * @IsGranted("ROLE_USER")
      */
-    public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, AbstractActivityRepository $activityRepository)
     {
         //TO DO
     	$user = $this->getUser();
-
-        /* TO Think about
-        $array = [
-            'Run' =>
-                [
-                    'durationTotal' => [
-                        'id' => 10,
-                        'duration' => 3600
-                    ],
-                    'distanceTotal' => [
-                        'id' => 10,
-                        'distace' => 3600
-                    ],
-                ]
-        ];
-        dump($array);
-        //tests
-        $workoutsTest1 = $workoutRepository->getHighScoresByUser($user);
-        dump($workoutsTest1);
-        $workoutsTest2 = $workoutRepository->getHighScoresByUserTest($user);
-        
-        dump($workoutsTest2);*/
-        ///
-
     	$workouts = $workoutRepository->findBy([ 'user' => $user ]);
+        $movementActivitiesNames = $activityRepository->findByTypeUniqueNamesAlphabetical('Movement');
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
         $formAverage->handleRequest($request);
 
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
@@ -97,7 +77,9 @@ class WorkoutController extends AbstractController
 
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
-            'workoutForm' => $formAverage->createView()
+            'workoutForm' => $formAverage->createView(),
+            'formSpecific' => $formSpecific->createView(),
+            'movementActivities' => $movementActivitiesNames
         ]);
 
     }
@@ -112,15 +94,15 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("api/workout/get_id_by_date", name="workout_id_by_date")
+     * @Route("api/workout/get_id_by_date", name="api_workout_id_by_date")
      * @IsGranted("ROLE_USER")
      */
-    public function getWorkoutIdByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function getWorkoutIdByDateAction(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
         $timeline = json_decode($request->getContent(), true);
 
         if($timeline === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
         $timeline['stopDate'] .= ' 23:59:59';
@@ -140,15 +122,15 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("api/workout/get_energy_by_date", name="workout_energy_by_date")
+     * @Route("api/workout/get_energy_by_date", name="api_workout_energy_by_date")
      * @IsGranted("ROLE_USER")
      */
-    public function getWorkoutEnergyByDate(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function getWorkoutEnergyByDateAction(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
     {
         $days = json_decode($request->getContent(), true);
 
         if($days === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
         $timeline['startDate'] = $days[0];
@@ -207,8 +189,8 @@ class WorkoutController extends AbstractController
     public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        $formAverage->handleRequest($request);
 
-        $formAverage->handleRequest($request);           
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
             $workoutAverageFormModel = $formAverage->getData();
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser(), $formAverage['imageFile']->getData());  
@@ -227,7 +209,7 @@ class WorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout was added!! ');
+                        $this->addFlash('success', 'Workout was added!');
                         return $this->redirectToRoute('workout_list');
                     } catch (\Exception $e) {
                         $this->addFlash('warning', $e->getMessage());
@@ -244,7 +226,7 @@ class WorkoutController extends AbstractController
                     ]);
                 }
             }
-            $this->addFlash('warning', 'Cannot create workout with this type of activity');
+            $this->addFlash('warning', 'Cannot create workout with that type of activity.');
         }
 
         return $this->render('workout/add_average.html.twig', [
@@ -278,7 +260,7 @@ class WorkoutController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $this->addFlash('success', 'Workout was added!! ');
+                        $this->addFlash('success', 'Workout was added!');
                         return $this->redirectToRoute('workout_list');
                     } catch (\Exception $e) {
                         $this->addFlash('warning', $e->getMessage());
@@ -296,7 +278,7 @@ class WorkoutController extends AbstractController
                 }
             }
 
-        $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
+        $this->addFlash('warning', 'Sorry we dont have activity matching your achievements in database.');
         }
 
         return $this->render('workout/add_specific.html.twig', [
@@ -324,69 +306,149 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/api/workout/add", name="workout_add", methods={"POST"})
+     * @Route("/api/workout/add_average", name="api_workout_add_average", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function add(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator)
+    public function addAverageAction(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory)
     {
-        //TO DO
-        $data = json_decode($request->getContent(), true);
 
-        if($data === null) {
-            throw new BadRequestHttpException('Invalid Json');    
-        }
-
-        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
-        $formAverage->submit($data);
-
-        if (!$formAverage->isValid()) {
-            $errors = $this->getErrorsFromForm($formAverage);
-
-            return $this->json(
-            $errors,
-            400
-            );
-        }
-        
-        $workoutAverageFormModel = $formAverage->getData();
-        $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
-                
-        //Validation Model data
-        $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-                    
-        if ($isValid) {
-            $activity = $workoutAverageFormModel->getActivity();
-            $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-            $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
-
-            $em->persist($workout);
-            $em->flush();
-            $response = new Response(null, 201);
-
-
-            $response->headers->set(
-                'Location',
-                $this->generateUrl('workout_get', ['id' => $workout->getId()])
-            );
-        
-            return $response;
+       $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
+        if ($request->getContent() !== '') {
+            $data = json_decode($request->getContent(), true);
+            if($data === null) {
+                throw new ApiBadRequestHttpException('Invalid JSON.');    
+            }
+            //TO DO upload file
+             
+            $formAverage->submit($data);
         } else {
-            $validatorErrors = $modelValidator->getErrors();
-                        
-            $errors = [
-                'activity' => $validatorErrors[0]->getMessage()
-                //'Calculate data goes wrong. Probably your workout duration is too short'
-            ];
-        
-            return $this->json(
-                $errors,
-                400
-            );
+            $formAverage->handleRequest($request);
         }
+        
+        if ($formAverage->isSubmitted() && $formAverage->isValid()) {
+            $workoutAverageFormModel = $formAverage->getData();
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser(), $formAverage['imageFile']->getData());
+
+            if($workoutAverageFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutAverageFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutAverageFormModel, $validationGroup);
+                if ($isValid) {
+                    try {
+                        $activity = $workoutAverageFormModel->getActivity();
+                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                        $workout = $workoutFactory->create($workoutAverageFormModel);
+                        $em->persist($workout);
+                        $em->flush();
+                    
+                        $response = new Response(null, 201);
+                        $response->headers->set(
+                            'Location',
+                            $this->generateUrl('api_workout_get', ['id' => $workout->getId()])
+                        );
+        
+                        return $response;
+                    } catch (\Exception $e) {
+                        $jsonError = new JsonErrorResponse(400, 
+                            JsonErrorResponse::TYPE_ACTION_FAILED,
+                            $e->getMessage()
+                        ); 
+                    }
+                } else {
+                    $jsonError = new JsonErrorResponse(400, 
+                        JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+                        $modelValidator->getErrorMessage()
+                    );
+                }
+            } else {
+                $jsonError = new JsonErrorResponse(400, 
+                    JsonErrorResponse::TYPE_ACTION_FAILED,
+                    'Cannot create workout with that type of activity.'
+                );
+            }
+        } else {
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
+                null
+            );
+            $jsonError->setArrayExtraData($this->getErrorsFromForm($formAverage));
+        }
+
+        return $jsonErrorFactory->createResponse($jsonError);
+    }
+
+    /**
+     * @Route("/api/workout/add_specific", name="api_workout_add_specific", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function addSpecificAction(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory)
+    {
+
+        $data = json_decode($request->getContent(), true);
+        
+        if($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+        $formSpecific->submit($data);
+
+        if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
+            $workoutSpecificModel = $formSpecific->getData();
+            $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser(), $formSpecific['imageFile']->getData());
+            
+            if($workoutSpecificModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificModel->getType());
+                $isValid = $modelValidator->isValid($workoutSpecificModel, $validationGroup);
+
+                if ($isValid) {
+                    try {
+                        $activity = $workoutSpecificModel->getActivity();
+                        $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
+                        $workout = $workoutFactory->create($workoutSpecificModel);
+                        $em->persist($workout);
+                        $em->flush();
+                    
+                        $response = new Response(null, 201);
+                        $response->headers->set(
+                            'Location',
+                            $this->generateUrl('api_workout_get', ['id' => $workout->getId()])
+                        );
+        
+                        return $response;
+                    } catch (\Exception $e) {
+                        $jsonError = new JsonErrorResponse(400, 
+                            JsonErrorResponse::TYPE_ACTION_FAILED,
+                            $e->getMessage()
+                        ); 
+                    }
+                } else {
+                    $jsonError = new JsonErrorResponse(400, 
+                        JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+                        $modelValidator->getErrorMessage()
+                    );
+                }
+            } else {
+                $jsonError = new JsonErrorResponse(400, 
+                    JsonErrorResponse::TYPE_ACTION_FAILED,
+                    'Sorry we dont have activity matching your achievements in database.'
+                );
+            }
+        } else {
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
+                null
+            );
+            $jsonError->setArrayExtraData($this->getErrorsFromForm($formSpecific));
+        }
+
+        return $jsonErrorFactory->createResponse($jsonError);
+
     }
 
      /**
-     * @Route("/api/workout_get/{id}", name="workout_get", methods={"GET"})
+     * @Route("/api/workout_get/{id}", name="api_workout_get", methods={"GET"})
      */
     public function getWorkoutAction(Workout $workout)
     {
@@ -397,7 +459,7 @@ class WorkoutController extends AbstractController
         $workout->setStartDate($startAt);
 
         $linkDelete = $this->generateUrl('workout_delete', ['id' => $workout->getId()]);
-        $linkEdit = $this->generateUrl('workout_edit', ['id' => $workout->getId()]);
+        $linkEdit = $this->generateUrl('api_workout_edit', ['id' => $workout->getId()]);
 
         $workout->setLinks('delete',$linkDelete);
         $workout->setLinks('edit',$linkEdit);
@@ -413,56 +475,74 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/api/workout/edit/{id}", name="workout_edit", methods={"PUT"})
+     * @Route("/api/workout/edit/{id}", name="api_workout_edit", methods={"PUT"})
      */
-    public function edit(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater)
+    public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory)
     {
-        //TO DO
+
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
         $data = json_decode($request->getContent(), true);
         //dump(date_default_timezone_get());
 
         if($data === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
-        $formAverage->submit($data);
+        $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
+        $formSpecific->submit($data);
 
-        if (!$formAverage->isValid()) {
-            $errors = $this->getErrorsFromForm($formAverage);
+        if (!$formSpecific->isValid()) {
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
+                null
+            );
+            $jsonError->setArrayExtraData($this->getErrorsFromForm($formSpecific));
 
-            return $this->json(
-            $errors,
-            400
+            return $jsonErrorFactory->createResponse($jsonError);
+        }
+
+        $workoutSpecificModel = $formSpecific->getData();
+        $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificModel, $this->getUser(), null);
+
+        if ($workoutSpecificModel) {
+            //Validation Model data
+            $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificModel->getType());
+            $isValid = $modelValidator->isValid($workoutSpecificModel, $validationGroup);
+
+            if ($isValid) {
+                try {
+                    $workout = $workoutUpdater->update($workoutSpecificModel, $workout);
+                    $em->persist($workout);
+                    $em->flush();
+                    $response = new Response(null, 200);
+
+                    $response->headers->set(
+                        'Location',
+                        $this->generateUrl('api_workout_get', ['id' => $workout->getId()])
+                    );
+
+                    return $response;
+                } catch (\Exception $e) {
+                    $jsonError = new JsonErrorResponse(400, 
+                        JsonErrorResponse::TYPE_ACTION_FAILED,
+                        $e->getMessage()
+                    );
+                }
+            } else {
+                $jsonError = new JsonErrorResponse(400, 
+                    JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+                    $modelValidator->getErrorMessage()
+                );
+            }
+        } else {
+            $jsonError = new JsonErrorResponse(400, 
+                JsonErrorResponse::TYPE_ACTION_FAILED,
+                'Cannot update workout with that type of activity.'
             );
         }
 
-        $workoutAverageFormModel = $formAverage->getData();
-        $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $workout->getUser());
-                
-        //Validation Model data
-        $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-        if ($isValid) {
-            try {
-                $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
-                $em->persist($workout);
-                $em->flush();
-
-                $response = new Response(null, 201);
-
-                $response->headers->set(
-                    'Location',
-                    $this->generateUrl('workout_get', ['id' => $workout->getId()])
-                );
-
-                return $response;
-            } catch (\Exception $e) {}            
-        }
-
-        //We can't display unmapped errors in list so just empty response
-        return $this->json(null, 400);
+        return $jsonErrorFactory->createResponse($jsonError);
     }
 
      /**
@@ -471,6 +551,10 @@ class WorkoutController extends AbstractController
     public function getSpecificWorkoutFormAction(Request $request, AbstractActivityRepository $activityRepository)
     {
         $name = $request->query->get('activityName');
+
+        if($name === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
 
         $activity = $activityRepository->findOneBy(['name' => $name]);
         $type = $activity->getType();
@@ -506,6 +590,11 @@ class WorkoutController extends AbstractController
     public function getWorkoutSetsForm(Request $request, AbstractActivityRepository $activityRepository)
     {
         $activityId = $request->query->get('id');
+        
+        if($activityId === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
         $activity = $activityRepository->find($activityId);
         $type = $activity->getType();
         
@@ -523,19 +612,30 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/workouts_get_after_date", name="api_workouts_get_after_date", 
      * methods={"POST"})
      */
-    public function getWorkoutsAfterDateAction(Request $request, WorkoutRepository $workoutRepository, ImagesManagerInterface $workoutsImagesManager)
+    public function getWorkoutsAfterDateAction(Request $request, WorkoutRepository $workoutRepository, ImagesManagerInterface $workoutsImagesManager, JsonErrorResponseFactory $jsonErrorFactory)
     {
         /** @var User $user */
         $user = $this->getUser();
         $date = json_decode($request->getContent(), true);
+
         if(!strtotime($date)){
-            return new JsonResponse(['message' => 'Nothing to load.'], Response::HTTP_BAD_REQUEST);
+            $jsonError = new JsonErrorResponse(404, 
+                JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
+                'No workouts to load.'
+            );
+
+            return $jsonErrorFactory->createResponse($jsonError);
         }
 
         $workouts = $workoutRepository->findByUserBeforeDate($user, $date, 10);
 
         if (!$workouts) {
-            return new JsonResponse(['message' => 'No more workouts to load.'], Response::HTTP_BAD_REQUEST);
+            $jsonError = new JsonErrorResponse(404, 
+                JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
+                'No more workouts to load.'
+            );
+
+            return $jsonErrorFactory->createResponse($jsonError);
         }
         foreach ($workouts as $workout) {
             $workout->transformSaveTimeToString();

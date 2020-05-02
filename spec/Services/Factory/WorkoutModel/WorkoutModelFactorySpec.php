@@ -6,6 +6,7 @@ use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 use App\Services\Factory\WorkoutModel\MovementWorkoutModelAverageFactory;
 use App\Services\Factory\WorkoutModel\MovementSetWorkoutModelAverageFactory;
 use App\Services\Factory\WorkoutModel\BodyweightWorkoutModelAverageFactory;
+use App\Services\Factory\WorkoutModel\WeightWorkoutModelAverageFactory;
 use App\Services\Factory\WorkoutModel\MovementWorkoutModelSpecificFactory;
 use App\Services\Factory\WorkoutModel\MovementSetWorkoutModelSpecificFactory;
 use App\Services\Factory\WorkoutModel\BodyweightWorkoutModelSpecificFactory;
@@ -36,6 +37,12 @@ class WorkoutModelFactorySpec extends ObjectBehavior
     function it_is_able_to_create_bodyweight_workout_model_average_factory(){
         $this->beConstructedThrough('chooseFactory', ['Bodyweight', 'Average']);
         $this->shouldBeAnInstanceOf(BodyweightWorkoutModelAverageFactory::class);
+        $this->shouldImplement(WorkoutModelFactoryInterface::class);
+    }
+
+    function it_is_able_to_create_weight_workout_model_average_factory(){
+        $this->beConstructedThrough('chooseFactory', ['Weight', 'Average']);
+        $this->shouldBeAnInstanceOf(WeightWorkoutModelAverageFactory::class);
         $this->shouldImplement(WorkoutModelFactoryInterface::class);
     }
 

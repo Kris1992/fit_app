@@ -56,7 +56,7 @@ class AdminCuriosityController extends AbstractController
             $em->persist($curiosity);
             $em->flush();
 
-            $this->addFlash('success', 'Curiosity was created!! ');
+            $this->addFlash('success', 'Curiosity was created!');
             
             return $this->redirectToRoute('admin_curiosity_list');
         }
@@ -81,7 +81,6 @@ class AdminCuriosityController extends AbstractController
         $entityManager->flush();
 
         
-
         $response = new Response();
         $this->addFlash('success','Curiosity was deleted!!');
         $response->send();

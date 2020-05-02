@@ -3,10 +3,6 @@ namespace App\Form\Model\Workout;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
-
 class WorkoutAverageFormModel extends AbstractWorkoutFormModel
 {
 
@@ -18,58 +14,17 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
 
     /**
      * @Assert\NotBlank(message="Cannot calculate right number of repetitions", 
-     * groups={"bodyweight_model"})
+     * groups={"bodyweight_model", "weight_model"})
      * @Assert\GreaterThan(message="Calculated number of repetitions it's not correct", 
-     * value=0, groups={"bodyweight_model"})
+     * value=0, groups={"bodyweight_model", "weight_model"})
      */
     private $repetitionsTotal;
 
     /**
-     * @Assert\Valid
-     * @Assert\Count(
-     *      min = 1,
-     *      minMessage = "You must specify at least one set",
-     *      groups={"average_sets"}
-     * )
+     * @Assert\NotBlank(message="Cannot calculate right dumbbell weight", groups={"weight_model"})
+     * @Assert\GreaterThan(message="Calculated dumbbell weight it's not correct", value=0, groups={"weight_model"})
      */
-    private $movementSets;
-
-    public function __construct()
-    {
-        $this->movementSets = new ArrayCollection();
-    }
-
-
-    /**
-     * @return Collection|MovementActivitySetFormModel[]
-     */
-    public function getMovementSets(): Collection
-    {
-        return $this->movementSets;
-    }
-
-    public function addMovementSet(MovementActivitySetFormModel $movementSet): self
-    {
-        if (!$this->movementSets->contains($movementSet)) {
-            $this->movementSets[] = $movementSet;
-            $movementSet->setWorkout($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMovementSet(MovementActivitySetFormModel $movementSet): self
-    {
-        if ($this->movementSets->contains($movementSet)) {
-            $this->movementSets->removeElement($movementSet);
-            // set the owning side to null (unless already changed)
-            if ($movementSet->getWorkout() === $this) {
-                $movementSet->setWorkout(null);
-            }
-        }
-
-        return $this;
-    }
+    private $dumbbellWeight;
 
     public function setDistanceTotal(?float $distanceTotal): self
     {
@@ -115,6 +70,28 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
         $repetitionsTotal = $repetitionsPerHour * ($this->getDurationSecondsTotal() / 3600);
 
         $this->repetitionsTotal = (int)$repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getDumbbellWeight(): ?float
+    {
+        return $this->dumbbellWeight;
+    }
+
+    public function setDumbbellWeight(?float $dumbbellWeight): self
+    {
+        $this->dumbbellWeight = $dumbbellWeight;
+
+        return $this;
+    }
+
+    public function calculateSaveDumbbellWeight(): self
+    {
+        $dumbbellWeightDiff = $this->activity->getWeightAvgMax() - $this->activity->getWeightAvgMin();
+        $dumbbellWeight = $this->activity->getWeightAvgMin() + ($dumbbellWeightDiff / 2);
+
+        $this->dumbbellWeight = (int)$dumbbellWeight;
 
         return $this;
     }

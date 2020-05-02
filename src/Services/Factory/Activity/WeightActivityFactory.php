@@ -15,8 +15,10 @@ class WeightActivityFactory implements ActivityAbstractFactory {
             ->setType($activityModel->getType())
             ->setName($activityModel->getName())
             ->setEnergy($activityModel->getEnergy())
-            ->setRepetitions($activityModel->getRepetitions())
-            ->setWeight($activityModel->getWeight())
+            ->setRepetitionsAvgMin($activityModel->getRepetitionsAvgMin())
+            ->setRepetitionsAvgMax($activityModel->getRepetitionsAvgMax())
+            ->setWeightAvgMin($activityModel->getWeightAvgMin())
+            ->setWeightAvgMax($activityModel->getWeightAvgMax())
             ;
 
         return $weightActivity;

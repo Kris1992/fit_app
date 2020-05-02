@@ -7,6 +7,7 @@ use App\Services\Transformer\Activity\MovementActivityTransformer;
 use App\Services\Transformer\Activity\MovementSetActivityTransformer;
 use App\Services\Transformer\Activity\BodyweightActivityTransformer;
 use App\Services\Transformer\Activity\ActivityTransformerInterface;
+use App\Services\Transformer\Activity\WeightActivityTransformer;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -32,6 +33,12 @@ class ActivityTransformerSpec extends ObjectBehavior
     function it_is_able_to_create_bodyweight_activity_transformer(){
         $this->beConstructedThrough('chooseTransformer', ['Bodyweight']);
         $this->shouldBeAnInstanceOf(BodyweightActivityTransformer::class);
+        $this->shouldImplement(ActivityTransformerInterface::class);
+    }
+
+    function it_is_able_to_create_weight_activity_transformer(){
+        $this->beConstructedThrough('chooseTransformer', ['Weight']);
+        $this->shouldBeAnInstanceOf(WeightActivityTransformer::class);
         $this->shouldImplement(ActivityTransformerInterface::class);
     }
 

@@ -12,6 +12,8 @@ class ModelValidatorChooser
         switch ($type) {
             case 'Bodyweight':
                 return ['bodyweight_model'];
+            case 'Weight':
+                return ['weight_model'];
             default:
                 return ['model'];
         }

@@ -11,9 +11,7 @@ class ActivityTransformer
     const MOVEMENT_TRANSFORMER="Movement";
     const MOVEMENTSET_TRANSFORMER="MovementSet";
     const BODYWEIGHT_TRANSFORMER="Bodyweight";
-    
     const WEIGHT_TRANSFORMER="Weight";
-
  
     public static function chooseTransformer($transformerName) {
         switch($transformerName) {

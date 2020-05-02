@@ -88,10 +88,8 @@ class ActivitiesImporter implements ActivitiesImporterInterface
                         $result['valid']++;    
                     } else {
                         $result['invalid']++;
-                        $violations = $this->modelValidatorInterface->getErrors();
+                        $violation = $this->modelValidatorInterface->getErrorMessage();
 
-                        //Take just first violation
-                        $violation = $violations[0]->getMessage();
                         array_push(
                             $result['invalidRows'], 
                             [ 

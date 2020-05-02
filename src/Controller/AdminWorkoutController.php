@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,8 +25,10 @@ use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 use App\Services\ImagesManager\ImagesManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteWorkoutImage;
-
+use App\Exception\Api\ApiBadRequestHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Services\JsonErrorResponse\JsonErrorResponse;
+use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -99,7 +102,7 @@ class AdminWorkoutController extends AbstractController
                 } 
             }
 
-            $this->addFlash('warning', 'Cannot create workout with this type of activity');
+            $this->addFlash('warning', 'Cannot create workout with this type of activity.');
         }
 
         return $this->render('admin_workout/add_average.html.twig', [
@@ -115,7 +118,7 @@ class AdminWorkoutController extends AbstractController
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class, null, [
             'is_admin' => true
         ]);
-    
+        
         $formSpecific->handleRequest($request);
         
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
@@ -153,7 +156,7 @@ class AdminWorkoutController extends AbstractController
                 }
             }
 
-            $this->addFlash('warning', 'Sorry we dont had activity matching your achievements in database');
+            $this->addFlash('warning', 'Sorry we dont have activity matching your achievements in database.');
         }
 
         return $this->render('admin_workout/add_specific.html.twig', [
@@ -186,7 +189,6 @@ class AdminWorkoutController extends AbstractController
 
         $formAverage->handleRequest($request);
         if ($formAverage->isSubmitted() && $formAverage->isValid()) {
-            //$workoutModel = $formAverage->getData(); //form handles modeldata so we don't need it
             $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null, $formAverage['imageFile']->getData());
 
             if ($workoutAverageFormModel) {
@@ -218,7 +220,7 @@ class AdminWorkoutController extends AbstractController
                     ]);
                 }
             } else {
-                $this->addFlash('warning', 'Cannot update this type of activity');
+                $this->addFlash('warning', 'Cannot update that type of activity.');
             }
         }
        
@@ -248,18 +250,22 @@ class AdminWorkoutController extends AbstractController
                 $workoutSpecificFormModel, [
                 'is_admin' => true
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception | \Error $e) {
             $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
                 null, [
                 'is_admin' => true
             ]);
-            $this->addFlash('warning', $e->getMessage());
-        } //catch error TO DO
+            if ($e instanceof \Error) {
+                $this->addFlash('danger', $e->getMessage());
+            } else {
+                $this->addFlash('warning', $e->getMessage());
+            }
+        }
     
         $formSpecific->handleRequest($request);
 
         if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
-            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel,null, $formSpecific['imageFile']->getData());
+            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel, null, $formSpecific['imageFile']->getData());
 
             if ($workoutSpecificFormModel) {
                 //Validation Model data
@@ -290,7 +296,7 @@ class AdminWorkoutController extends AbstractController
                     ]);
                 }
             } else {
-                $this->addFlash('warning', 'Cannot update this type of activity');
+                $this->addFlash('warning', 'Cannot update that type of activity.');
             }
         }
        
@@ -363,12 +369,12 @@ class AdminWorkoutController extends AbstractController
                 */
                
             } else {
-                $this->addFlash('danger','Wrong token');
+                $this->addFlash('danger','Wrong token.');
                 return $this->redirectToRoute('admin_workout_list');
             }
         }
 
-        $this->addFlash('warning','Nothing to do');
+        $this->addFlash('warning','Nothing to do.');
         return $this->redirectToRoute('admin_workout_list');
     }
 
@@ -376,13 +382,13 @@ class AdminWorkoutController extends AbstractController
      * @Route("/api/admin/workout/{id}/delete_image", name="api_admin_delete_workout_image",
      * methods={"DELETE"})
      */
-    public function deleteWorkoutImageAction(Request $request, ImagesManagerInterface $workoutsImagesManager, EntityManagerInterface $entityManager, Workout $workout): Response
+    public function deleteWorkoutImageAction(Request $request, ImagesManagerInterface $workoutsImagesManager, EntityManagerInterface $entityManager, Workout $workout, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
         $data = json_decode($request->getContent(), true);
-    
+
         if($data === null) {
-            throw new BadRequestHttpException('Invalid Json');    
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
         $workoutId = $workout->getId();
@@ -402,11 +408,12 @@ class AdminWorkoutController extends AbstractController
             }
         }
 
-        $responseMessage = [
-            'errorMessage' => 'Image not found!'
-        ];
+        $jsonError = new JsonErrorResponse(404, 
+            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
+            'Image not found.'
+        );
 
-        return new JsonResponse($responseMessage, Response::HTTP_BAD_REQUEST);
+        return $jsonErrorFactory->createResponse($jsonError);
     }
 
 }

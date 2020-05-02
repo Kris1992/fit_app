@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-
 {% block title %}Edit Account{% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -13,11 +12,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/all.css') }}">
 {% endblock %}
 {% block content %}
-
 <section class="editAccount">
-		
 	<div class="container">
-		
 		<div class="row">
             <div class="col-sm-12">
             {% include 'flash_messages.html.twig' %}

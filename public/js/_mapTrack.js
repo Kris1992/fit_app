@@ -17,10 +17,9 @@ var distanceTotal = 0;
 var lastRoutesDistance = 0;
 var activityData = null;
 
-//All waypoints from all routes (now we don't use it but in feature maybe we save that data into db)
+//All waypoints from all routes (used to recalculate routes and take routesData on the end)
 var waypoints = [];
-//Current route waypoints
-var currentWaypoints = []; 
+var waypointsIndex = 0;
 var routePolylines = [];
 
 
@@ -52,7 +51,7 @@ function initMapView() {
     if(navigator.geolocation) {
         watchActualPosition();
     }  else {
-        alert('Geolocation is not supported');
+        alert('Geolocation is not supported.');
     }
 }
 
@@ -70,16 +69,34 @@ function navigationError(error) {
  */
 function calculateDistance()
 {
-    if(currentWaypoints.length > 1) {
+    if(waypoints[waypointsIndex].length > 1) {
+        calculateRouteData(waypoints[waypointsIndex]).then((result) => {
+            showDistance(result);
+        }).catch((errorData) => {
+            showMapResponse('Cannot calculate route.');
+        });            
+    }
+}
+
+/**
+ * calculateRouteData Prepare and do call to api
+ * @param  {Array} routeData Data of route to calculate
+ * @param  {Boolean} needDraw Need to draw calculated route on the map? [optional]
+ * @param  {Boolean} needElevation   Do you want to get elevation data (altitude)? [optional]
+ */
+function calculateRouteData(routeData, needDraw = true, needElevation = false)
+{
+    return new Promise( (resolve, reject) => {
         var routingParameters = {
-            'mode': 'shortest;pedestrian',
+            mode: 'shortest;pedestrian',
             routeattributes : 'summary,shape',
-            'representation': 'display'
+            representation: 'display',
+            returnElevation: needElevation
         };
 
         //Add all waypoints to route
         var index = 0;
-        currentWaypoints.forEach( (waypoint) => {
+        routeData.forEach( (waypoint) => {
             routingParameters['waypoint' + index++] = 'geo!' + waypoint.coord.lat + ',' + waypoint.coord.lng;
         });
 
@@ -93,26 +110,29 @@ function calculateDistance()
                     lineString.pushLatLngAlt(routeCoordArray[0], routeCoordArray[1], 0);
                 });
 
-                var polyline = new H.map.Polyline(
-                    lineString, 
-                    {
-                        style: 
-                            {
-                                strokeColor: 'rgb(0, 130, 130)',
-                                lineWidth: 2
-                            }
-                    }
-                );
-                routePolylines.push(polyline); 
-                map.addObject(polyline);
-            
-                showDistance(response.route[0]);
+                if (needDraw) {
+                    var polyline = new H.map.Polyline(
+                        lineString, 
+                        {
+                            style: 
+                                {
+                                    strokeColor: 'rgb(0, 130, 130)',
+                                    lineWidth: 2
+                                }
+                        }
+                    );
+                    routePolylines.push(polyline); 
+                    map.addObject(polyline);
+                }
+
+                resolve(response.route[0]);
             }
         }, 
             error => { 
-                showMapResponse('Cannot calculate route.');
-        });
-    }
+                reject(error);
+            }
+        );
+    });
 }
 
 /**
@@ -139,8 +159,8 @@ function showDistance(routeData)
     var routeDistanceTotal = routeData.summary.distance;
     distanceTotal = (routeDistanceTotal/1000) + lastRoutesDistance;
 
-    if (routeDistanceTotal < 1000) {
-        document.getElementById('distance-js').innerHTML = routeDistanceTotal+" m";
+    if (distanceTotal < 1000) {
+        document.getElementById('distance-js').innerHTML = (distanceTotal*1000)+" m";
     } else {
         document.getElementById('distance-js').innerHTML = distanceTotal+" km";
     }
@@ -183,20 +203,20 @@ function showActualPosition(pos) {
  */
 function addPointToRouteAndCalculate(coords)
 {
-    var lastWaypoint = currentWaypoints.slice(-1)[0];
+    //Create array in waypoints
+    if (!waypoints[waypointsIndex]) {
+        waypoints[waypointsIndex] = [];
+    }
+
+    var lastWaypoint = waypoints[waypointsIndex].slice(-1)[0];
 
     //If position is the same like last one do nothing
     if (!lastWaypoint || (
         lastWaypoint.coord.lat !== coords.latitude || 
         lastWaypoint.coord.lng !== coords.longitude
         )) {
-        waypoints.push({
-            coord: {
-                lat: coords.latitude,
-                lng: coords.longitude
-            }
-        });
-        currentWaypoints.push({
+
+        waypoints[waypointsIndex].push({
             coord: {
                 lat: coords.latitude,
                 lng: coords.longitude
@@ -235,7 +255,7 @@ function sendActivity(event)
                 $("#trackme-js").on("click", startTrackPosition);
             }
         }).catch((errorData) => {
-            showMapResponse(errorData.errorMessage);                    
+            showMapResponse(errorData.title);                    
         });
     }
     
@@ -255,7 +275,7 @@ function getDataFromForm(fieldNames = null)
         //Group formData because I don't want allow_extra_fields in form
         formData['formData'] = {}
         for(let fieldData of $form.serializeArray()) { 
-            formData['formData'][fieldData.name] = fieldData.value;   
+            formData['formData'][fieldData.name] = fieldData.value;
         }
         return formData;    
     } else {
@@ -311,6 +331,8 @@ function startTrackPosition(event) {
     getServerDate($('#startAt').data('url')).then((today) => {
         $('#startAt').val(today);
         trackRoute();
+    }).catch((errorData) => {
+        showMapResponse(errorData.title);
     });
 }
 
@@ -325,9 +347,10 @@ function pauseTracking(event)
     addButton('button', 'info', 'Restart', 'restart-track-js', true);
     $('#restart-track-js').on("click", restartTracking);
 
-    //Reset current waypoints
-    currentWaypoints.length = 0;
+    //Reset current route (if user restart tracking it will be calculate new route)
+    waypointsIndex++;
     lastRoutesDistance = distanceTotal;
+
 }
 
 /**
@@ -356,25 +379,7 @@ function stopTracking(event)
         disableElement($('#restart-track-js'), false);
         $('#durationSecondsTotal').val(durationSecondsTotal);
 
-        map.capture((canvas) => {
-            if (canvas) {
-                //in future better solution
-                var formData = getDataFromForm();
-                var mapImage = canvas.toDataURL();
-                formData['waypoints'] = waypoints;
-                formData['image'] = mapImage;
-                formData['distanceTotal'] = distanceTotal;
-
-                saveWorkout(formData,$('#buttons-panel-js').data('url')).then((result) => {
-                    navigator.geolocation.clearWatch(watchID);
-                    window.location.href = result.url;
-                }).catch((errorData) => {
-                    showMapResponse(errorData.errorMessage);
-                });
-            } else {
-                showMapResponse('Capturing is not supported');
-            }
-        }, []);
+        calculateAllRoutesData();
     } else {
         showMapResponse('Your distance is equal 0.');
         if ($('#pause-track-js').length > 0) {
@@ -383,6 +388,51 @@ function stopTracking(event)
             $('#restart-track-js').on("click", restartTracking);
         }
     }
+}
+
+function calculateAllRoutesData()
+{
+    Promise.all(waypoints.map((waypoint) => {
+            return calculateRouteData(waypoint, false, true);
+    })).then((routes) => {
+        var routesData = [];
+        routes.map((route) => {
+            routesData.push(...route.shape);
+        });
+        captureImageAndSaveWorkout(routesData);
+    }).catch((errorData) => {
+        showMapResponse('Cannot recalculate route. Try again.');
+        enableElement($('#stop-track-js'));
+    });
+}
+
+/**
+ * captureImageAndSaveWorkout Get image of workout and send all data to database
+ * @param  {Array} routeData Array with route data
+ */
+function captureImageAndSaveWorkout(routesData)
+{
+    map.capture((canvas) => {
+        if (canvas) {
+            //in future better solution
+            var formData = getDataFromForm();
+            var mapImage = canvas.toDataURL();
+            formData['image'] = mapImage;
+            formData['distanceTotal'] = distanceTotal;
+            formData['routeData'] = routesData;
+
+            saveWorkout(formData,$('#buttons-panel-js').data('url')).then((result) => {
+                navigator.geolocation.clearWatch(watchID);
+                window.location.href = result.url;
+            }).catch((errorData) => {
+                showMapResponse(errorData.title);
+                enableElement($('#stop-track-js'));
+            });
+        } else {
+            showMapResponse('Capturing is not supported.');
+            enableElement($('#stop-track-js'));
+        }
+    }, []);
 }
 
 /**
@@ -408,6 +458,15 @@ function getServerDate(url) {
                 method: 'GET'
             }).then(function(today) {
                 resolve(today);
+            }).catch((jqXHR) => {
+                let statusError = [];
+                statusError = getStatusError(jqXHR);
+                if(statusError != null) {
+                    reject(statusError);
+                } else {
+                    const errorData = JSON.parse(jqXHR.responseText);
+                    reject(errorData);
+                }
             });
     });
 }
@@ -444,21 +503,24 @@ function getActivityData(data, url) {
  * @return errorMessage || null
  */
 function getStatusError(jqXHR) {
+    if (jqXHR.getResponseHeader('content-type') === 'application/problem+json') {
+        return null;
+    }
     if(jqXHR.status === 0) {
         return {
-            "errorMessage":"Cannot connect. Verify Network."
+            "title":"Cannot connect. Verify Network."
         }
-    } else if(jqXHR.status == 404) {
+    } else if(jqXHR.status === 404) {
         return {
-            "errorMessage":"Requested not found."
+            "title":"Requested not found."
         }
-    } else if(jqXHR.status == 500) {
+    } else if(jqXHR.status === 500) {
         return {
-            "errorMessage":"Internal Server Error"
+            "title":"Internal Server Error."
         }
     } else if(jqXHR.status > 400) {
         return {
-            "errorMessage":"Error. Contact with admin."
+            "title":"Error. Contact with admin."
         }
     }
     return null;

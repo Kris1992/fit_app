@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormEvents;
 use App\Form\Model\Activity\MovementActivityFormModel;
 use App\Form\Model\Activity\AbstractActivityFormModel;
 use App\Form\Model\Activity\BodyweightActivityFormModel;
+use App\Form\Model\Activity\WeightActivityFormModel;
 
 class ActivityFormType extends AbstractType
 {
@@ -103,12 +104,13 @@ class ActivityFormType extends AbstractType
                 break;
             case 'Weight':
                 $form
-                    ->add('repetitions', IntegerType::class)
-                    ->add('weight', NumberType::class)   
+                    ->add('repetitionsAvgMin', IntegerType::class)
+                    ->add('repetitionsAvgMax', IntegerType::class)
+                    ->add('weightAvgMin', NumberType::class)   
+                    ->add('weightAvgMax', NumberType::class)   
                 ;
         }
     }
-
 
     private function getChoices(string $fieldName)
     {   

@@ -26,7 +26,7 @@ class WorkoutModelFactory
                     case self::WEIGHT_FACTORY:
                         return new WeightWorkoutModelAverageFactory();
                     default:
-                        throw new \Exception("This type of activity is not supported yet");
+                        throw new \Exception("This type of activity is not supported yet.");
                 }
             case 'Specific':
                 switch($factoryName) {
@@ -36,13 +36,13 @@ class WorkoutModelFactory
                         return new MovementSetWorkoutModelSpecificFactory();
                     case self::BODYWEIGHT_FACTORY:
                         return new BodyweightWorkoutModelSpecificFactory();
-                    //case self::WEIGHT_FACTORY:
-                        //return new WeightWorkoutModelAverageFactory();
+                    case self::WEIGHT_FACTORY:
+                        return new WeightWorkoutModelSpecificFactory();
                     default:
-                        throw new \Exception("This type of activity is not supported yet");
+                        throw new \Exception("This type of activity is not supported yet.");
                 }
             default:
-                throw new \Error("Unknown workout model factory type");
+                throw new \Error("If you see that message contact with developer.");
         }
         
     }

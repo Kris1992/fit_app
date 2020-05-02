@@ -50,3 +50,10 @@
         'label' : 'Number of repetitions: '
     }) }}
 {% endif %}
+
+{# Weight #}
+{%  if workoutSpecificDataForm.dumbbellWeight is defined %}
+    {{ form_row(workoutSpecificDataForm.dumbbellWeight, {
+        'label' : 'Weight: '
+    }) }}
+{% endif %}

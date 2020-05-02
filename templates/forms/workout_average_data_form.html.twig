@@ -12,8 +12,9 @@
                             
                             {{ form_start(workoutForm, {
                                 'attr': {'class': 'form-signin js-new-workout-form',
-                                'data-url': path('workout_add'),
-                                'name': 'workout_average_data_form'
+                                'data-url': path('api_workout_add_average'),
+                                'name': 'workout_average_data_form',
+                                'id': 'js-form-average-id'
                                 }
                             }) }}
                                 {% if workoutForm.id is defined %}

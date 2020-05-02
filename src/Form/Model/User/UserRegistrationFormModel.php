@@ -5,7 +5,7 @@ namespace App\Form\Model\User;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueUser;
 use App\Validator\ContainsAlphanumeric;
-use App\Services\ImagesManager\UsersImagesManager;
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
 * @UniqueUser(
@@ -251,12 +251,12 @@ class UserRegistrationFormModel
 
     public function getImagePath(): ?string
     {
-        return UsersImagesManager::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath(): ?string
     {
-        return UsersImagesManager::USERS_IMAGES.'/'.$this->getLogin().'/'.UsersImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

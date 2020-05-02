@@ -150,7 +150,9 @@ class WorkoutSpecificDataFormType extends AbstractType
                     case 'Movement':
                         return ['Default','movement'];
                     case 'MovementSet':
-                        return ['specific_sets'];         
+                        return ['specific_sets'];
+                    case 'Weight':
+                        return ['Default', 'weight'];         
                     default:
                         return ['Default'];
                 }
@@ -166,19 +168,21 @@ class WorkoutSpecificDataFormType extends AbstractType
     private function setupSpecificActivityField(FormInterface $form, ?string $type)
     {
         $hinted = true;
+        $form
+            ->add('durationSecondsTotal', CustomTimeType::class, [
+                    'placeholder' => [
+                        'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
+                    ],
+                    'attr' => [
+                        'class'=>'form-inline'
+                    ]
+                ])
+            ;
 
         switch ($type) {
             case 'Movement':
                 $form
                     ->add('distanceTotal', NumberType::class)
-                    ->add('durationSecondsTotal', CustomTimeType::class, [
-                        'placeholder' => [
-                            'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
-                        ],
-                        'attr' => [
-                            'class'=>'form-inline'
-                        ]
-                    ])
                 ;
                 break;
             case 'MovementSet':
@@ -196,27 +200,23 @@ class WorkoutSpecificDataFormType extends AbstractType
                 if($form->has('distanceTotal')) {
                     $form
                         ->remove('distanceTotal')
+                    ;
+                }
+                if($form->has('durationSecondsTotal')) {
+                    $form
                         ->remove('durationSecondsTotal')
                     ;
                 }
                 break;
             case 'Bodyweight':
                 $form
-                    ->add('durationSecondsTotal', CustomTimeType::class, [
-                        'placeholder' => [
-                            'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second'
-                        ],
-                        'attr' => [
-                            'class'=>'form-inline'
-                        ]
-                    ])
                     ->add('repetitionsTotal', IntegerType::class)
                 ;
                 break;    
             case 'Weight':
                 $form
-                    ->add('repetitions', IntegerType::class)
-                    ->add('weight', NumberType::class)   
+                    ->add('repetitionsTotal', IntegerType::class)
+                    ->add('dumbbellWeight', NumberType::class)   
                 ;
                 break;
             default:

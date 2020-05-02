@@ -26,7 +26,14 @@ interface ModelValidatorInterface
 
     /**
      * getErrors Get Errors to render without form binding
-     * @return [type] [description]
+     * @return ConstraintViolationList
      */
     public function getErrors(): ConstraintViolationList;
+
+    /**
+     * getErrorMessage Get single Error message to render without form binding
+     * @return string
+     */
+    public function getErrorMessage(): string;
+
 }

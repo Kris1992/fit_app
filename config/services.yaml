@@ -22,6 +22,8 @@ services:
             $uploadsDirectory: '%uploads_directory%'
             $secret_key: '%env(GOOGLE_RECAPTCHA_SECRET)%'
             $map_api_key : '%env(MAP_API_KEY)%'
+            $weather_api_key: '%env(WEATHER_API_KEY)%'
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:

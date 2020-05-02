@@ -1,5 +1,5 @@
 <?php
-//TO DO
+
 namespace App\Services\Factory\Workout;
 
 use App\Entity\Workout;
@@ -10,15 +10,15 @@ class WeightWorkoutFactory implements WorkoutFactoryInterface {
 
     public function create(AbstractWorkoutFormModel $workoutModel): Workout
     {
-        // naprawić
         $workout = new Workout();
         $workout
-            ->setUser($activityArray['type'])
-            ->setActivity($activityArray['name'])
-            ->setBurnoutEnergyTotal($activityArray['energy'])//dodac tą metodę usunąć calculate
-            ->setStartAt($activityArray['speedAverageMin'])
-            ->setDurationSeconds($activityArray['speedAverageMax'])
-            ->setDistance($activityArray['intensity'])
+            ->setUser($workoutModel->getUser())
+            ->setActivity($workoutModel->getActivity())
+            ->setDurationSecondsTotal($workoutModel->getDurationSecondsTotal())
+            ->setStartAt($workoutModel->getStartAt())
+            ->setBurnoutEnergyTotal($workoutModel->getBurnoutEnergyTotal())
+            ->setRepetitionsTotal($workoutModel->getRepetitionsTotal())
+            ->setDumbbellWeight($workoutModel->getDumbbellWeight())
             ->setImageFilename($workoutModel->getImageFilename())
             ;
 

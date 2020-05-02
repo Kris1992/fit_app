@@ -27,22 +27,47 @@
             </div>
         </div>
         <div class="card-body p-0 ">
-            <div class="card-text row">
+            <div class="card-text row no-gutters">
                 <div class="col-md-5">
-                    <div class="col-12 text-center py-2">
+                    <div class="col-12 text-center py-2 border">
                         <span class="fas fa-fire color-fire"></span>
                         <span class="text-muted text-uppercase">
+                            Burnout Energy
                             {{workout.burnoutEnergyTotal }} kcal
                         </span>
                     </div>
-                    <div class="col-12 text-center py-2">
+                    <div class="col-12 text-center py-2 border">
                         <span class="far fa-clock color-clock"></span>
                         <span class="text-muted text-uppercase">
                             Duration
                             {{ workout.durationSecondsTotal | time }}
                         </span>
                     </div>
-                    <div class="col-12 text-center py-2">
+                    <div class="col-12 text-center py-2 border">
+                        <span class="fas fa-running text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Speed 
+                            {% if workout.averageSpeed %}
+                                {{ workout.averageSpeed | number_format(2) }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            km/h
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2 border">
+                        <span class="fas fa-tachometer-alt text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Pace
+                            {% if workout.averagePace %}
+                                {{ workout.averagePace | number_format(2) }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            min/km
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2 border">
                         <span class="fas fa-road color-clock"></span>
                         <span class="text-muted text-uppercase">
                             Distance
@@ -54,34 +79,51 @@
                             km
                         </span>
                     </div>
-                    <!-- TO DO-->
-                    <div class="col-12">TO DO</div>
-                    <div class="col-12 text-center py-2">
-                        <span class="fas fa-running text-primary"></span>
-                        <span class="text-muted text-uppercase">
-                            Average Speed 
-                            ---
-                        </span>
-                    </div>
-                    <div class="col-12 text-center py-2">
-                        <span class="fas fa-tachometer-alt text-primary"></span>
-                        <span class="text-muted text-uppercase">
-                            Average Pace
-                            ---
-                        </span>
-                    </div>
-                    <div class="col-12 text-center py-2">
+                    <div class="col-12 text-center py-2 border">
                         <span class="fas fa-mountain text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Min Altitude
-                            ---
+                            {% if workout.routeData.altitudeMin %}
+                                {{ workout.routeData.altitudeMin | number_format(2) }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            m
                         </span>
                     </div>
-                    <div class="col-12 text-center py-2">
+                    <div class="col-12 text-center py-2 border">
                         <span class="fas fa-mountain text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Max Altitude
-                            ---
+                            {% if workout.routeData.altitudeMax %}
+                                {{ workout.routeData.altitudeMax | number_format(2) }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            m
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2 border">
+                        <span class="fas fa-thermometer-half text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Temperature
+                            {% if workout.routeData.temperature %}
+                                {{ workout.routeData.temperature }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                            &#x2103;
+                        </span>
+                    </div>
+                    <div class="col-12 text-center py-2 border">
+                        <span class="fas fa-cloud-sun text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Weather Conditions
+                            {% if workout.routeData.weatherConditions %}
+                                "{{ workout.routeData.weatherConditions }}"
+                            {% else %}
+                                ---
+                            {% endif %}
                         </span>
                     </div>
                 </div>

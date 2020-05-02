@@ -40,7 +40,6 @@ function waitForImage()
     }
 }
 
-
 $('#delete-image').on('click', function(event) {
     event.preventDefault();
 
@@ -52,21 +51,18 @@ $('#delete-image').on('click', function(event) {
 
         // To be sure we want delete right photo
         const formData = {};
-
         formData.id = $('.form-id-js').val();
 
-    
         deleteImage(formData, url).then(result => {
             $('#uploaded_image').fadeOut(1000);
         }).catch(error => {
-            var errorMessage = `<span class="color-fire" id="fileError">${error.errorMessage}</span>`;
+            var errorMessage = `<span class="color-fire" id="fileError">${error.title}</span>`;
             $('#uploaded_image').append(errorMessage);
             anchor.classList.remove('disabled');
         });
 
     }
 });
-
 
 function deleteImage(formId, url) {
    return new Promise(function(resolve, reject){

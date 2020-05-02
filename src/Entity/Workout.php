@@ -64,8 +64,15 @@ class Workout
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups("main")
      */
     private $repetitionsTotal;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     * @Groups("main")
+     */
+    private $dumbbellWeight;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -78,6 +85,11 @@ class Workout
      * orphanRemoval=true, cascade={"persist", "refresh"})
      */
     private $movementSets;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\RouteData", cascade={"persist", "remove"})
+     */
+    private $routeData;
 
     public function __construct()
     {
@@ -284,6 +296,24 @@ class Workout
         return $this;
     }
 
+    public function getAverageSpeed(): ?float
+    {   
+        if ($this->distanceTotal) {
+            $averageSpeed = ($this->distanceTotal / ($this->durationSecondsTotal / 3600 ));
+            return $averageSpeed;
+        }
+        return null;
+    }
+
+    public function getAveragePace(): ?float
+    {   
+        if ($this->distanceTotal) {
+            $averagePace = (($this->durationSecondsTotal / 60 ) / $this->distanceTotal );
+            return $averagePace;
+        }
+        return null;
+    }
+
     /**
      * @return Collection|MovementSet[]
      */
@@ -315,6 +345,18 @@ class Workout
         return $this;
     }
 
+    public function getRouteData(): ?RouteData
+    {
+        return $this->routeData;
+    }
+
+    public function setRouteData(?RouteData $routeData): self
+    {
+        $this->routeData = $routeData;
+
+        return $this;
+    }
+
     public function getRepetitionsTotal(): ?int
     {
         return $this->repetitionsTotal;
@@ -323,6 +365,18 @@ class Workout
     public function setRepetitionsTotal(?int $repetitionsTotal): self
     {
         $this->repetitionsTotal = $repetitionsTotal;
+
+        return $this;
+    }
+
+    public function getDumbbellWeight(): ?float
+    {
+        return $this->dumbbellWeight;
+    }
+
+    public function setDumbbellWeight(?float $dumbbellWeight): self
+    {
+        $this->dumbbellWeight = $dumbbellWeight;
 
         return $this;
     }
