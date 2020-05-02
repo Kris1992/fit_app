@@ -4,6 +4,9 @@ namespace App\Form\Model\Workout;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
 use App\Services\ImagesManager\WorkoutsImagesManager;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 use App\Entity\User;
 use App\Entity\AbstractActivity;
 
@@ -50,6 +53,18 @@ abstract class AbstractWorkoutFormModel
      */
     protected $imageFilename;
 
+    /**
+     * @Assert\Valid
+     * @Assert\Count(
+     *      min = 1,
+     *      minMessage = "You must specify at least one set",
+     *      groups={"specific_sets", "average_sets"}
+     * )
+     */
+    protected $movementSets;
+
+    protected $routeData;
+
     //helpers
     /**
      * @Assert\NotBlank(message="Please enter activity name", groups={"specific_sets", "route_map"})
@@ -60,6 +75,41 @@ abstract class AbstractWorkoutFormModel
     protected $type;
 
 
+    public function __construct()
+    {
+        $this->movementSets = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|MovementActivitySetFormModel[]
+     */
+    public function getMovementSets(): Collection
+    {
+        return $this->movementSets;
+    }
+
+    public function addMovementSet(MovementActivitySetFormModel $movementSet): self
+    {
+        if (!$this->movementSets->contains($movementSet)) {
+            $this->movementSets[] = $movementSet;
+            $movementSet->setWorkout($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovementSet(MovementActivitySetFormModel $movementSet): self
+    {
+        if ($this->movementSets->contains($movementSet)) {
+            $this->movementSets->removeElement($movementSet);
+            // set the owning side to null (unless already changed)
+            if ($movementSet->getWorkout() === $this) {
+                $movementSet->setWorkout(null);
+            }
+        }
+
+        return $this;
+    }
 
     public function setId(?int $id)
     {
@@ -182,6 +232,18 @@ abstract class AbstractWorkoutFormModel
         return $this->type;
     }
 
+    public function getRouteData(): ?RouteDataModel
+    {
+        return $this->routeData;
+    }
+
+    public function setRouteData(?RouteDataModel $routeData): self
+    {
+        $this->routeData = $routeData;
+
+        return $this;
+    }
+
     public function getImagePath(): ?string
     {
         return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
@@ -191,6 +253,5 @@ abstract class AbstractWorkoutFormModel
     {
         return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
-
 
 }

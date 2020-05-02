@@ -7,7 +7,7 @@ Feature: Workouts Admin Panel
         Given I am logged in as an admin
 
     #base on js
-    @javascript @fixtures
+    @javascript @fixtures 
     Scenario: Add a movement workout with average data
         Given Is database with "activities"
         And I am on "/admin/workout"
@@ -28,6 +28,7 @@ Feature: Workouts Admin Panel
     Scenario: Add a movement workout with specific data
         Given Is database with "activities"
         And I am on "/admin/workout/add_specific"
+        And break
         And I select "Cycling" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
         And I fill in "startAt" with "2020-04-23 16:22"
@@ -211,9 +212,3 @@ Feature: Workouts Admin Panel
         And I wait for the page to be loaded
         Then I should see "Workouts were deleted!"
 
-#nav-link
-
-   
-
-        
-        

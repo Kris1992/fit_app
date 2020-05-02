@@ -62,19 +62,34 @@ Now check out the site at `http://localhost:8000`
 
 Have fun!
 
+## Tests stack
+
+Unit Tests - PHPSpec
+Functional Tests - Behat
+Integration Tests - PHPUnit
+
+## Run Tests
+
+./vendor/bin/phpspec run
+./vendor/bin/behat
+
 ## Used Technologies
 
 TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
-:hourglass_flowing_sand: Rebuild workouts history
-:heavy_check_mark: Refactor api error response (json+problem)
-:heavy_check_mark: ADD possibility to add weight activities
-:hourglass_flowing_sand: ADD more info about workout in reports
-:hourglass_flowing_sand: ADD unit, integration and functional tests (every week add few) 
+:hourglass_flowing_sand: Add curiosity system with cache
+:hourglass_flowing_sand: Add tests to curiosity system
+:hourglass_flowing_sand: Add tests to failure messages in admin panel
+:hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
 
 ## Last weeks updates
+
+:heavy_check_mark: Rebuild workouts history
+:heavy_check_mark: Refactor api error response (json+problem)
+:heavy_check_mark: ADD possibility to add weight activities
+:heavy_check_mark: ADD more info about workout in reports
 
 :heavy_check_mark: ADD tracking route in real time
 :heavy_check_mark: Refactor mailer service

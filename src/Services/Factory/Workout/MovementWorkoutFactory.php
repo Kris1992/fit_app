@@ -8,7 +8,6 @@ use App\Form\Model\Workout\AbstractWorkoutFormModel;
 
 class MovementWorkoutFactory implements WorkoutFactoryInterface {
 
-    //Poprawić testy
     public function create(AbstractWorkoutFormModel $workoutModel): Workout
     {
         $workout = new Workout();

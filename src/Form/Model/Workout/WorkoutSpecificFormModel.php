@@ -1,10 +1,8 @@
 <?php
+
 namespace App\Form\Model\Workout;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
 
 class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
 {
@@ -27,23 +25,6 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
      * @Assert\GreaterThan(message="Dumbbell weight should be greater than 0", value=0, groups={"weight"})
      */
     private $dumbbellWeight;
-
-    /**
-     * @Assert\Valid
-     * @Assert\Count(
-     *      min = 1,
-     *      minMessage = "You must specify at least one set",
-     *      groups={"specific_sets"}
-     * )
-     */
-    private $movementSets;
-
-    private $routeData;
-
-    public function __construct()
-    {
-        $this->movementSets = new ArrayCollection();
-    }
 
     public function getDistanceTotal(): ?float
     {
@@ -97,49 +78,6 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
         }
 
         return null;
-    }
-
-    /**
-     * @return Collection|MovementActivitySetFormModel[]
-     */
-    public function getMovementSets(): Collection
-    {
-        return $this->movementSets;
-    }
-
-    public function addMovementSet(MovementActivitySetFormModel $movementSet): self
-    {
-        if (!$this->movementSets->contains($movementSet)) {
-            $this->movementSets[] = $movementSet;
-            $movementSet->setWorkout($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMovementSet(MovementActivitySetFormModel $movementSet): self
-    {
-        if ($this->movementSets->contains($movementSet)) {
-            $this->movementSets->removeElement($movementSet);
-            // set the owning side to null (unless already changed)
-            if ($movementSet->getWorkout() === $this) {
-                $movementSet->setWorkout(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getRouteData(): ?RouteDataModel
-    {
-        return $this->routeData;
-    }
-
-    public function setRouteData(?RouteDataModel $routeData): self
-    {
-        $this->routeData = $routeData;
-
-        return $this;
     }
 
 }

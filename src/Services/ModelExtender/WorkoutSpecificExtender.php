@@ -57,6 +57,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         $this->weatherService = $weatherService;
         $this->logger = $logger;
     } 
+    
     //Dodać testy do tej metody
     public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
     {   

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form\Model\Workout;
 
 class RouteDataModel
