@@ -86,6 +86,11 @@ class Workout
      */
     private $movementSets;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\RouteData", cascade={"persist", "remove"})
+     */
+    private $routeData;
+
     public function __construct()
     {
         $this->movementSets = new ArrayCollection();
@@ -106,8 +111,6 @@ class Workout
     * @Groups("main")
     */
     private $startDate;
-
-
 
 
 
@@ -293,6 +296,24 @@ class Workout
         return $this;
     }
 
+    public function getAverageSpeed(): ?float
+    {   
+        if ($this->distanceTotal) {
+            $averageSpeed = ($this->distanceTotal / ($this->durationSecondsTotal / 3600 ));
+            return $averageSpeed;
+        }
+        return null;
+    }
+
+    public function getAveragePace(): ?float
+    {   
+        if ($this->distanceTotal) {
+            $averagePace = (($this->durationSecondsTotal / 60 ) / $this->distanceTotal );
+            return $averagePace;
+        }
+        return null;
+    }
+
     /**
      * @return Collection|MovementSet[]
      */
@@ -320,6 +341,18 @@ class Workout
                 $movementSet->setWorkout(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRouteData(): ?RouteData
+    {
+        return $this->routeData;
+    }
+
+    public function setRouteData(?RouteData $routeData): self
+    {
+        $this->routeData = $routeData;
 
         return $this;
     }

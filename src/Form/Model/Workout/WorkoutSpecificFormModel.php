@@ -38,6 +38,8 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
      */
     private $movementSets;
 
+    private $routeData;
+
     public function __construct()
     {
         $this->movementSets = new ArrayCollection();
@@ -124,6 +126,18 @@ class WorkoutSpecificFormModel extends AbstractWorkoutFormModel
                 $movementSet->setWorkout(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRouteData(): ?RouteDataModel
+    {
+        return $this->routeData;
+    }
+
+    public function setRouteData(?RouteDataModel $routeData): self
+    {
+        $this->routeData = $routeData;
 
         return $this;
     }

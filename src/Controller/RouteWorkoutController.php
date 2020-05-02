@@ -65,7 +65,7 @@ class RouteWorkoutController extends AbstractController
         $workoutSpecificModel = $form->getData();
 
         $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModelWithMap($workoutSpecificModel, $user, $data);
-        $workoutSpecificModel->setUser(null);
+
         if ($workoutSpecificModel) {
             $isValid = $modelValidator->isValid($workoutSpecificModel, ['route_model']);
 
@@ -79,8 +79,10 @@ class RouteWorkoutController extends AbstractController
                     
                     $response = [
                         'url' => $this->generateUrl(
-                                    'workout_list', 
-                                    [], 
+                                    'workout_report', 
+                                    [
+                                        'id' => $workout->getId()
+                                    ], 
                                     UrlGeneratorInterface::ABSOLUTE_URL
                                 )
                     ];
@@ -136,6 +138,7 @@ class RouteWorkoutController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+        dump($data);
         if($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
@@ -157,7 +160,7 @@ class RouteWorkoutController extends AbstractController
         $workoutSpecificModel = $form->getData();
 
         $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModelWithMap($workoutSpecificModel, $user, $data);
-        
+
         if ($workoutSpecificModel) {
             $isValid = $modelValidator->isValid($workoutSpecificModel, ['route_model']);
 

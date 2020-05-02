@@ -118,10 +118,27 @@ function calculateDistance(isRemovedMarker = false)
     }
 
     if(waypoints.length > 1) {
+        calculateRouteData(isRemovedMarker).then((result) => {
+            showDistance(result);
+        }).catch((errorData) => {
+            showMapResponse('Cannot calculate route.');
+        });            
+    }
+}
+
+/**
+ * calculateRouteData Prepare and do call to api
+ * @param  {Boolean} isRemovedMarker Do you want recalculate distance after remove marker?
+ * @param  {Boolean} needElevation   Do you want to get elevation data (altitude)? [optional]
+ */
+function calculateRouteData(isRemovedMarker, needElevation = false)
+{
+    return new Promise( (resolve, reject) => {
         var routingParameters = {
-            'mode': 'shortest;pedestrian',
+            mode: 'shortest;pedestrian',
             routeattributes : 'summary,shape',
-            'representation': 'display'
+            representation: 'display',
+            returnElevation: needElevation
         };
 
         //Add all waypoints to route
@@ -137,6 +154,7 @@ function calculateDistance(isRemovedMarker = false)
                 var lineString = new H.geo.LineString();
                 response.route[0].shape.forEach(routeCoord => {
                     var routeCoordArray = routeCoord.split(',');
+
                     lineString.pushLatLngAlt(routeCoordArray[0], routeCoordArray[1], 0);
                 });
 
@@ -154,13 +172,14 @@ function calculateDistance(isRemovedMarker = false)
                     routePolylines.push(polyline); 
                     map.addObject(polyline);
                 }
-                showDistance(response.route[0]);
+
+                resolve(response.route[0]);
             }
         }, 
             error => { 
-                showMapResponse('Cannot calculate route.');
+                reject(error);
         });
-    }
+    });
 }
 
 /**
@@ -171,8 +190,7 @@ function showDistance(routeData)
 {
     var routeDistanceTotal = routeData.summary.distance;
     distanceTotal = (routeDistanceTotal/1000);
-    console.log('route data:');
-    console.log(routeData);
+
     if (routeDistanceTotal < 1000) {
         document.getElementById('distance-js').innerHTML = routeDistanceTotal+" m";
     } else {
@@ -365,34 +383,46 @@ function sendData(event)
                 return;
             }
         }
-        
-        var url = document.getElementById('continue-js').getAttribute('data-url');
-        map.capture((canvas) => {
-            if (canvas) {
-                var mapImage = canvas.toDataURL();
-                formData['waypoints'] = waypoints;
-                formData['distanceTotal'] = distanceTotal;
-                formData['image'] = mapImage;
 
-                saveWorkout(formData,url).then((result) => {
-                    window.location.href = result.url;
-                }).catch((errorData) => {
-                    if (errorData.type !== 'form_validation_error') {
-                        showMapResponse(errorData.title);
-                    } else {
-                        mapErrorsToForm(errorData);
-                    }                    
-                });
-            } else {
-                showMapResponse('Capturing is not supported.');
-            }
-        }, []);
-
+        calculateRouteData(true, true).then((result) => {
+            captureImageAndSaveWorkout(formData, result);
+        }).catch((errorData) => {
+            showMapResponse('Cannot recalculate route. Try again.');
+        });      
     } else {
         showMapResponse('Draw your route first.');   
     }
-
     enableButton($(event.target));
+}
+
+/**
+ * captureImageAndSaveWorkout Get image of workout and send all data to database
+ * @param  {Array} formData  Array with form data
+ * @param  {Array} routeData Array with route data
+ */
+function captureImageAndSaveWorkout(formData, routeData)
+{
+    var url = document.getElementById('continue-js').getAttribute('data-url');
+    map.capture((canvas) => {
+        if (canvas) {
+            var mapImage = canvas.toDataURL();
+            formData['distanceTotal'] = distanceTotal;
+            formData['image'] = mapImage;
+            formData['routeData'] = routeData.shape;
+        
+            saveWorkout(formData,url).then((result) => {
+                window.location.href = result.url;
+            }).catch((errorData) => {
+                if (errorData.type !== 'form_validation_error') {
+                    showMapResponse(errorData.title);
+                } else {
+                    mapErrorsToForm(errorData);
+                }                    
+            });
+        } else {
+            showMapResponse('Capturing is not supported.');
+        }
+    }, []);
 }
 
 /**

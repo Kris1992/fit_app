@@ -385,7 +385,7 @@ class WorkoutController extends AbstractController
     {
 
         $data = json_decode($request->getContent(), true);
-        dump($data);
+        
         if($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
