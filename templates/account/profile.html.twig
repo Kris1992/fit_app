@@ -8,9 +8,9 @@
             <div class="col-xs-12 col-sm-2">
                 <div class="user-image">
                     {% if app.user.imageFilename %}
-                    <img src="{{uploaded_asset(app.user.thumbImagePath)}}" class="img-responsive thumbnail" height="100" width="100">
+                    <img src="{{uploaded_asset(app.user.thumbImagePath)}}" class="thumbnail" height="100" width="100">
                     {% else %}
-                    <img src="{{asset('img/users/default.png')}}" class="img-responsive thumbnail" height="100" width="100">
+                    <img src="{{asset('img/users/default.png')}}" class="thumbnail" height="100" width="100">
                     {% endif %}
                     
                 </div>

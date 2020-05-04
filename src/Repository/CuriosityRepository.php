@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Curiosity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-//use Symfony\Bridge\Doctrine\RegistryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CuriosityRepository extends ServiceEntityRepository
 {
-    public function __construct(/*RegistryInterface*/ ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Curiosity::class);
     }
@@ -65,6 +64,22 @@ class CuriosityRepository extends ServiceEntityRepository
             ->setParameter('ids', $arrayIds)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * findPublishedOrderedByNewest Find published curiosities (order by newest)
+     * @param int $limit The max number curiosities to return
+     * @return Curiosity[]
+     */
+    public function findPublishedOrderedByNewest(int $limit)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.publishedAt IS NOT NULL')
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
 

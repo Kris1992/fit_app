@@ -18,6 +18,9 @@ class CuriosityFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
+        $curiosity = $options['data'] ?? null;
+        $isEdit = $curiosity && $curiosity->getId();
+
         $builder
             ->add('title', TextType::class, [
                 'attr' =>[
@@ -28,26 +31,26 @@ class CuriosityFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Enter short description of curiosity here.',
                 ],
-                'help' => 'This will be shown on the main page.',
+                'help' => 'This will be shown on the main page. Think of something catchy!',
             ])
             ->add('content', TextareaType::class, [
                 'attr' => [
                     'placeholder' => 'Enter content of curiosity here.',
                 ],
+                'required' => false
             ])
             ->add('isPublished', CheckboxType::class, [
                 'required' => false,
             ])
         ;
 
-    
-            /*$builder
-                ->add('publishedAt', null, [
-                    'widget' => 'single_text',
+        if ($isEdit) {
+            $builder
+                ->add('author', UserSelectTextType::class, [
+                    'disabled' => true,
                 ])
-                ->add('author', UserSelectTextType::class)
                 ;
-       */
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)

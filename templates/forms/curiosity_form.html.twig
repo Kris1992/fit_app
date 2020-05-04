@@ -12,6 +12,12 @@
                 'label' : 'Description: '
             }) }}
 
+            {% if curiosityForm.author is defined %}
+                {{ form_row(curiosityForm.author, {
+                    'label' : 'Author: ',
+                }) }}
+            {% endif %}
+
             {{ form_row(curiosityForm.content, {
                 'label' : 'Content: ',
             }) }}

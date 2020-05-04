@@ -25,12 +25,14 @@
     {{ parent() }}
     <script src="https://cdn.tiny.cloud/1/{{tinymce_api_key}}/tinymce/5/tinymce.min.js" referrerpolicy="origin"/></script>
 
-    <script type="text/javascript">
-       // tinymce.init({
-       //     selector: '#curiosity_form_content',
-       //     plugins: 'linkchecker autolink lists checklist powerpaste tinymcespellchecker',
-       //     toolbar: 'checklist',
-       //     toolbar_mode: 'floating',
-    //});
-    </script>
+        <script type="text/javascript">
+            tinymce.init({
+                selector: '#curiosity_form_content',
+                plugins: 'lists checklist table advtable autolink image link autolink anchor tinymcespellchecker linkchecker',
+                menubar: false,
+                toolbar: 'undo redo | bold italic underline strikethrough forecolor |  fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist checklist table | image link anchor',
+                toolbar_mode: 'sliding',
+                height : '500'
+            });
+        </script>
 {% endblock %}

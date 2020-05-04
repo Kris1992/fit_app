@@ -54,6 +54,11 @@
 
                                 <td class="links-table">
                                     <div class="link-wrapper">
+                                        <a href="{{ path('admin_curiosity_show', { slug: curiosity.slug }) }}" title="Show">
+                                            <span class="fas fa-eye"></span>
+                                        </a>
+                                    </div>
+                                    <div class="link-wrapper">
                                         <a href="{{ path('admin_curiosity_edit', { slug: curiosity.slug }) }}" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>

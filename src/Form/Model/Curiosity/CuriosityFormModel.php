@@ -10,18 +10,28 @@ class CuriosityFormModel
 
     private $id;
 
-    /**
-     * //Assert\NotBlank(message="Please enter author.") //model
-     */
+    /*
+        There is no option to change it we dont need assets here
+    */
     private $author;
 
     /**
      * @Assert\NotBlank(message="Please enter title.") 
-     */
+     * @Assert\Length(
+     *      max = 100,
+     *      maxMessage = "Your first name cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
+     */ 
     private $title;
 
     /**
      * @Assert\NotBlank(message="Please enter few words of description.")
+     * @Assert\Length(
+     *      max = 40,
+     *      maxMessage = "Your first name cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
      */
     private $description;
 

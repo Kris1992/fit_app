@@ -8,9 +8,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use App\Form\DataTransformer\EmailToUserTransformer;
 use Symfony\Component\Routing\RouterInterface;
-
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-
 use App\Repository\UserRepository;
 
 class UserSelectTextType extends AbstractType 

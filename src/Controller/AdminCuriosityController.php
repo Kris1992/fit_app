@@ -73,7 +73,7 @@ class AdminCuriosityController extends AbstractController
     /**
      * @Route("/admin/curiosity/edit/{slug}", name="admin_curiosity_edit", methods={"POST", "GET"})
      */
-    public function edit(Curiosity $curiosity, Request $request, EntityManagerInterface $em, CuriosityModelFactoryInterface $curiosityModelFactory, CuriosityUpdaterInterface $curiosityUpdater)
+    public function edit(Curiosity $curiosity, Request $request, EntityManagerInterface $em, CuriosityModelFactoryInterface $curiosityModelFactory, CuriosityUpdaterInterface $curiosityUpdater, string $tinymce_api_key)
     {            
         
         $curiosityModel = $curiosityModelFactory->create($curiosity);
@@ -96,9 +96,22 @@ class AdminCuriosityController extends AbstractController
         }
 
         return $this->render('admin_curiosity/edit.html.twig', [
-            'curiosityForm' => $form->createView()
+            'curiosityForm' => $form->createView(),
+            'tinymce_api_key' => $tinymce_api_key,
         ]);
 
+    }
+
+    //Przenieść
+    /**
+     * @Route("/admin/curiosity/{slug}", name="admin_curiosity_show", methods={"POST", "GET"})
+     */
+    public function show(Curiosity $curiosity, Request $request)
+    {            
+        
+        return $this->render('admin_curiosity/show.html.twig', [
+            'curiosity' => $curiosity
+        ]);
     }
 
     /**

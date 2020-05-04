@@ -9,7 +9,7 @@
 {% block section_class %}editCuriosity{% endblock %} 
 {% block content_class %}{% endblock %}
 {% block content_body %}
-<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+<div class="col-9 mx-auto">
     <div class="card card-signin my-5 shadow-box">
         {{ include('forms/curiosity_form.html.twig', {
             header_text: 'Edit Curiosity',
@@ -20,4 +20,16 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
+        <script src="https://cdn.tiny.cloud/1/{{tinymce_api_key}}/tinymce/5/tinymce.min.js" referrerpolicy="origin"/></script>
+
+        <script type="text/javascript">
+            tinymce.init({
+                selector: '#curiosity_form_content',
+                plugins: 'lists checklist table advtable autolink image link autolink anchor tinymcespellchecker linkchecker',
+                menubar: false,
+                toolbar: 'undo redo | bold italic underline strikethrough forecolor |  fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist checklist table | image link anchor',
+                toolbar_mode: 'sliding',
+                height : '500'
+            });
+        </script>
 {% endblock %}

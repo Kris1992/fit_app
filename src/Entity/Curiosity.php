@@ -24,7 +24,7 @@ class Curiosity
     private $author;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=100)
      */
     private $title;
 
