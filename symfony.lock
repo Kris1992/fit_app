@@ -338,6 +338,18 @@
             "./config/packages/security_checker.yaml"
         ]
     },
+    "stof/doctrine-extensions-bundle": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.2",
+            "ref": "6c1ceb662f8997085f739cd089bfbef67f245983"
+        },
+        "files": [
+            "config/packages/stof_doctrine_extensions.yaml"
+        ]
+    },
     "symfony/asset": {
         "version": "v4.3.2"
     },
@@ -541,11 +553,17 @@
             "tests/bootstrap.php"
         ]
     },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.15.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.11.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.11.0"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.15.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.11.0"
@@ -614,6 +632,9 @@
     },
     "symfony/stopwatch": {
         "version": "v4.3.2"
+    },
+    "symfony/string": {
+        "version": "v5.0.8"
     },
     "symfony/test-pack": {
         "version": "v1.0.6"
@@ -715,6 +736,9 @@
         "version": "v3.0.3"
     },
     "twig/inky-extra": {
+        "version": "v3.0.3"
+    },
+    "twig/string-extra": {
         "version": "v3.0.3"
     },
     "twig/twig": {

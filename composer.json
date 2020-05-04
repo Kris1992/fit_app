@@ -16,6 +16,7 @@
         "oneup/flysystem-bundle": "^3.1",
         "sensio/framework-extra-bundle": "^5.4",
         "sensiolabs/security-checker": "^6.0",
+        "stof/doctrine-extensions-bundle": "^1.4",
         "symfony/asset": "4.4.*",
         "symfony/console": "4.4.*",
         "symfony/dependency-injection": "4.4.*",
@@ -33,7 +34,8 @@
         "symfony/yaml": "4.4.*",
         "twig/cssinliner-extra": "^3.0",
         "twig/extensions": "^1.5",
-        "twig/inky-extra": "^3.0"
+        "twig/inky-extra": "^3.0",
+        "twig/string-extra": "^3.0"
     },
     "require-dev": {
         "behat/mink-selenium2-driver": "^1.4",

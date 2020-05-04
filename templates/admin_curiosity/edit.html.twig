@@ -1,0 +1,23 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Edit Curiosity{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+{% endblock %}
+
+{% block section_class %}editCuriosity{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        {{ include('forms/curiosity_form.html.twig', {
+            header_text: 'Edit Curiosity',
+            button_text: 'Edit'
+        }) }}
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

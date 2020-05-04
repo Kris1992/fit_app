@@ -1,56 +1,89 @@
 {% extends 'content_base.html.twig' %}
 
-{% block title %}Curiosity list{% endblock %}
+{% block title %}Curiosities list{% endblock %}
 
 {% block content_class %}{{ parent() }} container-border-green p-2{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
-    	<a href="{{ path('admin_curiosity_add') }}" class="btn btn-primary float-right">
-        	Create <span class="fa fa-plus-circle"></span>
-    	</a>
-	    <h2 class="text-green">All Curiosities ({{ pagination.getTotalItemCount }})</h2>
-	    <div class="table-responsive">
-		    <table class="table table-hover" id="list">
-		        <thead>
-		            <tr>
-		            	<th {% if pagination.isSorted('c.id') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, '#', 'c.id') }}
-		            	</th>
-		            	<th {% if pagination.isSorted('c.title') %} class="sorted" {% endif %}>
-		            		{{ knp_pagination_sortable(pagination, 'Title', 'c.title') }}
-		            	</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            {% for curiosity in pagination %}
-		                <tr>
-		                	<td>{{ curiosity.id }}</td>
-		                    <td>{{ curiosity.title }}</td>
-		                    <td>
-		                        <a href="{{ path('admin_account_edit', { id: curiosity.id }) }}">
-		                            <span class="fa fa-pencil-alt"></span>
-		                        </a>
-		                        <a href="">
-		                           <span class="fa fa-trash-alt curiosity" data-id="{{ curiosity.id }}"></span>
-		                        </a>
-		                    </td>
-		                </tr>
-		            {% endfor %}
-		        </tbody>
-		    </table>
+        <a href="{{ path('admin_curiosity_add') }}" class="btn btn-primary float-right">
+            Create <span class="fa fa-plus-circle"></span>
+        </a>
+        <h2 class="text-green">All Curiosities ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        <div class="table-responsive">
+            <form action="{{ path('admin_curiosity_delete_selected') }}" method="POST">
+                <table class="table table-hover" id="list">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th {% if pagination.isSorted('c.id') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, '#', 'c.id') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.title') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Title', 'c.title') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.content') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Content', 'c.content') }}
+                            </th>
+                            <th {% if pagination.isSorted('u.email') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Author', 'u.email') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.createdAt') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Created At', 'c.createdAt') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.publishedAt') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Published', 'c.publishedAt') }}
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for curiosity in pagination %}
+                            <tr>
+                                <td><input type="checkbox" name="deleteId[]" value="{{ curiosity.id }}"></td>
+                                <td>{{ curiosity.id }}</td>
+                                <td>{{ curiosity.title }}</td>
+                                <td>{{ curiosity.content|u.truncate(40, '...') }}</td>
+                                <td>{{ curiosity.author.email }}</td>
+                                <td>{{ curiosity.createdAt | date('m/d/Y') }}</td>
+                                <td>
+                                    <span class="fa fa-{{ curiosity.isPublished ? 'check text-success' : 'times text-danger' }}"></span>
+                                </td>
 
-		</div>
-		<div class="navigation">
+                                <td class="links-table">
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_curiosity_edit', { slug: curiosity.slug }) }}" title="Edit">
+                                            <span class="fa fa-pencil-alt"></span>
+                                        </a>
+                                    </div>
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_curiosity_delete', { id: curiosity.id }) }}" class="delete-item" data-name="curiosity" data-id="{{ curiosity.id }}" title="Delete">
+                                            <span class="fa fa-trash-alt"></span>
+                                        </a>
+                                    </div>
+                                </td> 
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <input type="hidden" name="token" value="{{ csrf_token('delete_multiple') }}"/>
+                <button type="submit" class="btn btn-danger">Delete checked</button>
+            </form>
 
-			{{ knp_pagination_render(pagination, null, {}, {
-				'align': 'center'
-			}) }}
-			{% include 'per_page.html.twig' %}
-		</div>
-	</div>
+        </div>
+        <div class="navigation">
+
+            {{ knp_pagination_render(pagination, null, {}, {
+                'align': 'center'
+            }) }}
+            {% include 'per_page.html.twig' %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
-<script type="text/javascript" src="{{ asset('js/_delete.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
 {% endblock %}

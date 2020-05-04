@@ -1,30 +1,36 @@
-{% extends 'base.html.twig' %}
+{% extends 'content_base.html.twig' %}
 
 {% block title %}Add Curiosity{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
-    <script src="{{ asset('js/algolia-autocomplete.js') }}"></script>
-{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/algolia-autocomplete.css') }}">
 {% endblock %}
-{% block content %}
 
-<section class="addCuriosity">
-	<div class="container">
-		<div class="row">
-	      	<div class="col-sm-9 mx-auto">
-		        <div class="card card-signin my-5 shadow-box">
-                    {{ include('forms/curiosity_form.html.twig', {
-                        header_text: 'Add Curiosity',
-                        button_text: 'Add'
-                    }) }}
-		        </div>
-	      	</div>
-	    </div>
-    </div>
-</section>
+{% block section_class %}addCuriosity{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+    <div class="col-sm-7 mx-auto">
+		<div class="card card-signin my-5 shadow-box">
+            {{ include('forms/curiosity_form.html.twig', {
+                header_text: 'Add Curiosity',
+                button_text: 'Add'
+            }) }}
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.tiny.cloud/1/{{tinymce_api_key}}/tinymce/5/tinymce.min.js" referrerpolicy="origin"/></script>
+
+    <script type="text/javascript">
+       // tinymce.init({
+       //     selector: '#curiosity_form_content',
+       //     plugins: 'linkchecker autolink lists checklist powerpaste tinymcespellchecker',
+       //     toolbar: 'checklist',
+       //     toolbar_mode: 'floating',
+    //});
+    </script>
 {% endblock %}

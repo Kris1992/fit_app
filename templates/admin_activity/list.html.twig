@@ -13,7 +13,7 @@
 	        Create <span class="fa fa-plus-circle"></span>
 	    </a>
 	    <h2 class="text-green">All Activities ({{ pagination.getTotalItemCount }})</h2>
-        <div class="col-sm-4 mx-auto">
+        <div class="col-sm-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
 	    <div class="table-responsive">
@@ -37,6 +37,7 @@
     		            	<th {% if pagination.isSorted('a.energy') %} class="sorted" {% endif %}>
     		            		{{ knp_pagination_sortable(pagination, 'Energy', 'a.energy') }}
     		            	</th>
+                            <th></th>
     		            </tr>
     		        </thead>
     		        <tbody>
