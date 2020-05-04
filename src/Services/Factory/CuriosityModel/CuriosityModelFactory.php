@@ -5,7 +5,6 @@ namespace App\Services\Factory\CuriosityModel;
 use App\Entity\Curiosity;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 
-//Testy
 class CuriosityModelFactory implements CuriosityModelFactoryInterface 
 {
     

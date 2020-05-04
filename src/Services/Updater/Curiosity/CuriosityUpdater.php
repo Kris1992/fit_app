@@ -26,7 +26,6 @@ class CuriosityUpdater implements CuriosityUpdaterInterface
         $curiosity
             ->setTitle($curiosityModel->getTitle())
             ->setDescription($curiosityModel->getDescription())
-            ->setDescription($curiosityModel->getDescription())
             ->setContent($curiosityModel->getContent())
             ->updateTimeStamp()
             ;

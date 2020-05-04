@@ -21,3 +21,4 @@ interface CuriosityUpdaterInterface
      */
      public function update(CuriosityFormModel $curiosityModel, Curiosity $curiosity, ?File $uploadedImage): Curiosity;
 }
+

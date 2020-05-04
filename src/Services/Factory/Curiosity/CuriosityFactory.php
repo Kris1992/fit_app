@@ -8,7 +8,7 @@ use App\Form\Model\Curiosity\CuriosityFormModel;
 use Symfony\Component\HttpFoundation\File\File;
 
 //use App\Services\ImagesManager\ImagesManagerInterface;
-//TEST it
+
 class CuriosityFactory implements CuriosityFactoryInterface {
 
     //private $imagesManager;
