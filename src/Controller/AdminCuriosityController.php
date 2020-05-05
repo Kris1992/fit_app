@@ -54,10 +54,10 @@ class AdminCuriosityController extends AbstractController
             $curiosityModel = $form->getData();
             $user = $this->getUser();
 
-            $curiosity = $curiosityFactory->create($curiosityModel, $user, null);
+            $curiosity = $curiosityFactory->create($curiosityModel, $user, $form['imageFile']->getData());
+
             $em->persist($curiosity);
             $em->flush();
-
             $this->addFlash('success', 'Curiosity was created!');
             
             return $this->redirectToRoute('admin_curiosity_list');
@@ -83,8 +83,7 @@ class AdminCuriosityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {    
-            $curiosity = $curiosityUpdater->update($curiosityModel, $curiosity, null);
-            //$form['imageFile']->getData());
+            $curiosity = $curiosityUpdater->update($curiosityModel, $curiosity, $form['imageFile']->getData());
 
             $em->persist($curiosity);
             $em->flush();
@@ -102,9 +101,8 @@ class AdminCuriosityController extends AbstractController
 
     }
 
-    //Przenieść
     /**
-     * @Route("/admin/curiosity/{slug}", name="admin_curiosity_show", methods={"POST", "GET"})
+     * @Route("/admin/curiosity/{slug}/show", name="admin_curiosity_show", methods={"POST", "GET"})
      */
     public function show(Curiosity $curiosity, Request $request)
     {            
@@ -132,7 +130,7 @@ class AdminCuriosityController extends AbstractController
      /**
      * @Route("/admin/curiosity/delete_selected", name="admin_curiosity_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, CuriosityRepository $curiosityRepository)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, CuriosityRepository $curiosityRepository)
     {
 
         $submittedToken = $request->request->get('token');

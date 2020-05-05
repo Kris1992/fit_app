@@ -11,7 +11,7 @@ use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use App\Services\ImagesResizer\ImagesResizerInterface;
 
-class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInterface
+class CuriositiesImagesManager extends ImagesConstants implements ImagesManagerInterface
 {
 
     private $publicFilesystem;
@@ -22,12 +22,12 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
     private $uploadsDirectory;
 
     /**
-     * WorkoutsImagesManager Constructor
+     * CuriositiesImagesManager Constructor
      *
      *@param FilesystemInterface $publicUploadsFilesystem
      *@param LoggerInterface $logger
      *@param RequestStackContext $requestStackContext
-     *@param magesResizerInterface $imagesResizer
+     *@param ImagesResizerInterface $imagesResizer
      *@param string $uploadedAssetsBaseUrl
      *@param string $uploadsDirectory
      *
@@ -43,27 +43,27 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
     }
 
     /**
-     * uploadImage Upload workout image and compress it to smaller one thumb image if it is too large
+     * uploadImage Upload curiosity image and compress it to smaller one thumb image if it is too large
      * @param  File    $file             Uploaded file
      * @param  string  $existingFilename Filename of image which was uploaded before[optional]
      * @param  string  $subdirectory     Subdirectory for image[optional]
      * @param  integer $newWidth         Width of compressed image [optional]
      * @return string                    New filename
      */
-    public function uploadImage(File $file, ?string $existingFilename, ?string $subdirectory, $newWidth = 150): string
+    public function uploadImage(File $file, ?string $existingFilename, ?string $subdirectory, $newWidth = 350): string
     {
         if($subdirectory) {
-            $directory =  self::WORKOUTS_IMAGES.'/'.$subdirectory;
+            $directory =  self::CURIOSITIES_IMAGES.'/'.$subdirectory;
             $newFilename = $this->uploadFile($file, $directory, $newWidth);
         } else {
-            $this->logger->alert('Workouts image uploader: Subdirectory missing, cannot upload image!!');
+            $this->logger->alert('Curiosities image uploader: Subdirectory missing, cannot upload image!!');
             return null;
         }
-        
+
         if ($existingFilename) {
            $result = $this->deleteOldImage($existingFilename, $subdirectory);
            if(!$result) {
-                $this->logger->alert(sprintf('User upload new file but deleting old one fails. Check file: "%s" exist!!', $existingFilename));
+                $this->logger->alert(sprintf('User upload new curiosity image but deleting old one fails. Check file: "%s" exist!!', $existingFilename));
            }
         }
 
@@ -71,7 +71,7 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
     }
 
     /**
-     * deleteUserImage Delete user images (original and compressed) from server 
+     * deleteImage Delete curiosity images (original and compressed) from server 
      * @param  string $existingFilename Filename of image to delete
      * @param  string  $subdirectory     Subdirectory for image[optional]
      * @return bool                   
@@ -89,22 +89,11 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
      * @param  string $absolutePath Absolute path to image to resize
      * @param  int    $newWidth     New width
      * @return string If image was completely resized return filename
-     * @throws Exception If the given path is not a file or cannot resize it
+     * @throws Exception If the given path is not a file
      */
     public function resizeImageFromPath(string $absolutePath, int $newWidth): string
-    {   
-        $file = new File($absolutePath);
-        $filename = $file->getFilename();
-        $extension = $file->guessExtension();
-        //$filename = $filenameExtFree.'.'.$extension;
-
-        try {
-            $this->imagesResizer->compressImage($absolutePath, $extension, $newWidth);
-        } catch (\Exception $e) {
-            throw new \Exception("Cannot resize this image.");   
-        }
-        
-        return $filename;
+    {
+        //To implement
     }
 
     public function getPublicPath(string $path): string
@@ -112,7 +101,7 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         return $this->requestStackContext
             ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
     }
-
+    
     /**
      * uploadFile Function which take care about upload image process
      * @param  File   $file      Uploaded file
@@ -165,13 +154,12 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         }
 
         try {
-            $result = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
-            $resultThumb = $this->publicFilesystem->delete(self::WORKOUTS_IMAGES.'/'.$subdirectory.'/'.self::THUMB_IMAGES.'/'.$existingFilename);
-
+            $result = $this->publicFilesystem->delete(self::CURIOSITIES_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
+            $resultThumb = $this->publicFilesystem->delete(self::CURIOSITIES_IMAGES.'/'.$subdirectory.'/'.self::THUMB_IMAGES.'/'.$existingFilename);
             if ($result === false || $resultThumb === false) {
                 throw new \Exception(sprintf('Could not delete old uploaded file "%s"', $existingFilename));
             }
-        } catch (FileNotFoundException | \Exception $e) {
+        } catch (FileNotFoundException  | \Exception $e) {
             $this->logger->alert(sprintf('Old uploaded file "%s" was missing when trying to delete', $existingFilename));
             
             return false;
@@ -191,6 +179,5 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
         
         return $clearFilename;
-    }
-
+    } 
 }

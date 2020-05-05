@@ -6,21 +6,20 @@ use App\Entity\Curiosity;
 use App\Entity\User;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 use Symfony\Component\HttpFoundation\File\File;
-
-//use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 class CuriosityFactory implements CuriosityFactoryInterface {
 
-    //private $imagesManager;
+    private $imagesManager;
 
     /**
      * CuriosityFactory Constructor
      * 
-     * @param ImagesManagerInterface $imagesManager
+     * @param ImagesManagerInterface $curiositiesImagesManager
      */
-    public function __construct()//ImagesManagerInterface $imagesManager)  
+    public function __construct(ImagesManagerInterface $curiositiesImagesManager)  
     {
-        //$this->imagesManager = $imagesManager;
+        $this->imagesManager = $curiositiesImagesManager;
     }
     
     public function create(CuriosityFormModel $curiosityModel, User $author, ?File $uploadedImage): Curiosity
@@ -41,12 +40,11 @@ class CuriosityFactory implements CuriosityFactoryInterface {
                 ;
         }
 
-        /*
         if ($uploadedImage) {
-            $newFilename = $this->imagesManager->uploadImage($uploadedImage, null, $user->getLogin());
-            $user->setImageFilename($newFilename);
-        }
-        */
+            $subdirectory = $curiosity->getAuthor()->getLogin();
+            $newFilename = $this->imagesManager->uploadImage($uploadedImage, null, $subdirectory);
+            $curiosity->setMainImageFilename($newFilename);
+        }        
 
         return $curiosity;
     }

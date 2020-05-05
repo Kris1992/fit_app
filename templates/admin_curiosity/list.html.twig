@@ -45,7 +45,7 @@
                                 <td><input type="checkbox" name="deleteId[]" value="{{ curiosity.id }}"></td>
                                 <td>{{ curiosity.id }}</td>
                                 <td>{{ curiosity.title }}</td>
-                                <td>{{ curiosity.content|u.truncate(40, '...') }}</td>
+                                <td>{{ curiosity.content | striptags | u.truncate(40, '...') | raw }}</td>
                                 <td>{{ curiosity.author.email }}</td>
                                 <td>{{ curiosity.createdAt | date('m/d/Y') }}</td>
                                 <td>

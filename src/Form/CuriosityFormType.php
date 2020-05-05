@@ -5,12 +5,12 @@ namespace App\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Validator\Constraints\Image;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 
 class CuriosityFormType extends AbstractType
@@ -20,6 +20,16 @@ class CuriosityFormType extends AbstractType
 
         $curiosity = $options['data'] ?? null;
         $isEdit = $curiosity && $curiosity->getId();
+
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M',
+                'mimeTypes' => [
+                    'image/jpeg',
+                    'image/png',
+                ]
+            ])
+        ];
 
         $builder
             ->add('title', TextType::class, [
@@ -42,6 +52,11 @@ class CuriosityFormType extends AbstractType
             ->add('isPublished', CheckboxType::class, [
                 'required' => false,
             ])
+            ->add('imageFile', FileType::class, [
+                'mapped' => false,
+                'required' => true,
+                'constraints' => $imageConstraints,
+            ])
         ;
 
         if ($isEdit) {
@@ -49,6 +64,7 @@ class CuriosityFormType extends AbstractType
                 ->add('author', UserSelectTextType::class, [
                     'disabled' => true,
                 ])
+                ->add('id', HiddenType::class)
                 ;
         }
     }

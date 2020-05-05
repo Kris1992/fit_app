@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
@@ -15,7 +14,6 @@ abstract class BaseFixture extends Fixture
     /** @var Generator */
     protected $faker;
     private $referencesIndex = [];
-
 
     abstract protected function loadData(ObjectManager $manager);
     

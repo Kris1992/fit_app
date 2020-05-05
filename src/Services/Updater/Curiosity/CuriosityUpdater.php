@@ -10,14 +10,16 @@ use App\Services\ImagesManager\ImagesManagerInterface;
 class CuriosityUpdater implements CuriosityUpdaterInterface 
 {
 
+    private $imagesManager;
+
     /**
      * CuriosityUpdater Constructor
      * 
-     * @param ImagesManagerInterface $imagesManager
+     * @param ImagesManagerInterface $curiositiesImagesManager
      */
-    public function __construct()//ImagesManagerInterface $imagesManager)  
+    public function __construct(ImagesManagerInterface $curiositiesImagesManager)  
     {
-        //$this->imagesManager = $imagesManager;
+        $this->imagesManager = $curiositiesImagesManager;
     }
 
     public function update(CuriosityFormModel $curiosityModel, Curiosity $curiosity, ?File $uploadedImage): Curiosity
@@ -40,10 +42,11 @@ class CuriosityUpdater implements CuriosityUpdaterInterface
                     ;
             }
 
-            /*if($uploadedImage) {
-                $newFilename = $this->imagesManager->uploadImage($uploadedImage, $user->getImageFilename(), $user->getLogin());
-                $user->setImageFilename($newFilename);
-            }*/
+            if($uploadedImage) {
+                $subdirectory = $curiosity->getAuthor()->getLogin();
+                $newFilename = $this->imagesManager->uploadImage($uploadedImage, $curiosity->getMainImageFilename(), $subdirectory);
+                $curiosity->setMainImageFilename($newFilename);
+            }
         
         return $curiosity;
     }

@@ -249,6 +249,14 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         return null;
     }
 
+     /**
+     * @Then I fill tinymce field with :text
+     */
+    public function iFillTinymceFieldWith($text)
+    {
+        $this->getSession()->executeScript("tinymce.get()[0].setContent('" . $text . "');");
+    }
+
 
 
 

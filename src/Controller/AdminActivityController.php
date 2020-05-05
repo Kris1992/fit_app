@@ -204,7 +204,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/delete_selected", name="admin_activity_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {

@@ -4,6 +4,7 @@ namespace App\Form\Model\Curiosity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
+use App\Services\ImagesManager\ImagesConstants;
 
 class CuriosityFormModel
 {
@@ -34,6 +35,11 @@ class CuriosityFormModel
      * )
      */
     private $description;
+
+    /**
+     *  //Assert\NotBlank(message="Curiosity must have image.")
+     */
+    private $mainImageFilename;
 
     /**
      * @Assert\NotBlank(message="Please enter content.")
@@ -90,6 +96,18 @@ class CuriosityFormModel
         return $this;
     }
 
+    public function getMainImageFilename(): ?string
+    {
+        return $this->mainImageFilename;
+    }
+
+    public function setMainImageFilename(?string $mainImageFilename): self
+    {
+        $this->mainImageFilename = $mainImageFilename;
+
+        return $this;
+    }
+
     public function getContent(): ?string
     {
         return $this->content;
@@ -112,6 +130,16 @@ class CuriosityFormModel
         $this->isPublished = $isPublished;
 
         return $this;
+    }
+
+    public function getImagePath()
+    {
+        return ImagesConstants::CURIOSITIES_IMAGES.'/'.$this->getAuthor()->getLogin().'/'.$this->getMainImageFilename();
+    }
+
+    public function getThumbImagePath()
+    {
+        return ImagesConstants::CURIOSITIES_IMAGES.'/'.$this->getAuthor()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getMainImageFilename();
     }
 
 }

@@ -16,7 +16,8 @@
     				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
 			</header>
-
+    
+            {% if curiosities %}
             <div id="curiosityCarousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
                     {% for curiositiesGroup in curiosities|batch(3) %}
@@ -62,7 +63,6 @@
                 </div>
             </div>				
 		</div>
-
+        {% endif %}
 	</section>
-
 {% endblock %}

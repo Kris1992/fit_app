@@ -19,6 +19,7 @@ class CuriosityModelFactory implements CuriosityModelFactoryInterface
             ->setDescription($curiosity->getDescription())
             ->setContent($curiosity->getContent())
             ->setIsPublished($curiosity->isPublished())
+            ->setMainImageFilename($curiosity->getMainImageFilename())
             ;
 
         return $curiosityModel;

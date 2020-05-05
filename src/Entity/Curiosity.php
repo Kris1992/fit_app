@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CuriosityRepository")
@@ -58,6 +59,11 @@ class Curiosity
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $mainImageFilename;
 
 
     public function getId(): ?int
@@ -182,6 +188,28 @@ class Curiosity
         $this->updatedAt = new \DateTime();
 
         return $this;
+    }
+
+    public function getMainImageFilename(): ?string
+    {
+        return $this->mainImageFilename;
+    }
+
+    public function setMainImageFilename(string $mainImageFilename): self
+    {
+        $this->mainImageFilename = $mainImageFilename;
+
+        return $this;
+    }
+
+    public function getImagePath()
+    {
+        return ImagesConstants::CURIOSITIES_IMAGES.'/'.$this->getAuthor()->getLogin().'/'.$this->getMainImageFilename();
+    }
+
+    public function getThumbImagePath()
+    {
+        return ImagesConstants::CURIOSITIES_IMAGES.'/'.$this->getAuthor()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getMainImageFilename();
     }
 
 }

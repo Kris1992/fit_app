@@ -11,14 +11,8 @@ use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use App\Services\ImagesResizer\ImagesResizerInterface;
 
-
-class UsersImagesManager implements ImagesManagerInterface
+class UsersImagesManager extends ImagesConstants implements ImagesManagerInterface
 {
-    /*
-    To delete const
-     */
-    const USERS_IMAGES = 'users_images';
-    const THUMB_IMAGES = 'thumb';
 
     private $publicFilesystem;
     private $logger;
@@ -33,7 +27,7 @@ class UsersImagesManager implements ImagesManagerInterface
      *@param FilesystemInterface $publicUploadsFilesystem
      *@param LoggerInterface $logger
      *@param RequestStackContext $requestStackContext
-     *@param magesResizerInterface $imagesResizer
+     *@param ImagesResizerInterface $imagesResizer
      *@param string $uploadedAssetsBaseUrl
      *@param string $uploadsDirectory
      *

@@ -99,7 +99,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete_selected", name="admin_account_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository, MessageBusInterface $messageBus)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, MessageBusInterface $messageBus)
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {

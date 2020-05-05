@@ -61,8 +61,10 @@ services:
 
     App\Services\ImagesManager\UsersImagesManager: ~
     App\Services\ImagesManager\WorkoutsImagesManager: ~
+    App\Services\ImagesManager\CuriositiesImagesManager: ~
     
     App\Services\ImagesManager\ImagesManagerInterface $workoutsImagesManager: '@App\Services\ImagesManager\WorkoutsImagesManager'
+    App\Services\ImagesManager\ImagesManagerInterface $curiositiesImagesManager: '@App\Services\ImagesManager\CuriositiesImagesManager'
 
     #DEFAULT
     App\Services\ImagesManager\ImagesManagerInterface: '@App\Services\ImagesManager\UsersImagesManager'

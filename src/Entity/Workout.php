@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
-
-use App\Services\ImagesManager\WorkoutsImagesManager;
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WorkoutRepository")
@@ -395,12 +394,12 @@ class Workout
 
     public function getImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

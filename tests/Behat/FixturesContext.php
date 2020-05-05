@@ -38,6 +38,9 @@ class FixturesContext extends HelperContext
             case 'users':
                 $this->loadFixtures(['User']);
                 break;
+            case 'curiosities':
+                $this->loadFixtures(['User', 'Curiosity']);
+                break;
             default:
                 break;
         }

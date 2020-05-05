@@ -10,6 +10,8 @@ use App\Services\ImagesManager\ImagesManagerInterface;
 class UserUpdater implements UserUpdaterInterface 
 {
 
+    private $imagesManager;
+
     /**
      * UserUpdater Constructor
      * 

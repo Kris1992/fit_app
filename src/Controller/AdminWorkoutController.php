@@ -330,7 +330,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/delete_selected", name="admin_workout_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository, MessageBusInterface $messageBus)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository, MessageBusInterface $messageBus)
     {
 
         $submittedToken = $request->request->get('token');

@@ -14,13 +14,11 @@ class CuriosityFixtures extends BaseFixture implements DependentFixtureInterface
     public function getDependencies()
     {
         //I try to resolve problem with construct UserFixtures
-        if ($_ENV['APP_ENV'] !== 'test') {
+        //if ($_ENV['APP_ENV'] !== 'test') {
             return [
                 UserFixtures::class,
             ];
-        } else {
-            return [];
-        }
+        
     }
 
     public function __construct()//ImagesManagerInterface $workoutsImagesManager)
