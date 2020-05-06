@@ -15,7 +15,7 @@ interface ImagesManagerInterface
      * @param  File    $file             Uploaded file
      * @param  string  $existingFilename Filename of image which was uploaded before[optional]
      * @param  string  $subdirectory     Subdirectory for image[optional]
-     * @param  integer $newWidth         Width of compressed image [optional]
+     * @param  int $newWidth             Width of compressed image [optional]
      * @return string                    New filename
      */
     public function uploadImage(File $file, ?string $existingFilename, ?string $subdirectory, int $newWidth): string;

@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\File\File;
 class CuriosityFixtures extends BaseFixture implements DependentFixtureInterface
 {
 
+    private $curiositiesImagesManager;
+
     public function getDependencies()
     {
         //I try to resolve problem with construct UserFixtures
@@ -21,9 +23,9 @@ class CuriosityFixtures extends BaseFixture implements DependentFixtureInterface
         
     }
 
-    public function __construct()//ImagesManagerInterface $workoutsImagesManager)
+    public function __construct(ImagesManagerInterface $curiositiesImagesManager)
     {
-        //$this->workoutsImagesManager = $workoutsImagesManager;
+        $this->curiositiesImagesManager = $curiositiesImagesManager;
     }
 
     protected function loadData(ObjectManager $manager)
@@ -44,28 +46,28 @@ class CuriosityFixtures extends BaseFixture implements DependentFixtureInterface
                     ->publish()
                     ;
             }
+
             //In test env we do need waste of time to upload images
-            //if ($_ENV['APP_ENV'] !== 'test') {
-            //    $imageFilename = $this->uploadFakeImage($workout->getUser()->getLogin());
-            //    $workout
-            //        ->setImageFilename($imageFilename)
-            //        ;
-           // }
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $imageFilename = $this->uploadFakeImage($curiosity->getAuthor()->getLogin());
+                $curiosity
+                    ->setMainImageFilename($imageFilename)
+                    ;
+            }
 
             return $curiosity;
         });
 
         $manager->flush();
     }
-/*
+
     private function uploadFakeImage(string $subdirectory): string
     {
         $randomImage = 'image'.$this->faker->numberBetween(0, 3).'.jpg';
-        $imagePath = __DIR__.'/workout_images/'.$randomImage;
+        $imagePath = __DIR__.'/curiosity_images/'.$randomImage;
 
-        return $this->workoutsImagesManager
+        return $this->curiositiesImagesManager
             ->uploadImage(new File($imagePath), null, $subdirectory)
             ;
     }
-    */
 }

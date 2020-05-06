@@ -135,8 +135,9 @@ class CuriositiesImagesManager extends ImagesConstants implements ImagesManagerI
             fclose($stream);
         }
 
+        $newHeight = intval($newWidth / 1.55);// Proper ratio to show image on main page
         $path = $this->uploadsDirectory.'/'.$directory.'/'.$newFilename;
-        $this->imagesResizer->compressImage($path, $extension, $newWidth);
+        $this->imagesResizer->compressImage($path, $extension, $newWidth, $newHeight);
 
         return $newFilename;
     }

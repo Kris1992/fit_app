@@ -136,7 +136,7 @@ class UsersImagesManager extends ImagesConstants implements ImagesManagerInterfa
         }
 
         $path = $this->uploadsDirectory.'/'.$directory.'/'.$newFilename;
-        $this->imagesResizer->compressImage($path, $extension, $newWidth);
+        $this->imagesResizer->compressImage($path, $extension, $newWidth, null);
 
         return $newFilename;
     }

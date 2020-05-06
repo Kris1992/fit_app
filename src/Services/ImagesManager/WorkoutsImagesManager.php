@@ -99,7 +99,7 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         //$filename = $filenameExtFree.'.'.$extension;
 
         try {
-            $this->imagesResizer->compressImage($absolutePath, $extension, $newWidth);
+            $this->imagesResizer->compressImage($absolutePath, $extension, $newWidth, null);
         } catch (\Exception $e) {
             throw new \Exception("Cannot resize this image.");   
         }
@@ -147,7 +147,7 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         }
 
         $path = $this->uploadsDirectory.'/'.$directory.'/'.$newFilename;
-        $this->imagesResizer->compressImage($path, $extension, $newWidth);
+        $this->imagesResizer->compressImage($path, $extension, $newWidth, null);
 
         return $newFilename;
     }

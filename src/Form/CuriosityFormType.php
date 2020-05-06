@@ -24,6 +24,11 @@ class CuriosityFormType extends AbstractType
         $imageConstraints = [
             new Image([
                 'maxSize' => '5M',
+                'maxRatio' => 1.75,
+                'maxRatioMessage' => 
+                    'Uploaded image will be resized to make site content user friendly.
+                    Your image ratio is too big ({{ ratio }}) and will be ugly after resize.
+                    Allowed maximum ratio is {{ max_ratio }}. Please change it.',
                 'mimeTypes' => [
                     'image/jpeg',
                     'image/png',
@@ -54,7 +59,7 @@ class CuriosityFormType extends AbstractType
             ])
             ->add('imageFile', FileType::class, [
                 'mapped' => false,
-                'required' => true,
+                'required' => false,
                 'constraints' => $imageConstraints,
             ])
         ;
