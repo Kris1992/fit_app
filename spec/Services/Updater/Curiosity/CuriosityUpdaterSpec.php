@@ -8,9 +8,16 @@ use App\Entity\Curiosity;
 use App\Entity\User;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 use App\Services\Updater\Curiosity\CuriosityUpdaterInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
 
 class CuriosityUpdaterSpec extends ObjectBehavior
 {
+    
+    function let(ImagesManagerInterface $curiositiesImagesManager)
+    {
+        $this->beConstructedWith($curiositiesImagesManager);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(CuriosityUpdater::class);

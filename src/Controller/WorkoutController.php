@@ -637,25 +637,31 @@ class WorkoutController extends AbstractController
 
             return $jsonErrorFactory->createResponse($jsonError);
         }
+
         foreach ($workouts as $workout) {
             $workout->transformSaveTimeToString();
             $startAt = $workout->getStartAt();
             $startAt = date_format($startAt, 'Y-m-d H:i');
             $workout->setStartDate($startAt);
             $workout->setLinks(
-                'thumbImagePath', 
+                'thumbImage', 
                 $workoutsImagesManager->getPublicPath($workout->getThumbImagePath())
             );
             $workout->setLinks(
-                'imagePath', 
+                'image', 
                 $workoutsImagesManager->getPublicPath($workout->getImagePath())
             );
+            $workout->setLinks(
+                'reaction', 
+                $this->generateUrl('api_workout_reaction', ['id' => $workout->getId()])
+            );
+            $workout->setReactionsArray($user, [1,2]);
         }
 
         return $this->json(
             $workouts,
             200,
-            [],
+            ['content-type' => 'application/hal+json'],
             [
                 'groups' => ['main']
             ]

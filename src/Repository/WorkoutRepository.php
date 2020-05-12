@@ -334,6 +334,22 @@ FROM t1 WHERE (id,rev) IN
             ->getResult();
     }
 
+    public function countAllWorkoutsReactionsByUserAndType($user, int $type): int
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.user = :user')
+            ->setParameter('user', $user)
+            ->innerJoin('w.reactions', 'r')
+            ->select('COUNT(r)')
+            ->andWhere('r.type = :type')
+            ->setParameter('type', $type)
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
+    }
+
+    
+
 
 
     

@@ -33,5 +33,12 @@ interface FilesManagerInterface
      */
     public function getAbsolutePath(string $path): string;
 
+    /**
+     * moveTo Move file to destionation directory 
+     * @param  File   $file        File to move
+     * @param  string $destinationPath Destionation directory
+     * @return bool
+     */
+    public function moveTo(File $file, string $destinationPath, ?string $filename): bool;
 
 }

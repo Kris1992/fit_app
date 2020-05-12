@@ -24,9 +24,9 @@
                 {{ curiosity.createdAt | date('m/d/Y')}}
             </div>
             <div class="col-12">
-                <img class="img-fluid" src="{{ asset('img/facts/runner.jpg') }}" alt="Image name">
+                <img class="img-fluid" src="{{ uploaded_asset(curiosity.imagePath) }}" alt="Image name">
             </div>
-            <div class="col-12 my-3">{{ curiosity.content | raw}}</div>
+            <div class="col-12 my-3">{{ curiosity.content | raw }}</div>
         </div>
 
     </div>

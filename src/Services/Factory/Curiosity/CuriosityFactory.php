@@ -7,24 +7,27 @@ use App\Entity\User;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\AttachmentsHelper\AttachmentsHelperInterface;
 
 class CuriosityFactory implements CuriosityFactoryInterface {
 
     private $imagesManager;
+    private $attachmentsHelper;
 
     /**
      * CuriosityFactory Constructor
      * 
      * @param ImagesManagerInterface $curiositiesImagesManager
+     * @param AttachmentsHelperInterface $attachmentsHelper
      */
-    public function __construct(ImagesManagerInterface $curiositiesImagesManager)  
+    public function __construct(ImagesManagerInterface $curiositiesImagesManager, AttachmentsHelperInterface $attachmentsHelper)  
     {
         $this->imagesManager = $curiositiesImagesManager;
+        $this->attachmentsHelper = $attachmentsHelper;
     }
     
     public function create(CuriosityFormModel $curiosityModel, User $author, ?File $uploadedImage): Curiosity
-    {
-        
+    {   
         $curiosity = new Curiosity();
         $curiosity
             ->setAuthor($author)
@@ -33,6 +36,11 @@ class CuriosityFactory implements CuriosityFactoryInterface {
             ->setContent($curiosityModel->getContent())
             ->creationTimeStamp()
             ;
+
+        $filenames = $this->attachmentsHelper->getAttachments($curiosity->getContent());
+        if ($filenames) {
+            $curiosity = $this->attachmentsHelper->addNewAttachments($curiosity, $filenames);
+        }
 
         if ($curiosityModel->getIsPublished()) {
             $curiosity
@@ -47,5 +55,5 @@ class CuriosityFactory implements CuriosityFactoryInterface {
         }        
 
         return $curiosity;
-    }
+    }    
 }

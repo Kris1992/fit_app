@@ -2,7 +2,11 @@
 <div class="card-body">
     <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
         {{ form_start(curiosityForm, {
-            'attr': {'class': 'form-larger'}
+            'attr': {
+                'class': 'form-larger',
+                'id': 'js-curiosity-form',
+                'data-url': app.request.getSchemeAndHttpHost()
+            },
         }) }}
             {{ form_row(curiosityForm.title, {
                 'label' : 'Title: '

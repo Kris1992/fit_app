@@ -73,7 +73,6 @@ function addWorkoutCards(workouts) {
 }
 
 function addWorkoutCard(workout) {
-    console.log(workout);
     const $loadingWrapper = $('#loadingWrapper-js');
     const tplText = $('#js-workout-card-template').html();
     const tpl = _.template(tplText);
@@ -104,3 +103,4 @@ function getWorkouts() {
         });
     });
 }
+

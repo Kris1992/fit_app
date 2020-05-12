@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use App\Services\ImagesManager\ImagesConstants;
@@ -64,6 +66,16 @@ class Curiosity
      * @ORM\Column(type="string", length=255)
      */
     private $mainImageFilename;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Attachment", mappedBy="curiosity", orphanRemoval=true, cascade={"persist", "remove", "refresh"})
+     */
+    private $attachments;
+
+    public function __construct()
+    {
+        $this->attachments = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -210,6 +222,37 @@ class Curiosity
     public function getThumbImagePath()
     {
         return ImagesConstants::CURIOSITIES_IMAGES.'/'.$this->getAuthor()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getMainImageFilename();
+    }
+
+    /**
+     * @return Collection|Attachment[]
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachment $attachment): self
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments[] = $attachment;
+            $attachment->setCuriosity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(Attachment $attachment): self
+    {
+        if ($this->attachments->contains($attachment)) {
+            $this->attachments->removeElement($attachment);
+            // set the owning side to null (unless already changed)
+            if ($attachment->getCuriosity() === $this) {
+                $attachment->setCuriosity(null);
+            }
+        }
+
+        return $this;
     }
 
 }

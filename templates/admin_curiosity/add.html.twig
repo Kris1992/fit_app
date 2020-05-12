@@ -27,14 +27,52 @@
     <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
     <script src="https://cdn.tiny.cloud/1/{{tinymce_api_key}}/tinymce/5/tinymce.min.js" referrerpolicy="origin"/></script>
 
-        <script type="text/javascript">
-            tinymce.init({
-                selector: '#curiosity_form_content',
-                plugins: 'lists checklist table advtable autolink image link autolink anchor tinymcespellchecker linkchecker',
-                menubar: false,
-                toolbar: 'undo redo | bold italic underline strikethrough forecolor |  fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist checklist table | image link anchor',
-                toolbar_mode: 'sliding',
-                height : '500'
-            });
-        </script>
+    <script type="text/javascript">
+        let form = document.querySelector("#js-curiosity-form");
+
+        tinymce.init({
+            valid_children : '-p[img],h1[img],h2[img],h3[img],h4[img],+div[img],span[img]',
+            selector: '#curiosity_form_content',
+            plugins: 'lists checklist table advtable autolink image link autolink anchor tinymcespellchecker linkchecker imagetools',
+            menubar: false,
+            toolbar: 'undo redo | bold italic underline strikethrough forecolor |  fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist checklist table | image link anchor',
+            toolbar_mode: 'sliding',
+            height : '500',
+
+            //upload
+
+            content_style: 'img {max-width: 100%; height: auto;}',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            relative_urls : false,
+            remove_script_host : true,
+            document_base_url : form.getAttribute('data-url'),
+            images_upload_url: '/api/admin/attachment',
+            file_picker_callback: function (cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.onchange = function () {
+                    var file = this.files[0];
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    /* call the callback and populate the Title field with the file name */
+                    cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                input.click();
+            }
+    });
+    </script>
 {% endblock %}

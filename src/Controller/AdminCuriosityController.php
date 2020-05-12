@@ -46,7 +46,6 @@ class AdminCuriosityController extends AbstractController
      */
     public function add(Request $request, EntityManagerInterface $em, CuriosityFactoryInterface $curiosityFactory, string $tinymce_api_key)
     {
-
         $form = $this->createForm(CuriosityFormType::class);
         $form->handleRequest($request);
         
@@ -62,7 +61,6 @@ class AdminCuriosityController extends AbstractController
             
             return $this->redirectToRoute('admin_curiosity_list');
         }
-
 
         return $this->render('admin_curiosity/add.html.twig', [
             'curiosityForm' => $form->createView(),
@@ -85,7 +83,7 @@ class AdminCuriosityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {    
             $curiosity = $curiosityUpdater->update($curiosityModel, $curiosity, $form['imageFile']->getData());
 
-            $em->persist($curiosity);
+            //$em->persist($curiosity);
             $em->flush();
             $this->addFlash('success', 'Curiosity was updated!');
 
