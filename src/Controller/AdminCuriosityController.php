@@ -99,17 +99,6 @@ class AdminCuriosityController extends AbstractController
     }
 
     /**
-     * @Route("/admin/curiosity/{slug}/show", name="admin_curiosity_show", methods={"POST", "GET"})
-     */
-    public function show(Curiosity $curiosity, Request $request)
-    {            
-        
-        return $this->render('admin_curiosity/show.html.twig', [
-            'curiosity' => $curiosity
-        ]);
-    }
-
-    /**
      * @Route("/admin/curiosity/{id}/delete", name="admin_curiosity_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, Curiosity $curiosity)

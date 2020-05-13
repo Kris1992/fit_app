@@ -38,7 +38,6 @@ class WeatherService implements WeatherServiceInterface
         curl_close($curl);
 
         $data = json_decode($result, true);
-
         if($data !== null) {  
             $locationData = reset($data['locations']);
             $temperature = $locationData['values'][0]['temp'];

@@ -100,11 +100,13 @@
                             <div class="card-body">
                                 <div class="card-text row">
                                     <div class="workout-stat col-md-3">
+                                        <a href="{{ path('workout_report', {id: workout.id} ) }}" target="_blank">
                                         {% if workout.imageFilename is not null %} 
-                                            <img src="{{ uploaded_asset(workout.thumbImagePath) }}" alt="Workout image"> 
+                                            <img src="{{ uploaded_asset(workout.thumbImagePath) }}" alt="Workout image">
                                         {% else %}
                                             <img src="https://via.placeholder.com/150" alt="Workout image">
-                                        {% endif %}            
+                                        {% endif %}
+                                        </a>             
                                     </div>
                                     <div class="workout-stat col-md-9">
                                         <div class="col-12">
@@ -128,6 +130,30 @@
                                                     ---
                                                 {% endif %}
                                                 km
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-running text-primary"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Average Speed
+                                                {% if workout.averageSpeed %}
+                                                    {{ workout.averageSpeed | number_format(2)}}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                km/h
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-tachometer-alt text-primary"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Average Pace
+                                                {% if workout.averagePace %}
+                                                    {{ workout.averagePace | number_format(2) }}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                min/km
                                             </span>
                                         </div>
                                     </div>
@@ -190,11 +216,13 @@
         <div class="card-body">
             <div class="card-text row">
                 <div class="workout-stat col-md-3">
+                    <a href="<%= _links.report.href %>" target="_blank">
                     <% if (imageFilename) { %>
                         <img src="<%= _links.thumbImage.href %>" alt="Workout image">
                     <% } else { %>
                         <img src="https://via.placeholder.com/150" alt="Workout image">
                     <% } %>
+                    </a>
                 </div>
                 <div class="workout-stat col-md-9">
                     <div class="col-12">
@@ -214,6 +242,30 @@
                             ---
                         <% } %>
                         km</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-running text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Speed
+                            <% if (averageSpeed) { %>
+                                <%= averageSpeed.toFixed(2) %>
+                            <% } else { %>
+                                ---
+                            <% } %>
+                            km/h
+                        </span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-tachometer-alt text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Pace
+                            <% if (averagePace) { %>
+                                <%= averagePace.toFixed(2) %>
+                            <% } else { %>
+                                ---
+                            <% } %>
+                            min/km
+                        </span>
                     </div>
                 </div>
             </div>

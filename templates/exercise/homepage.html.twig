@@ -27,7 +27,7 @@
                                     <div class="col-md-4">
                                         <div class="card mb-2 carousel-card">
                                             <div class="overlayed oversized">
-                                                <a href="#">
+                                                <a href="{{ path('curiosity_show', { slug: curiosity.slug } )}}">
                                                     <img src="{{ uploaded_asset(curiosity.thumbImagePath) }}" alt="Facts about runners">
                                                 </a>
                                                 <a class="link" href="#">
@@ -37,7 +37,7 @@
                                             <div class="card-body">
                                                 <h4 class="card-title text-success">{{ curiosity.title }}</h4>
                                                 <p class="card-text">{{ curiosity.content | striptags | u.truncate(100, '...') | raw }}</p>
-                                                <a class="btn btn-primary">Read more...</a>
+                                                <a  href="{{ path('curiosity_show', { slug: curiosity.slug } )}}" class="btn btn-primary">Read more...</a>
                                             </div>
                                         </div>
                                     </div>

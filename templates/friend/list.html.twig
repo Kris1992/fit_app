@@ -1,0 +1,37 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Friends{% endblock %}
+
+{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2{% endblock %} 
+{% block content_body %}
+    <div class="col-sm-12"><h2 class="text-green">Friends</h2></div>
+
+    <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+        <a href="#" class="stretched-link">
+            <div class="row">
+                <div class="col-2">
+                    <img class="img-fluid" src="https://via.placeholder.com/50">
+                </div>
+                <div class="col-10 align-self-center">
+                    <h5 class="text-green">
+                        Henry Ford
+                    </h5>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+        <a href="#" class="stretched-link"><h4 class="text-green">Activities</h4></a>
+    </div>
+    <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+        <a href="#" class="stretched-link"><h4 class="text-green">Workouts</h4></a>
+    </div>
+    <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+        <a href="#" class="stretched-link"><h4 class="text-green">Curiosities</h4></a>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+{% endblock %}

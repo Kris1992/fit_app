@@ -28,15 +28,10 @@
                 
 						<ul class="navbar-nav ml-auto">
 							{% if is_granted('ROLE_USER') %}
-                            <!-- TO DO 
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="friends-submenu" aria-haspopup="true" href="#">Friends</a>
-                                <div class="dropdown-menu" aria-labelledby="friends-submenu">
-                                    <a class="dropdown-item" href="{{ path('workout_list') }}">List</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ path('workout_choose_add') }}">Add</a>
-                                </div>
-                            </li> -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ app.request.get('_route') == 'friend_list' ? 'active' }}" href="{{ path('friend_list') }}">Friends</a>
+                            </li>
+
                             <li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="workouts-submenu" aria-haspopup="true" href="#">Workout</a>
 								<div class="dropdown-menu" aria-labelledby="workouts-submenu">

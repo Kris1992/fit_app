@@ -83,7 +83,7 @@
                         <span class="fas fa-mountain text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Min Altitude
-                            {% if workout.routeData.altitudeMin %}
+                            {% if workout.routeData.altitudeMin is defined %}
                                 {{ workout.routeData.altitudeMin | number_format(2) }}
                             {% else %}
                                 ---
@@ -95,7 +95,7 @@
                         <span class="fas fa-mountain text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Max Altitude
-                            {% if workout.routeData.altitudeMax %}
+                            {% if workout.routeData.altitudeMax is defined %}
                                 {{ workout.routeData.altitudeMax | number_format(2) }}
                             {% else %}
                                 ---
@@ -107,7 +107,7 @@
                         <span class="fas fa-thermometer-half text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Average Temperature
-                            {% if workout.routeData.temperature %}
+                            {% if workout.routeData.temperature is defined %}
                                 {{ workout.routeData.temperature }}
                             {% else %}
                                 ---
@@ -119,7 +119,7 @@
                         <span class="fas fa-cloud-sun text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Weather Conditions
-                            {% if workout.routeData.weatherConditions %}
+                            {% if workout.routeData.weatherConditions is defined %}
                                 "{{ workout.routeData.weatherConditions }}"
                             {% else %}
                                 ---
@@ -131,7 +131,7 @@
                     {% if workout.imageFilename is not null %} 
                         <img class="img-fluid" src="{{ uploaded_asset(workout.imagePath) }}" alt="Workout image">
                     {% else %}
-                        <img class="img-fluid" src="https://via.placeholder.com/350" alt="Workout image">
+                        <img class="w-100 img-fluid" src="https://via.placeholder.com/350" alt="Workout image">
                     {% endif %}            
                 </div>
             </div>

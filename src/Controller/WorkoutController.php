@@ -28,8 +28,7 @@ use App\Message\Command\DeleteWorkoutImage;
 use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
-
-use Symfony\Component\Form\FormInterface;
+use App\Services\FormApiValidator\FormApiValidatorInterface;
 
 class WorkoutController extends AbstractController
 {
@@ -309,7 +308,7 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/add_average", name="api_workout_add_average", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function addAverageAction(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory)
+    public function addAverageAction(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
@@ -371,7 +370,7 @@ class WorkoutController extends AbstractController
                 JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
                 null
             );
-            $jsonError->setArrayExtraData($this->getErrorsFromForm($formAverage));
+            $jsonError->setArrayExtraData($formApiValidator->getErrors($formAverage));
         }
 
         return $jsonErrorFactory->createResponse($jsonError);
@@ -381,7 +380,7 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/add_specific", name="api_workout_add_specific", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function addSpecificAction(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory)
+    public function addSpecificAction(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
         $data = json_decode($request->getContent(), true);
@@ -440,7 +439,7 @@ class WorkoutController extends AbstractController
                 JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
                 null
             );
-            $jsonError->setArrayExtraData($this->getErrorsFromForm($formSpecific));
+            $jsonError->setArrayExtraData($formApiValidator->getErrors($formSpecific));
         }
 
         return $jsonErrorFactory->createResponse($jsonError);
@@ -467,7 +466,7 @@ class WorkoutController extends AbstractController
         return $this->json(
             $workout,
             201,
-            [],
+            ['content-type' => 'application/hal+json'],
             [
                 'groups' => ['main']
             ]
@@ -477,7 +476,7 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/api/workout/{id}/edit", name="api_workout_edit", methods={"PUT"})
      */
-    public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory)
+    public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
         $this->denyAccessUnlessGranted('MANAGE', $workout);
@@ -497,7 +496,7 @@ class WorkoutController extends AbstractController
                 JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
                 null
             );
-            $jsonError->setArrayExtraData($this->getErrorsFromForm($formSpecific));
+            $jsonError->setArrayExtraData($formApiValidator->getErrors($formSpecific));
 
             return $jsonErrorFactory->createResponse($jsonError);
         }
@@ -655,6 +654,10 @@ class WorkoutController extends AbstractController
                 'reaction', 
                 $this->generateUrl('api_workout_reaction', ['id' => $workout->getId()])
             );
+            $workout->setLinks(
+                'report', 
+                $this->generateUrl('workout_report', ['id' => $workout->getId()])
+            );
             $workout->setReactionsArray($user, [1,2]);
         }
 
@@ -681,23 +684,4 @@ class WorkoutController extends AbstractController
         ]);
     }
     
-    //bind it to service
-    protected function getErrorsFromForm(FormInterface $form)
-    {
-        foreach ($form->getErrors() as $error) {
-            return $error->getMessage();
-        }
-
-        $errors = array();
-        foreach ($form->all() as $childForm) {
-            if ($childForm instanceof FormInterface) {
-                if ($childError = $this->getErrorsFromForm($childForm)) {
-                    $errors[$childForm->getName()] = $childError;
-                }
-            }
-        }
-
-        return $errors;
-    }
-
 }

@@ -285,8 +285,8 @@ import { getStatusError } from './_apiHelper.js';
         		.addClass('fas fa-save');
         	const $row = $link.closest('tr');
         	$row.find(WorkoutApi._selectors.fastEditButton)
-        		.removeClass(WorkoutApi._selectors.fastEditButton)
-        		.addClass(WorkoutApi._selectors.submitEditButton);
+        		.removeClass('js-edit-workout')
+        		.addClass('js-submit-edit-workout');
         	const $tds = $row.find('td');
         	const data = {};
         	var i = 0;
@@ -476,13 +476,13 @@ import { getStatusError } from './_apiHelper.js';
                 <td class="align-middle">${data['startDate']}</td>
 				<td class="links-table">
                     <div class="link-wrapper">
-                        <a href="#" class="js-delete-workout delete-item" data-url="${data['links']['delete']}"
+                        <a href="#" class="js-delete-workout delete-item" data-url="${data['_links']['delete']['href']}"
                         data-id="${data['id']}" data-toggle="tooltip" data-placement="left" title="Delete">
                     	   <span class="fa fa-trash-alt"></span>
                         </a>
                     </div>
                 	<div class="link-wrapper">
-                        <a href="#" class="js-edit-workout" data-url="${data['links']['edit']}"
+                        <a href="#" class="js-edit-workout" data-url="${data['_links']['edit']['href']}"
                         data-toggle="tooltip" data-placement="left" title="Fast edit">
                     	   <span class="far fa-edit"></span>
                         </a>

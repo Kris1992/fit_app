@@ -30,13 +30,4 @@ class AdminUtilityController extends AbstractController
         );
     }
 
-    /**
-     * @Route("api/admin/utility/images", name="api_admin_utility_images", methods={"POST", "GET"})
-     */
-    public function uploadImagesAction(Request $request)
-    {            
-        $data = $this->getRequest()->request->all();
-        dump($data);
-
-    }
 }

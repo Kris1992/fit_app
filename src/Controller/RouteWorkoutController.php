@@ -15,10 +15,10 @@ use App\Services\Factory\Workout\WorkoutFactory;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\ModelExtender\WorkoutSpecificExtender;
-use Symfony\Component\Form\FormInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\FormApiValidator\FormApiValidatorInterface;
 
 class RouteWorkoutController extends AbstractController
 {
@@ -40,7 +40,7 @@ class RouteWorkoutController extends AbstractController
     /**
      * @Route("api/route/workout/add_drawed", name="api_route_workout_add_drawed")
      */
-    public function addDrawedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory)
+    public function addDrawedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
         $data = json_decode($request->getContent(), true);
         if($data === null) {
@@ -51,7 +51,7 @@ class RouteWorkoutController extends AbstractController
         $form->submit($data['formData']);
 
         if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
+            $errors = $formApiValidator->getErrors($form);
             $jsonError = new JsonErrorResponse(400, 
                 JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
                 null
@@ -134,20 +134,20 @@ class RouteWorkoutController extends AbstractController
     /**
      * @Route("api/route/workout/add_tracked", name="api_route_workout_add_tracked")
      */
-    public function addTrackedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory)
+    public function addTrackedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
         $data = json_decode($request->getContent(), true);
 
-        dump($data);
         if($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
         $form = $this->createForm(WorkoutWithMapFormType::class, null, [ 'is_drawing' => false ]);
+
         $form->submit($data['formData']);
 
         if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);// FormApiValidator
+            $errors = $formApiValidator->getErrors($form);
             $jsonError = new JsonErrorResponse(400, 
                 JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
                 $errors
@@ -210,26 +210,5 @@ class RouteWorkoutController extends AbstractController
         );
 
         return $jsonErrorFactory->createResponse($jsonError);
-    }
-
-
-    
-
-    protected function getErrorsFromForm(FormInterface $form)
-    {
-        foreach ($form->getErrors() as $error) {
-            return $error->getMessage();
-        }
-
-        $errors = array();
-        foreach ($form->all() as $childForm) {
-            if ($childForm instanceof FormInterface) {
-                if ($childError = $this->getErrorsFromForm($childForm)) {
-                    $errors[$childForm->getName()] = $childError;
-                }
-            }
-        }
-
-        return $errors;
     }
 }
