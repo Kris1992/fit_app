@@ -69,7 +69,7 @@ class AdminCuriosityController extends AbstractController
     }
 
     /**
-     * @Route("/admin/curiosity/edit/{slug}", name="admin_curiosity_edit", methods={"POST", "GET"})
+     * @Route("/admin/curiosity/{slug}/edit", name="admin_curiosity_edit", methods={"POST", "GET"})
      */
     public function edit(Curiosity $curiosity, Request $request, EntityManagerInterface $em, CuriosityModelFactoryInterface $curiosityModelFactory, CuriosityUpdaterInterface $curiosityUpdater, string $tinymce_api_key)
     {            
@@ -83,7 +83,6 @@ class AdminCuriosityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {    
             $curiosity = $curiosityUpdater->update($curiosityModel, $curiosity, $form['imageFile']->getData());
 
-            //$em->persist($curiosity);
             $em->flush();
             $this->addFlash('success', 'Curiosity was updated!');
 
@@ -111,7 +110,7 @@ class AdminCuriosityController extends AbstractController
     }
 
     /**
-     * @Route("/admin/curiosity/delete/{id}", name="admin_curiosity_delete",  methods={"DELETE"})
+     * @Route("/admin/curiosity/{id}/delete", name="admin_curiosity_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, Curiosity $curiosity)
     {

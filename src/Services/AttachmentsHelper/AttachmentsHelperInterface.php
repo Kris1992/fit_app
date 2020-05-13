@@ -21,15 +21,17 @@ interface AttachmentsHelperInterface
      * addNewAttachments Add new attachments to curiosity
      * @param Curiosity $curiosity Curiosity object
      * @param Array     $filenames Array with filenames of new attachments
+     * @return Curiosity
      */
     public function addNewAttachments(Curiosity $curiosity, Array $filenames): Curiosity;
 
     /**
      * removeUnusedAttachments Remove unused attachments from curiosity
      * @param Curiosity $curiosity Curiosity object
-     * @param Array     $filenames Array with filenames of all used attachments
+     * @param Array|null     $filenames Array with filenames of all used attachments or null
+     * @return Curiosity
      */
-    public function removeUnusedAttachments(Curiosity $curiosity, Array $filenames): Curiosity; 
+    public function removeUnusedAttachments(Curiosity $curiosity, ?Array $filenames): Curiosity; 
 
 }
 

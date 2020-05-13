@@ -99,3 +99,4 @@ Feature: Accounts Admin Panel
         And I press "Delete checked" 
         And I wait for the page to be loaded
         Then I should see "Users were deleted!"
+

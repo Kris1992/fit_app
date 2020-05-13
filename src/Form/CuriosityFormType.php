@@ -78,6 +78,9 @@ class CuriosityFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CuriosityFormModel::class,
+            'error_mapping' => [
+                'mainImageFilename' => 'imageFile'
+            ],
         ]);
     }
 }

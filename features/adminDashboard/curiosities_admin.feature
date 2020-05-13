@@ -6,20 +6,7 @@ Feature: Curiosities Admin Panel
     Background:
         Given I am logged in as an admin
 
-    Scenario: Add a unpublished curiosity 
-        And I am on "/admin/curiosity"
-        And I click "Create"
-        And I fill in "curiosity_form[title]" with "Simple title"
-        And I fill in "curiosity_form[description]" with "About me"
-        And I fill tinymce field with "Content of curiosity"
-        And I press "Add"
-        And I wait for the page to be loaded
-        Then I should see "Curiosity was created!"
-        And I should see 1 row in the table 
-        Then I press "Edit" in the row with name "Simple title"
-        And the "curiosity_form[isPublished]" checkbox should be unchecked
-
-    @file
+    @file 
     Scenario: Add a unpublished curiosity with image
         And I am on "/admin/curiosity"
         And I click "Create"
@@ -34,11 +21,13 @@ Feature: Curiosities Admin Panel
         Then I press "Edit" in the row with name "Simple title"
         And the "curiosity_form[isPublished]" checkbox should be unchecked
     
-    Scenario: Add a published curiosity
+    @file
+    Scenario: Add a published curiosity with image
         And I am on "/admin/curiosity"
         And I click "Create"
         And I fill in "curiosity_form[title]" with "Simple title"
         And I fill in "curiosity_form[description]" with "About me"
+        Then I attach the file "image/test.jpg" to "curiosity_form[imageFile]"
         And I fill tinymce field with "Content of curiosity"
         And I check "curiosity_form[isPublished]"
         And I press "Add"
@@ -80,4 +69,5 @@ Feature: Curiosities Admin Panel
     #    Then I should see "Users were deleted!"
 
         
-        
+    #features/adminDashboard/curiosities_admin.feature:23
+    #features/adminDashboard/curiosities_admin.feature:37

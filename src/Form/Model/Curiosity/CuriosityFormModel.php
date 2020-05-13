@@ -37,7 +37,7 @@ class CuriosityFormModel
     private $description;
 
     /**
-     *  //Assert\NotBlank(message="Curiosity must have image.")
+     * //Assert\NotBlank(message="Curiosity must have image.")
      */
     private $mainImageFilename;
 

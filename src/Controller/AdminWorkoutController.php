@@ -165,7 +165,7 @@ class AdminWorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/admin/workout/edit_average/{id}", name="admin_workout_edit", methods={"POST", "GET"})
+     * @Route("/admin/workout/{id}/edit_average", name="admin_workout_edit", methods={"POST", "GET"})
      */
     public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
@@ -231,7 +231,7 @@ class AdminWorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/admin/workout/edit_specific/{id}", name="admin_workout_specific_edit", 
+     * @Route("/admin/workout/{id}/edit_specific", name="admin_workout_specific_edit", 
      * methods={"POST", "GET"})
      */
     public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
@@ -307,7 +307,7 @@ class AdminWorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/admin/workout/delete/{id}", name="admin_workout_delete",  methods={"DELETE"})
+     * @Route("/admin/workout/{id}/delete", name="admin_workout_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
     {

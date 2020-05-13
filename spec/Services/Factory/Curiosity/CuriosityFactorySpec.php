@@ -9,12 +9,13 @@ use App\Entity\User;
 use App\Form\Model\Curiosity\CuriosityFormModel;
 use App\Services\Factory\Curiosity\CuriosityFactoryInterface;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\AttachmentsHelper\AttachmentsHelperInterface;
 
 class CuriosityFactorySpec extends ObjectBehavior
 {
-    function let(ImagesManagerInterface $curiositiesImagesManager)
+    function let(ImagesManagerInterface $curiositiesImagesManager, AttachmentsHelperInterface $attachmentsHelper)
     {
-        $this->beConstructedWith($curiositiesImagesManager);
+        $this->beConstructedWith($curiositiesImagesManager, $attachmentsHelper);
     }
 
     function it_is_initializable()

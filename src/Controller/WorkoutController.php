@@ -287,7 +287,7 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
+     * @Route("/workout/{id}/delete", name="workout_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
     {
@@ -475,7 +475,7 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/api/workout/edit/{id}", name="api_workout_edit", methods={"PUT"})
+     * @Route("/api/workout/{id}/edit", name="api_workout_edit", methods={"PUT"})
      */
     public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory)
     {
