@@ -1,0 +1,37 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}{{ curiosity.title }}{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/_show.css') }}">
+{% endblock %}
+
+{% block section_class %}showCuriosity{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-9 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <div class="row mx-2">
+            <div class="col-12 text-center text-uppercase my-2 text-green">
+                <h2>{{ curiosity.title }}</h2>
+            </div>
+            <div class="col-12 my-1 curiosity-header text-muted">
+                <img src="{{ asset('img/users/default.png') }}" class="thumbnail" height="18" width="18">
+                {{ curiosity.author.firstName }}
+                {{ curiosity.author.secondName }} 
+                <span>|</span>
+                {{ curiosity.createdAt | date('m/d/Y')}}
+            </div>
+            <div class="col-12">
+                <img class="img-fluid" src="{{ uploaded_asset(curiosity.imagePath) }}" alt="Image name">
+            </div>
+            <div class="col-12 my-3 curiosity-content">{{ curiosity.content | raw }}</div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

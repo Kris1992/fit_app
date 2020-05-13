@@ -9,6 +9,10 @@
 ###< symfony/framework-bundle ###
 /public/uploads/users_images/*
 /public/uploads/workouts_images/*
+/public/uploads/curiosities_images/*
+/public/uploads/attachments/*
+/public/test_uploads/*
+
 ###> friends-of-behat/symfony-extension ###
 /behat.yml
 ###< friends-of-behat/symfony-extension ###

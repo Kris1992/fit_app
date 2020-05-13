@@ -147,7 +147,7 @@ class AdminActivityController extends AbstractController
     }
 
      /**
-     * @Route("/admin/activity/edit/{id}", name="admin_activity_edit", methods={"POST", "GET"})
+     * @Route("/admin/activity/{id}/edit", name="admin_activity_edit", methods={"POST", "GET"})
      */
     public function edit(AbstractActivity $activity, Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
     {            
@@ -187,7 +187,7 @@ class AdminActivityController extends AbstractController
     }
 
     /**
-     * @Route("/admin/activity/delete/{id}", name="admin_activity_delete",  methods={"DELETE"})
+     * @Route("/admin/activity/{id}/delete", name="admin_activity_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, AbstractActivity $activity)
     {
@@ -204,7 +204,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/delete_selected", name="admin_activity_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, AbstractActivityRepository $activityRepository)
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {

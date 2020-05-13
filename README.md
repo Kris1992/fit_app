@@ -79,13 +79,17 @@ TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
-:hourglass_flowing_sand: Add curiosity system with cache
-:hourglass_flowing_sand: Add tests to curiosity system
-:hourglass_flowing_sand: Add tests to failure messages in admin panel
+:hourglass_flowing_sand: Add friends system
+:hourglass_flowing_sand: Find friends by elasticsearch
+:hourglass_flowing_sand: Add few more improvements
 :hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
 
 ## Last weeks updates
 
+:heavy_check_mark: Add reactions system (likes, loves)
+:heavy_check_mark: Add curiosity system
+:heavy_check_mark: Add tests to curiosity system
+:heavy_check_mark: Add tests to failure messages in admin panel
 :heavy_check_mark: Rebuild workouts history
 :heavy_check_mark: Refactor api error response (json+problem)
 :heavy_check_mark: ADD possibility to add weight activities

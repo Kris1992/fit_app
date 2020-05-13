@@ -48,7 +48,7 @@ class AdminAccountController extends AbstractController
     }
 
     /**
-     * @Route("/admin/account/edit/{id}", name="admin_account_edit", methods={"POST", "GET"})
+     * @Route("/admin/account/{id}/edit", name="admin_account_edit", methods={"POST", "GET"})
      */
     public function edit(User $user, Request $request, EntityManagerInterface $em, UserModelFactoryInterface $userModelFactoryInterface, UserUpdaterInterface $userUpdaterInterface)
     {
@@ -79,7 +79,7 @@ class AdminAccountController extends AbstractController
     }
 
     /**
-     * @Route("/admin/account/delete/{id}", name="admin_account_delete",  methods={"DELETE"})
+     * @Route("/admin/account/{id}/delete", name="admin_account_delete",  methods={"DELETE"})
      */
     public function delete(Request $request, User $user, MessageBusInterface $messageBus)
     {
@@ -99,7 +99,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/delete_selected", name="admin_account_delete_selected",  methods={"POST", "DELETE"})
      */
-    public function deleteSelected(Request $request,  EntityManagerInterface $entityManager, UserRepository $userRepository, MessageBusInterface $messageBus)
+    public function deleteSelected(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, MessageBusInterface $messageBus)
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {

@@ -41,10 +41,11 @@ class ImagesResizer implements ImagesResizerInterface
      * @param  string $source  Absolute path to source file
      * @param  string $extension Extension of file
      * @param  int $newWidth  New width of image
+     * @param  int $newHeight Height of new image (if given ratio of image will be changed) [optional]
      * @return void           
      * @throws Exception
      */
-    public function compressImage(string $source, string $extension, int $newWidth): void
+    public function compressImage(string $source, string $extension, int $newWidth, ?int $newHeight): void
     {
         
         if(!$this->islibraryLoaded()) {
@@ -67,7 +68,7 @@ class ImagesResizer implements ImagesResizerInterface
             //used only GD library
             if ($extension === 'jpeg') {
                 $image = imagecreatefromjpeg($source);
-                $newImage = $this->resizeImage($source, $image, $newWidth);
+                $newImage = $this->resizeImage($source, $image, $newWidth, $newHeight);
                 imagejpeg($newImage, $destination, self::JPEG_QUALITY);
                 $this->flushMemory($image, $newImage);
             } elseif ($extension === 'gif') {
@@ -106,7 +107,7 @@ class ImagesResizer implements ImagesResizerInterface
                 $this->foldersManager->clearFolder($tempPath);
             } elseif($extension === 'png') {
                 $image = imagecreatefrompng($source);
-                $newImage = $this->resizeImage($source, $image, $newWidth);
+                $newImage = $this->resizeImage($source, $image, $newWidth, $newHeight);
                 imagepng($newImage, $destination, self::PNG_QUALITY);
                 $this->flushMemory($image, $newImage);
             }
@@ -181,14 +182,17 @@ class ImagesResizer implements ImagesResizerInterface
     * @param  string $source   Source filename
     * @param  resource $image    Image resource
     * @param  int $newWidth Width of new image
+    * @param  int $newHeight Height of new image (if given ratio of image will be changed) [optional]
     * @return resource
     */
-   private function resizeImage(string $source, $image, int $newWidth)
+   private function resizeImage(string $source, $image, int $newWidth, ?int $newHeight)
    {
     
         list($originalWidth, $originalHeight) = getimagesize($source);
-
-        list($newWidth, $newHeight) = $this->getNewSize($originalWidth, $originalHeight, $newWidth);   
+        
+        if (!$newHeight) {
+            list($newWidth, $newHeight) = $this->getNewSize($originalWidth, $originalHeight, $newWidth);
+        }
 
         //resize_image() 
         $newImage = imagecreatetruecolor($newWidth, $newHeight);

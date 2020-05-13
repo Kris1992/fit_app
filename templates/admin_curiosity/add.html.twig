@@ -1,30 +1,78 @@
-{% extends 'base.html.twig' %}
+{% extends 'content_base.html.twig' %}
 
 {% block title %}Add Curiosity{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
-    <script src="{{ asset('js/algolia-autocomplete.js') }}"></script>
-{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/algolia-autocomplete.css') }}">
 {% endblock %}
-{% block content %}
 
-<section class="addCuriosity">
-	<div class="container">
-		<div class="row">
-	      	<div class="col-sm-9 mx-auto">
-		        <div class="card card-signin my-5 shadow-box">
-                    {{ include('forms/curiosity_form.html.twig', {
-                        header_text: 'Add Curiosity',
-                        button_text: 'Add'
-                    }) }}
-		        </div>
-	      	</div>
-	    </div>
-    </div>
-</section>
+{% block section_class %}addCuriosity{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+    <div class="col-sm-7 mx-auto">
+		<div class="card card-signin my-5 shadow-box">
+            {{ include('forms/curiosity_form.html.twig', {
+                header_text: 'Add Curiosity',
+                button_text: 'Add'
+            }) }}
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
+    <script src="https://cdn.tiny.cloud/1/{{tinymce_api_key}}/tinymce/5/tinymce.min.js" referrerpolicy="origin"/></script>
+
+    <script type="text/javascript">
+        let form = document.querySelector("#js-curiosity-form");
+
+        tinymce.init({
+            valid_children : '-p[img],h1[img],h2[img],h3[img],h4[img],+div[img],span[img]',
+            selector: '#curiosity_form_content',
+            plugins: 'lists checklist table advtable autolink image link autolink anchor tinymcespellchecker linkchecker imagetools',
+            menubar: false,
+            toolbar: 'undo redo | bold italic underline strikethrough forecolor |  fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist checklist table | image link anchor',
+            toolbar_mode: 'sliding',
+            height : '500',
+
+            //upload
+
+            content_style: 'img {max-width: 100%; height: auto;}',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            relative_urls : false,
+            remove_script_host : true,
+            document_base_url : form.getAttribute('data-url'),
+            images_upload_url: '/api/admin/attachment',
+            file_picker_callback: function (cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.onchange = function () {
+                    var file = this.files[0];
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    /* call the callback and populate the Title field with the file name */
+                    cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                input.click();
+            }
+    });
+    </script>
 {% endblock %}

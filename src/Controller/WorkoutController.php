@@ -287,7 +287,7 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/workout/delete/{id}", name="workout_delete",  methods={"DELETE"})
+     * @Route("/workout/{id}/delete", name="workout_delete",  methods={"DELETE"})
      */
     public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
     {
@@ -475,7 +475,7 @@ class WorkoutController extends AbstractController
     }
 
     /**
-     * @Route("/api/workout/edit/{id}", name="api_workout_edit", methods={"PUT"})
+     * @Route("/api/workout/{id}/edit", name="api_workout_edit", methods={"PUT"})
      */
     public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory)
     {
@@ -637,25 +637,31 @@ class WorkoutController extends AbstractController
 
             return $jsonErrorFactory->createResponse($jsonError);
         }
+
         foreach ($workouts as $workout) {
             $workout->transformSaveTimeToString();
             $startAt = $workout->getStartAt();
             $startAt = date_format($startAt, 'Y-m-d H:i');
             $workout->setStartDate($startAt);
             $workout->setLinks(
-                'thumbImagePath', 
+                'thumbImage', 
                 $workoutsImagesManager->getPublicPath($workout->getThumbImagePath())
             );
             $workout->setLinks(
-                'imagePath', 
+                'image', 
                 $workoutsImagesManager->getPublicPath($workout->getImagePath())
             );
+            $workout->setLinks(
+                'reaction', 
+                $this->generateUrl('api_workout_reaction', ['id' => $workout->getId()])
+            );
+            $workout->setReactionsArray($user, [1,2]);
         }
 
         return $this->json(
             $workouts,
             200,
-            [],
+            ['content-type' => 'application/hal+json'],
             [
                 'groups' => ['main']
             ]

@@ -36,6 +36,8 @@ framework:
 
             'App\Message\Command\DeleteWorkoutImage': async
 
+            'App\Message\Command\CheckIsAttachmentUsed': async
+            'App\Message\Event\AttachmentDeletedEvent': async
 
 
 

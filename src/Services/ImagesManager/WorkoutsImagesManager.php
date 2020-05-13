@@ -11,10 +11,8 @@ use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use App\Services\ImagesResizer\ImagesResizerInterface;
 
-class WorkoutsImagesManager implements ImagesManagerInterface
+class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInterface
 {
-    const WORKOUTS_IMAGES = 'workouts_images';
-    const THUMB_IMAGES = 'thumb';
 
     private $publicFilesystem;
     private $logger;
@@ -101,7 +99,7 @@ class WorkoutsImagesManager implements ImagesManagerInterface
         //$filename = $filenameExtFree.'.'.$extension;
 
         try {
-            $this->imagesResizer->compressImage($absolutePath, $extension, $newWidth);
+            $this->imagesResizer->compressImage($absolutePath, $extension, $newWidth, null);
         } catch (\Exception $e) {
             throw new \Exception("Cannot resize this image.");   
         }
@@ -149,7 +147,7 @@ class WorkoutsImagesManager implements ImagesManagerInterface
         }
 
         $path = $this->uploadsDirectory.'/'.$directory.'/'.$newFilename;
-        $this->imagesResizer->compressImage($path, $extension, $newWidth);
+        $this->imagesResizer->compressImage($path, $extension, $newWidth, null);
 
         return $newFilename;
     }

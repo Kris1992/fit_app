@@ -142,7 +142,6 @@ h1 {
     color: #5cb85c !important;
 }
 
-
 /* List */
 .links-table a:hover {
     text-decoration: none;
@@ -159,10 +158,18 @@ h1 {
 {
     height: 100%;
 }
-
-
-
-
+.carousel-controls-panel {
+    height: 50px;
+    background-color: black;
+    opacity: 0.5;
+    position: relative;
+}
+.carousel-card {
+    height: 515px;
+}
+.js-reactions a:hover{
+    text-decoration: none;
+}
 
 
 

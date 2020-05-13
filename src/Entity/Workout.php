@@ -8,8 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
-
-use App\Services\ImagesManager\WorkoutsImagesManager;
+use App\Services\ImagesManager\ImagesConstants;
+use Doctrine\Common\Collections\Criteria;
+use App\Repository\ReactionRepository;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WorkoutRepository")
@@ -91,9 +92,16 @@ class Workout
      */
     private $routeData;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Reaction", mappedBy="workout", orphanRemoval=true, cascade={"persist", "refresh"})
+     */
+    private $reactions;
+
+
     public function __construct()
     {
         $this->movementSets = new ArrayCollection();
+        $this->reactions = new ArrayCollection();
     }
 
 
@@ -106,12 +114,15 @@ class Workout
     /**
     * @Groups("main")
     */
-    private $links = [];
+    private $_links = [];
     /**
     * @Groups("main")
     */
     private $startDate;
-
+    /**
+    * @Groups("main")
+    */
+    private $reactionsArray = [];
 
 
  
@@ -166,14 +177,14 @@ class Workout
 
     public function setLinks(string $type, string $url): self
     {
-        $this->links[$type] = $url;
+        $this->_links[$type]['href'] = $url;
 
         return $this;
     }
 
     public function getLinks(): ?array
     {
-        return $this->links;
+        return $this->_links;
     }
 
     public function setStartDate(string $startDate): self
@@ -381,6 +392,80 @@ class Workout
         return $this;
     }
 
+    /**
+     * @return Collection|Reaction[]
+     */
+    public function getReactions(): Collection
+    {
+        return $this->reactions;
+    }
+
+    /**
+     * @return Collection|Reaction[]
+     */
+    public function getReactionsByType(int $type): Collection
+    {
+        $criteria = ReactionRepository::createReactionsByTypeCriteria($type);
+
+        return $this->reactions->matching($criteria);
+    }
+
+
+    public function isReactedByUserAndType(User $user, int $type): bool
+    {
+        $criteria = ReactionRepository::createReactionsByUserAndTypeCriteria($user, $type);
+        
+        return !($this->reactions->matching($criteria)->isEmpty());
+    }
+
+    /**
+     * setReactionsArray Set Array with all needed data about reactions
+     * @param User $user User whose is owner of needed reactions
+     * @param Array  $types All needed types given by array
+     */
+    public function setReactionsArray(User $user, Array $types): self
+    {
+
+        foreach ($types as $type) {
+            $reactionsTemp['type'][$type] = [
+                'count' => $this->getReactionsByType($type)->count(),
+                'reacted' => $this->isReactedByUserAndType($user, $type)
+            ];
+        }
+
+        $this->reactionsArray = $reactionsTemp;
+
+        return $this;
+    }
+
+    public function getReactionsArray(): Array
+    {
+        return $this->reactionsArray;
+    }
+
+    public function addReaction(Reaction $reaction): self
+    {
+        if (!$this->reactions->contains($reaction)) {
+            $this->reactions[] = $reaction;
+            $reaction->setWorkout($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReaction(Reaction $reaction): self
+    {
+        if ($this->reactions->contains($reaction)) {
+            $this->reactions->removeElement($reaction);
+            // set the owning side to null (unless already changed)
+            if ($reaction->getWorkout() === $this) {
+                $reaction->setWorkout(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function getImageFilename(): ?string
     {
         return $this->imageFilename;
@@ -395,12 +480,12 @@ class Workout
 
     public function getImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

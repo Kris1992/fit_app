@@ -67,6 +67,7 @@ class FilesManager implements FilesManagerInterface {
     public function delete(string $existingFilename, string $foldersPath): void
     {
         $filePath = $foldersPath.'/'.$existingFilename;
+
         try {
             $result = $this->publicFilesystem->delete($filePath);
             if ($result === false) {
@@ -82,6 +83,28 @@ class FilesManager implements FilesManagerInterface {
     public function getAbsolutePath(string $path): string
     {   
         return $this->uploadsDirectory.'/'.$path;
+    }
+
+    public function moveTo(File $file, string $destinationPath, ?string $filename): bool
+    {
+        if (!$filename) {
+            if ($file instanceof UploadedFile) {
+                $filename = $file->getClientOriginalName();
+            } else {
+                $filename = $file->getFilename();
+            }
+        } 
+
+        try {
+            $file->move(
+                $destinationPath,
+                $filename
+            );
+        } catch (FileException $e) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

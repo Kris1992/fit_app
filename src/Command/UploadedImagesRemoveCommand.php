@@ -27,18 +27,20 @@ class UploadedImagesRemoveCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Remove all uploaded images')
+            ->setDescription('Remove all uploaded images (uploaded path depends of env)')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $userImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::USERS_IMAGES;
+        $usersImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::USERS_IMAGES;
         $workoutsImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::WORKOUTS_IMAGES;
+        $curiositiesImagesPath = $this->uploadsDirectory.'/'.ImagesConstants::CURIOSITIES_IMAGES;
 
-        $this->foldersManager->deleteFolder($userImagesPath);
+        $this->foldersManager->deleteFolder($usersImagesPath);
         $this->foldersManager->deleteFolder($workoutsImagesPath);
+        $this->foldersManager->deleteFolder($curiositiesImagesPath);
 
         $io->success('All uploaded images was removed successfully.');
 

@@ -3,7 +3,7 @@ namespace App\Form\Model\Workout;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as AcmeAssert;
-use App\Services\ImagesManager\WorkoutsImagesManager;
+use App\Services\ImagesManager\ImagesConstants;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Form\Model\Workout\WorkoutSet\MovementActivitySetFormModel;
@@ -246,12 +246,12 @@ abstract class AbstractWorkoutFormModel
 
     public function getImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.$this->getImageFilename();
     }
 
     public function getThumbImagePath(): ?string
     {
-        return WorkoutsImagesManager::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.WorkoutsImagesManager::THUMB_IMAGES.'/'.$this->getImageFilename();
+        return ImagesConstants::WORKOUTS_IMAGES.'/'.$this->getUser()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

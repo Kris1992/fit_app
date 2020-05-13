@@ -1,28 +1,74 @@
 {% block curiosity_form %}
-                
-                    <div class="card-body">
-                        <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
-                            
-                            {{ form_start(curiosityForm, {
-                                'attr': {'class': 'form-larger',
-                                'data-url': path('workout_add')
-                                }
+<div class="card-body">
+    <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+        {{ form_start(curiosityForm, {
+            'attr': {
+                'class': 'form-larger',
+                'id': 'js-curiosity-form',
+                'data-url': app.request.getSchemeAndHttpHost()
+            },
+        }) }}
+            {{ form_row(curiosityForm.title, {
+                'label' : 'Title: '
+            }) }}
 
-                            }) }}
+            {{ form_row(curiosityForm.description, {
+                'label' : 'Description: '
+            }) }}
+            
+            {{ form_row(curiosityForm.imageFile, {
+                'label' : 'Main image of curiosity: ',
+                attr: {
+                    'placeholder': 'Select a curiosity image',
+                },
+            }) }}
 
-                                {{ form_row(curiosityForm.title, {
-                                    'label' : 'Title: '
-                                }) }}
 
-                                {{ form_row(curiosityForm.content, {
-                                    'label' : 'Content: '
-                                }) }}
-
-                                <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
-                            
-                            {{ form_end(curiosityForm) }}
+            {% if curiosityForm.vars.data.mainImageFilename is defined and curiosityForm.vars.data.mainImageFilename is not null %}
+                <div id="uploaded_image">
+                    <p>Already uploaded:</p>
+                    <div class="imageForm-container position-relative">
+                        <img class="imageForm rounded" src="{{ uploaded_asset(curiosityForm.vars.data.thumbImagePath) }}" alt="Main curiosity image">
+                        <div class="image-toolbar">
+                            <a href="{{ uploaded_asset(curiosityForm.vars.data.imagePath) }}" target="_blank">
+                                <span class="fa fa-search-plus position-absolute link-show"></span>
+                            </a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a 
+                                    href="{{ path('api_admin_delete_user_image', 
+                                    { id: curiosityForm.vars.data.id }) }}"
+                                    id="delete-image"
+                                >
+                                    <span class="fa fa-trash position-absolute link-delete"></span>
+                                </a> 
+                            {% else %}
+                                <a href="{{ path('api_delete_user_image') }}" id="delete-image">
+                                    <span class="fa fa-trash position-absolute link-delete"></span>
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
+                </div>
+                
+            {% endif %}
 
+            {% if curiosityForm.author is defined %}
+                {{ form_row(curiosityForm.author, {
+                    'label' : 'Author: ',
+                }) }}
+            {% endif %}
+
+            {{ form_row(curiosityForm.content, {
+                'label' : 'Content: ',
+            }) }}
+
+            {{ form_row(curiosityForm.isPublished, {
+                'label' : 'Do You want publish it?'
+            }) }}
+
+            <button class="btn btn-lg btn-green float-right text-uppercase" type="submit">{{ button_text }}</button>
+        {{ form_end(curiosityForm) }}
+</div>
 {% endblock %}
 
 

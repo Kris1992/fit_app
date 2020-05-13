@@ -33,6 +33,7 @@ use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 
 class AccountController extends AbstractController
 {
+
     /**
      * @Route("/profile", name="app_profile")
      * @IsGranted("ROLE_USER")
@@ -46,11 +47,13 @@ class AccountController extends AbstractController
 
         $workouts = $workoutRepository->getLastWorkoutsByUser($user, 3);
         $totalData = $workoutRepository->getWorkoutsTimeAndNumWorkoutsByUser($user);
+        $likes = $workoutRepository->countAllWorkoutsReactionsByUserAndType($user, 1);
 
         return $this->render('account/profile.html.twig', [
             'workouts' => $workouts,
             'totalData' => $totalData,
-            'personalBest' => $personalBest
+            'personalBest' => $personalBest,
+            'totalLikes' => $likes
         ]);
     }
 
