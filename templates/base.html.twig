@@ -31,6 +31,13 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ app.request.get('_route') == 'friend_list' ? 'active' }}" href="{{ path('friend_list') }}">Friends</a>
                             </li>
+                            <!-- Next week patch -->
+                            <li class="nav-item align-self-center">
+                                <a href="#">                                    
+                                    <!--<span class="fas fa-bell"></span> -->
+                                    <span class="text-dark far fa-bell"></span>
+                                </a>
+                            </li>
 
                             <li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="workouts-submenu" aria-haspopup="true" href="#">Workout</a>

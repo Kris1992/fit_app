@@ -11,3 +11,12 @@ java -jar selenium-server-standalone-3.0.0.jar
 
 
         
+Start/Stop elasticsearch:
+
+sudo systemctl start elasticsearch.service
+sudo systemctl stop elasticsearch.service
+
+Test czy uruchomione
+http://localhost:9200/
+
+php bin/console fos:elastica:populate

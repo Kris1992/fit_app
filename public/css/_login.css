@@ -107,5 +107,29 @@ legend {
 .image-toolbar a.disabled {
     color: #dddddd;
 }
+.search-friends input[type=search] {
+    color: #666;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    outline: none; 
+}
+.search-friends .form-control {
+    margin: 0;
+}
+.search-friends input[type=search]:focus {
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
+    -moz-box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
+    box-shadow: 0px 0px 10px 2px rgba(204,204,204,0.9);
+    border: 2px solid #a5cda5;
+    background-color: #e9f3e9;
+    color: #428c42;
+}
+
+
+
+
+
+
 
 

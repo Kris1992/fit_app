@@ -1,0 +1,84 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Look for friends{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_login.css') }}">
+{% endblock %}
+{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2{% endblock %} 
+{% block content_body %}
+    <div class="col-sm-12">
+        <h2 class="text-green d-inline-block">Look for friends</h2>
+        <a href="{{ path('friend_requests') }}" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Pending invites">
+            <span class="fas fa-envelope"></span>
+        </a>
+        <a href="{{ path('friend_list') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Friends list">
+            <span class="fas fa-user-friends"></span>
+        </a>
+    </div>
+    <div class="col-sm-12 search-friends my-3">
+        {{ knp_pagination_filter(pagination, {}) }}
+    </div>
+    {% if pagination is not empty%}
+        {% for user in pagination %}
+            {% if user is not same as(app.user) %} <!-- You cannot invite yourself -->
+                <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+                    <div class="row">
+                        <div class="col-2">
+                            <a href="">
+                                {% if user.imageFilename %}
+                                    <img class="img-fluid thumbnail" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                {% else %}
+                                    <img class="img-fluid thumbnail" src="{{ asset('img/users/default.png') }}">
+                                {% endif %}   
+                            </a>
+                        </div>
+                        <div class="col-6 align-self-center">
+                            <a href="#">
+                                <h5 class="text-green">
+                                    {{ user.fullName }}
+                                </h5>
+                            </a>
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <h5>
+                                <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus"></span></a>
+                            </h5>
+                        </div>
+                    </div> 
+                </div>
+            {% endif %}
+        {% endfor %}
+    
+        <div class="col-12 mt-3">
+            <div class="navigation">
+                {{ knp_pagination_render(pagination, null, {}, {
+                    'align': 'center'
+                }) }}
+                {{ include('per_page.html.twig', {
+                    span_color: 'text-primary',
+                    per_page: [6,12,18]
+                }) }}
+            </div>
+        </div>
+    {% else %}
+        <div class="col-11 p-3 mx-auto my-2 link-card">
+            <span class="text-center">
+                <h5 class="text-green">Actually we don't have any users meeting the requirements.</h5>
+            </span>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_friend.js') }}"></script>
+<script type="text/javascript">
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+{% endblock %}

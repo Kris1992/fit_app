@@ -32,7 +32,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups("main")
+     * @Groups({"main", "elastica"})
      */
     private $email;
 
@@ -48,6 +48,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"elastica"})
      */
     private $firstName;
 
@@ -58,6 +59,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"elastica"})
      */
     private $secondName;
 
@@ -244,6 +246,11 @@ class User implements UserInterface
         $this->secondName = $secondName;
 
         return $this;
+    }
+
+    public function getFullName(): string
+    {
+        return $fullName = sprintf('%s %s', $this->getFirstName(), $this->getSecondName());
     }
 
     public function getAgreedTermsAt(): ?\DateTimeInterface
