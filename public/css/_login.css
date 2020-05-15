@@ -125,7 +125,9 @@ legend {
     background-color: #e9f3e9;
     color: #428c42;
 }
-
+a span.text-danger:hover {
+    color: #cb2424 !important;
+}
 
 
 

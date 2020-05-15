@@ -17,21 +17,26 @@ class Friend
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="invitedFriends")
      * @ORM\JoinColumn(nullable=false)
      */
     private $inviter;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="invitedByFriends")
      * @ORM\JoinColumn(nullable=false)
      */
     private $invitee;
 
     /**
-     * @ORM\Column(type="string", length=10, columnDefinition="enum('Accepted', 'Pending')")
+     * @ORM\Column(type="string", length=10, columnDefinition="enum('Accepted', 'Rejected', 'Pending')")
      */
     private $status;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getInviter(): ?User
     {

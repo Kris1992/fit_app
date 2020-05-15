@@ -5,7 +5,7 @@
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_login.css') }}">
 {% endblock %}
-{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2{% endblock %} 
+{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2 js-friend-wrapper{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
         <h2 class="text-green d-inline-block">Pending requests</h2>
@@ -17,25 +17,38 @@
         </a>
     </div>
     {% if friendRequests is not empty%}
-        {% for user in friendRequests %}
-            <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
-                <a href="#" class="stretched-link">
+        {% for friendRequest in friendRequests %}
+            {% set user = friendRequest.inviter %}
+                <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card js-card">
                     <div class="row">
                         <div class="col-2">
-                            {% if user.imageFilename %}
-                                <img class="img-fluid thumbnail" src="{{ uploaded_asset(user.thumbImagePath) }}">
-                            {% else %}
-                                <img class="img-fluid thumbnail" src="{{ asset('img/users/default.png') }}">
-                            {% endif %}   
+                            <a href="">
+                                {% if user.imageFilename %}
+                                    <img class="img-fluid thumbnail" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                {% else %}
+                                    <img class="img-fluid thumbnail" src="{{ asset('img/users/default.png') }}">
+                                {% endif %}   
+                            </a>
                         </div>
-                        <div class="col-10 align-self-center">
-                            <h5 class="text-green">
-                                {{ user.fullName }}
+                        <div class="col-6 align-self-center">
+                            <a href="#">
+                                <h5 class="text-green">
+                                    {{ user.fullName }}
+                                </h5>
+                            </a>
+                        </div>
+                        <div class="col-2 align-self-center">
+                            <h5>
+                                <a class="js-friend-response" href="{{ path('api_friend_response', { id: friendRequest.id }) }}" data-action="accept"><span class="fas fa-user-check"></span></a>
                             </h5>
                         </div>
-                    </div>
-                </a>
-            </div>
+                        <div class="col-2 align-self-center">
+                            <h5>
+                                <a class="js-friend-response" href="{{ path('api_friend_response', { id: friendRequest.id }) }}" data-action="reject"><span class="text-danger fas fa-user-times"></span></a>
+                            </h5>
+                        </div>
+                    </div> 
+                </div>
         {% endfor %}
     
     {% else %}
@@ -50,9 +63,13 @@
 
 {% block javascripts %}
 {{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_friendApi.js') }}"></script>
 <script type="text/javascript">
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+    $(document).ready(function() {
+        var $wrapper = $('.js-friend-wrapper');
+        var friendApi = new FriendApi($wrapper);
+    });
 </script>
 {% endblock %}

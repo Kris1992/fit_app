@@ -5,7 +5,7 @@
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_login.css') }}">
 {% endblock %}
-{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2{% endblock %} 
+{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2 js-friend-wrapper{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
         <h2 class="text-green d-inline-block">Look for friends</h2>
@@ -41,9 +41,26 @@
                             </a>
                         </div>
                         <div class="col-4 align-self-center">
-                            <h5>
-                                <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus"></span></a>
-                            </h5>
+                            {% set currentInviteHim = user.invitedByFriend(app.user)|first %}
+                            {% set heWasInvitedByCurrent = user.invitedFriend(app.user)|first %}
+
+                            {% if not currentInviteHim and not heWasInvitedByCurrent %}
+                                <h5>
+                                    <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus"></span></a>
+                                </h5>
+                            {% elseif currentInviteHim.status is defined and currentInviteHim.status is same as('Pending') %}
+                                <h5>
+                                    <span class="fas fa-user-clock"></span>
+                                </h5>
+                            {% elseif heWasInvitedByCurrent.status is defined and heWasInvitedByCurrent.status is same as('Pending') %}
+                                <h5>
+                                    <a href="{{ path('friend_requests') }}"><span class="fas fa-envelope"></span></a>
+                                </h5>
+                            {% else %}
+                                <h5>
+                                    <span class="text-green fas fa-user-friends"></span>
+                                </h5>
+                            {% endif %}
                         </div>
                     </div> 
                 </div>
@@ -74,11 +91,12 @@
 {{ parent() }}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
-<script type="module" src="{{ asset('js/_friend.js') }}"></script>
+<script type="module" src="{{ asset('js/_friendApi.js') }}"></script>
 <script type="text/javascript">
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+    $(document).ready(function() {
+        var $wrapper = $('.js-friend-wrapper');
+        var friendApi = new FriendApi($wrapper);
+    });
 </script>
 
 {% endblock %}

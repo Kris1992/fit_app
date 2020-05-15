@@ -55,6 +55,32 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
+     * findAllQueryElastica Find all users with following data (with join friends) or empty table 
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function findAllQueryElastica(string $searchTerms)
+    {   
+        if ($searchTerms) {
+            return $this->createQueryBuilder('u')
+                ->where('MATCH_AGAINST(u.firstName, u.secondName) AGAINST(:searchTerms boolean)>0')
+                ->orWhere('u.email LIKE :emailTerms')
+                ->setParameters([
+                    'searchTerms' => $searchTerms.'*',
+                    'emailTerms' => '%'.$searchTerms.'%'
+                ])
+                ->leftJoin('u.invitedFriends', 'if')
+                ->addSelect('if')
+                ->leftJoin('u.invitedByFriends', 'ibf')
+                ->addSelect('ibf')
+                ->getQuery()
+
+                ;
+        }
+        return [];
+    }    
+
+    /**
      * @return User[]
      */
     public function findAllMatching(string $query, int $limit = 5)

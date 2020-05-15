@@ -5,7 +5,7 @@
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_login.css') }}">
 {% endblock %}
-{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2{% endblock %} 
+{% block content_class %}{{ parent() }} container-border-blue bg-profile text-center p-2 js-friend-wrapper{% endblock %} 
 {% block content_body %}
     <div class="col-sm-12">
         <h2 class="text-green d-inline-block">Friends</h2>
@@ -70,9 +70,13 @@
 
 {% block javascripts %}
 {{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_friendApi.js') }}"></script>
 <script type="text/javascript">
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+    $(document).ready(function() {
+        var $wrapper = $('.js-friend-wrapper');
+        var friendApi = new FriendApi($wrapper);
+    });
 </script>
 {% endblock %}

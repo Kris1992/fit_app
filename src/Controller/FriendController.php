@@ -11,10 +11,13 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\FriendInvitation\FriendInvitationFactoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Services\Updater\Friend\FriendUpdaterInterface;
 use App\Entity\User;
+use App\Entity\Friend;
 
 use App\Repository\UserRepository;
 use App\Repository\FriendRepository;
@@ -67,17 +70,17 @@ class FriendController extends AbstractController
     /**
      * @Route("/friend/search", name="friend_search", methods={"GET"})
      */
-    public function search(RepositoryManagerInterface $finder, UserRepository $userRepository, PaginatorInterface $paginator, Request $request)
+    public function search(RepositoryManagerInterface $finder, UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository)
     {
         //$results = $finder->getRepository(User::class)->find('admin0@fit.com');
 
         //tymczasowo
         $searchTerms = $request->query->getAlnum('filterValue');
-        if ($searchTerms) {
-            $userQuery = $userRepository->findAllQuery($searchTerms);
-        } else {
-            $userQuery = [];
-        }
+        $userQuery = $userRepository->findAllQueryElastica($searchTerms);
+
+        //z tym 6 calls i 8ms total 146 ms a po wyczyszczeniu cache 351 ms
+        //Po wykorzystaniu kolekcji i joina zyskujemy na wydajności
+        //$friendsRelationships = $friendRepository->findAllBetweenUserAndUsers($currentUser, $users);
 
         $pagination = $paginator->paginate(
             $userQuery, /* query NOT result */
@@ -90,19 +93,26 @@ class FriendController extends AbstractController
         ]);
 
         return $this->render('friend/search.html.twig', [
-            'pagination' => $pagination
+            'pagination' => $pagination,
         ]);
     }
 
     //Api
     /**
-     * @Route("/api/friend/{id}/invite", name="api_friend_invite", methods={"GET"})
+     * @Route("/api/friend/user/{id}/invite", name="api_friend_invite", methods={"GET"})
      */
-    public function inviteAction(User $user, JsonErrorResponseFactory $jsonErrorFactory, FriendInvitationFactoryInterface $friendInvitationFactory, EntityManagerInterface $entityManager)
+    public function inviteAction(User $user, JsonErrorResponseFactory $jsonErrorFactory, FriendInvitationFactoryInterface $friendInvitationFactory, EntityManagerInterface $entityManager, FriendRepository $friendRepository)
     {   
+
         /** @var User $currentUser */
         $currentUser = $this->getUser();
         if ($user !== $currentUser) {
+            //check is history of this realationship (I want keep just one friend object per pair)
+            $oldStatus = $friendRepository->findAllBetweenUsers($currentUser, $user);
+            if ($oldStatus) {
+                $entityManager->remove($oldStatus);
+            }
+
             $friend = $friendInvitationFactory->create($currentUser, $user);
             $entityManager->persist($friend);
             $entityManager->flush();
@@ -116,5 +126,34 @@ class FriendController extends AbstractController
 
         return $jsonErrorFactory->createResponse($jsonError);
     }
+
+    /**
+     * @Route("/api/friend/{id}/response", name="api_friend_response", methods={"POST", "GET"})
+     */
+    public function responseAction(Friend $friend, Request $request, JsonErrorResponseFactory $jsonErrorFactory, FriendUpdaterInterface $friendUpdater, EntityManagerInterface $entityManager): response
+    {   
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        if ($friend->getInvitee() === $currentUser) {
+            $friend = $friendUpdater->update($friend, $data['status']);
+            $entityManager->flush();
+            return new JsonResponse(Response::HTTP_OK);
+        }
+
+        $jsonError = new JsonErrorResponse(400, 
+            JsonErrorResponse::TYPE_ACTION_FAILED,
+            'Something goes wrong.'
+        );
+
+        return $jsonErrorFactory->createResponse($jsonError);
+    }
+
+    
 
 }

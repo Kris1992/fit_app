@@ -11,6 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Services\ImagesManager\ImagesConstants;
+use Doctrine\Common\Collections\Criteria;
+use App\Repository\FriendRepository;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -113,10 +115,22 @@ class User implements UserInterface
      */
     private $curiosities;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Friend", mappedBy="inviter", orphanRemoval=true)
+     */
+    private $invitedFriends;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Friend", mappedBy="invitee", orphanRemoval=true)
+     */
+    private $invitedByFriends;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
         $this->curiosities = new ArrayCollection();
+        $this->invitedFriends = new ArrayCollection();
+        $this->invitedByFriends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -429,6 +443,47 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Friend[]
+     */
+    public function getInvitedFriends(): Collection
+    {
+        return $this->invitedFriends;
+    }
+
+    /**
+     * getInvitedFriend Get friend object if user was invited by current user 
+     * @param User $user User object whose is or not invited by current one
+     * @return Collection|Friend
+     */
+    public function getInvitedFriend(User $user): Collection
+    {
+        $criteria = FriendRepository::createNotRejectedFriendsByInviteeCriteria($user);
+
+        return $this->invitedFriends->matching($criteria);
+    }
+
+    /**
+     * getInvitedByFriends Get all users whose invited current one
+     * @return Collection|Friend[]
+     */
+    public function getInvitedByFriends(): Collection
+    {
+        return $this->invitedByFriends;
+    }
+
+    /**
+     * getInvitedByFriend Get friend object if current user invite user 
+     * @param User $user User object whose is or not invitee by current one
+     * @return Collection|Friend
+     */
+    public function getInvitedByFriend(User $user): Collection
+    {
+        $criteria = FriendRepository::createNotRejectedFriendsByInviterCriteria($user);
+
+        return $this->invitedByFriends->matching($criteria);
     }
 
 }
