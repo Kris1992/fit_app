@@ -33,6 +33,11 @@ class Friend
      */
     private $status;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +75,18 @@ class Friend
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreated(): self
+    {
+        $this->createdAt = new \DateTime();
 
         return $this;
     }

@@ -5,7 +5,6 @@ namespace App\Services\Factory\FriendInvitation;
 use App\Entity\User;
 use App\Entity\Friend;
 
-//TEST
 class FriendInvitationFactory implements FriendInvitationFactoryInterface {
     
     public function create(User $inviter, User $invitee): Friend
@@ -15,6 +14,7 @@ class FriendInvitationFactory implements FriendInvitationFactoryInterface {
             ->setInviter($inviter)
             ->setInvitee($invitee)
             ->setStatus('Pending')
+            ->setCreated()
             ;
 
         return $friendInvitation;

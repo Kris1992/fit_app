@@ -16,7 +16,6 @@ class FriendUpdater implements FriendUpdaterInterface
 
     public function update(Friend $friend, string $status): Friend
     {
-        
         if (isset(self::$statuses[$status])) {
             $statusType = self::$statuses[$status];
             $friend
