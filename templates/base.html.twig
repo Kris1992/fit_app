@@ -12,6 +12,8 @@
         {% block stylesheets %}
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         	<link href="{{ asset('css/_style.css') }}" rel="stylesheet" /> 
+            <link rel="stylesheet" type="text/css" href="{{ asset('css/all.css') }}">
+
         {% endblock %}
     </head>
     <body>
@@ -28,17 +30,15 @@
                 
 						<ul class="navbar-nav ml-auto">
 							{% if is_granted('ROLE_USER') %}
+                            <!-- next week patch 
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Competitions</a>
+                            </li>--> 
+
+
                             <li class="nav-item">
                                 <a class="nav-link {{ app.request.get('_route') == 'friend_list' ? 'active' }}" href="{{ path('friend_list') }}">Friends</a>
                             </li>
-                            <!-- Next week patch -->
-                            <li class="nav-item align-self-center">
-                                <a href="#">                                    
-                                    <!--<span class="fas fa-bell"></span> -->
-                                    <span class="text-dark far fa-bell"></span>
-                                </a>
-                            </li>
-
                             <li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="workouts-submenu" aria-haspopup="true" href="#">Workout</a>
 								<div class="dropdown-menu" aria-labelledby="workouts-submenu">
@@ -70,11 +70,26 @@
 									{% endif %}	
 								</div>
 							</li>
+                            {% if is_granted('ROLE_USER') %}
+                                <li class="nav-item align-self-center">
+                                    <a href="{{ path('friend_requests') }}">
+                                        {% set notifications = notifications(app.user) %}
+                                        {% if notifications > 0 and app.request.get('_route') is not same as('friend_requests') %}
+                                            <h5>
+                                                <span class="text-green fas fa-bell">
+                                                    <span class="badge badge-light notifications-count align-top">{{ notifications }}</span>
+                                                </span> 
+                                            </h5>
+                                        {% else %}
+                                            <h5>
+                                                <span class="text-dark far fa-bell"></span> 
+                                            </h5>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
                 		</ul>
             		</div>
-
-
-
 				</nav>
 			</header>
 			<main>
@@ -86,7 +101,6 @@
         		{% endif %}
 				{% block content %}{% endblock %}
 			</main>
-			
         	
      	</div>   
         {% block javascripts %}

@@ -74,9 +74,12 @@ class FriendController extends AbstractController
     {
         //$results = $finder->getRepository(User::class)->find('admin0@fit.com');
 
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+//
         //tymczasowo
         $searchTerms = $request->query->getAlnum('filterValue');
-        $userQuery = $userRepository->findAllQueryElastica($searchTerms);
+        $userQuery = $userRepository->findAllQueryElastica($searchTerms, $currentUser);
 
         //z tym 6 calls i 8ms total 146 ms a po wyczyszczeniu cache 351 ms
         //Po wykorzystaniu kolekcji i joina zyskujemy na wydajności
@@ -85,7 +88,7 @@ class FriendController extends AbstractController
         $pagination = $paginator->paginate(
             $userQuery, /* query NOT result */
             $request->query->getInt('page', 1)/*page number*/,
-            $request->query->getInt('perPage', 5)/*limit per page*/
+            $request->query->getInt('perPage', 6)/*limit per page*/
         );
 
         $pagination->setCustomParameters([

@@ -787,7 +787,7 @@ import { getStatusError } from './_apiHelper.js';
                 }
             }
             
-            this.$wrapper.find('.js-total-distance').html(sum);
+            this.$wrapper.find('.js-total-distance').html(sum.toFixed(2));
         }
 
         getTotalDuration() {

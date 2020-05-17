@@ -1,25 +1,21 @@
 {% extends 'content_base.html.twig' %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}Show User{% endblock %}
 {% block section_class %}account{% endblock %} 
 {% block content_body %}
 	<div class="col-sm-12 bg-profile border rounded">
         <div class="row">
             <div class="col-xs-12 col-sm-2">
                 <div class="user-image">
-                    {% if app.user.imageFilename %}
-                    <img src="{{uploaded_asset(app.user.thumbImagePath)}}" class="thumbnail" height="100" width="100">
+                    {% if user.imageFilename %}
+                    <img src="{{uploaded_asset(user.thumbImagePath)}}" class="thumbnail" height="100" width="100">
                     {% else %}
                     <img src="{{asset('img/users/default.png')}}" class="thumbnail" height="100" width="100">
                     {% endif %}
-                    
                 </div>
             </div>
             <div class="col-xs-12 col-sm-10 text-green p-3 mb-3">
-                <h3 class="d-inline-block">Welcome back, {{ app.user.firstName }}</h3>
-             <!--   <a class="btn btn-labeled btn-info float-right d-inline-block" href="#">
-                    <span class="btn-label"><i class="fa fa-pencil"></i></span>Update
-                </a>-->
+                <h3 class="d-inline-block">{{ user.fullName }}</h3>
             </div>
         </div>
         <div class="row bg-primary">

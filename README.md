@@ -79,11 +79,15 @@ TO DO
 
 ## Next Week Patch (introduction to SCRUM flow) 
 
-:hourglass_flowing_sand: Add friends system
+:hourglass_flowing_sand: Competitions system  
+:hourglass_flowing_sand: Full Edit in workout history  
+
+
+:heavy_check_mark: Add friends system
 :hourglass_flowing_sand: Find friends by elasticsearch
 :heavy_check_mark: Add getErrorsFromForm to service
 :heavy_check_mark: Move messenger to rabbitmq
-:hourglass_flowing_sand: Add few more improvements
+:heavy_check_mark: Add few more improvements and bug fixes
 :hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
 
 ## Last weeks updates

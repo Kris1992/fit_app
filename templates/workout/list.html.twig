@@ -38,7 +38,7 @@
 		                    <td class="js-duration align-middle">{{ workout.durationSecondsTotal | time }}</td>
                             <td class="js-distance align-middle">
                                 {% if workout.distanceTotal is not null %}
-                                    {{ workout.distanceTotal }}
+                                    {{ workout.distanceTotal | number_format(2) }}
                                 {% else %}
                                     ---
                                 {% endif %}
@@ -178,7 +178,7 @@
     <td class="js-duration align-middle"><%= time %></td>
     <td class="js-distance align-middle">
         <% if (distanceTotal !== null) { %>
-            <%= distanceTotal %>
+            <%= distanceTotal.toFixed(2) %>
         <% } else { %>
             ---
         <% } %>
@@ -203,7 +203,7 @@
         <div class="link-wrapper">
             <a href="#"
                 class="js-delete-workout delete-item"
-                data-url="<%= links.delete %>"
+                data-url="<%= _links.delete.href %>"
                 data-id="<%= id %>"
                 data-toggle="tooltip" data-placement="left" title="Delete"
             >
@@ -214,7 +214,7 @@
             <div class="link-wrapper">
                 <a href="#"
                     class="js-edit-workout"
-                    data-url="<%= links.edit %>"
+                    data-url="<%= _links.edit.href %>"
                     data-toggle="tooltip" data-placement="left" title="Fast edit"
                 >
                     <span class="far fa-edit"></span>

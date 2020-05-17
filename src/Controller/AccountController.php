@@ -19,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Form\RenewPasswordFormType;
 use App\Form\Model\User\RenewPasswordFormModel;
 use App\Entity\PasswordToken;
+use App\Entity\User;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Security\LoginFormAuthenticator;
 use App\Form\UserRegistrationFormType;
@@ -50,6 +51,27 @@ class AccountController extends AbstractController
         $likes = $workoutRepository->countAllWorkoutsReactionsByUserAndType($user, 1);
 
         return $this->render('account/profile.html.twig', [
+            'workouts' => $workouts,
+            'totalData' => $totalData,
+            'personalBest' => $personalBest,
+            'totalLikes' => $likes
+        ]);
+    }
+
+    /**
+     * @Route("/account/{id}/show", name="account_show")
+     * @IsGranted("ROLE_USER")
+    */
+    public function show(User $user, WorkoutRepository $workoutRepository)
+    {
+        $personalBest = $workoutRepository->getHighScoresByUser($user);
+
+        $workouts = $workoutRepository->getLastWorkoutsByUser($user, 3);
+        $totalData = $workoutRepository->getWorkoutsTimeAndNumWorkoutsByUser($user);
+        $likes = $workoutRepository->countAllWorkoutsReactionsByUserAndType($user, 1);
+
+        return $this->render('account/show.html.twig', [
+            'user' => $user,
             'workouts' => $workouts,
             'totalData' => $totalData,
             'personalBest' => $personalBest,
