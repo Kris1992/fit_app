@@ -1,5 +1,6 @@
 <?php
 
+///Test do tego integrity
 namespace App\Services\ActivitiesImporter;
 
 use League\Flysystem\FileNotFoundException;
@@ -28,7 +29,6 @@ class ActivitiesImporter implements ActivitiesImporterInterface
     private $csvFileReader;
     private $modelValidatorInterface;
     private $em;
-
 
     /**
      * ActivitiesImporter Constructor

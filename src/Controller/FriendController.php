@@ -23,6 +23,7 @@ use App\Repository\UserRepository;
 use App\Repository\FriendRepository;
 
 
+
 /**
 * @IsGranted("ROLE_USER")
 **/
@@ -56,7 +57,7 @@ class FriendController extends AbstractController
     /**
      * @Route("/friend/requests", name="friend_requests", methods={"GET"})
      */
-    public function requestlist(FriendRepository $friendRepository, Request $request)
+    public function requestlist(FriendRepository $friendRepository)
     {
         /** @var User $currentUser */
         $currentUser = $this->getUser();
@@ -70,15 +71,17 @@ class FriendController extends AbstractController
     /**
      * @Route("/friend/search", name="friend_search", methods={"GET"})
      */
-    public function search(RepositoryManagerInterface $finder, UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository)
-    {
-        //$results = $finder->getRepository(User::class)->find('admin0@fit.com');
+    public function search(/*RepositoryManagerInterface $finder,*/ UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository)
+    {   
 
+        //$res = $finder->getRepository(User::class)->find('ell');
+        
         /** @var User $currentUser */
         $currentUser = $this->getUser();
-//
-        //tymczasowo
         $searchTerms = $request->query->getAlnum('filterValue');
+        //$results = $finder->getRepository(User::class)->createPaginatorAdapter($searchTerms);
+
+        //tymczasowo
         $userQuery = $userRepository->findAllQueryElastica($searchTerms, $currentUser);
 
         //z tym 6 calls i 8ms total 146 ms a po wyczyszczeniu cache 351 ms

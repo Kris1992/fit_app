@@ -74,7 +74,7 @@
                                     </div>
                                 {% endif %}
                                 <div class="link-wrapper">
-                                    <a href="#" data-toggle="tooltip" data-placement="left" title="Full edit">
+                                    <a href="{{ path('workout_edit_average', {id:workout.id})}}" data-toggle="tooltip" data-placement="left" title="Full edit">
                                         <span class="fa fa-pencil-alt"></span>
                                     </a>
                                 </div>
@@ -222,7 +222,7 @@
             </div>
         <% } %>
         <div class="link-wrapper">
-            <a href="#"
+            <a href="<%= _links.full_edit.href %>"
                 data-toggle="tooltip" data-placement="left" title="Full edit"
             >
                 <span class="fa fa-pencil-alt"></span>

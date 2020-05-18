@@ -74,13 +74,16 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
         });
 
         $this->createMany(10, 'bodyweight_workout', function($i) 
-        {
+        {   
+            $activity = $this->getRandomReference($this->faker->randomElement(self::$bodyweightActivities));
+
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
-                ->setActivity($this->getRandomReference($this->faker->randomElement(self::$bodyweightActivities)))
+                ->setActivity($activity)
                 ->setDurationSecondsTotal($this->faker->numberBetween($min = 1, $max = 86399))
                 /* max time -> 23:59:59 */ 
+                ->setRepetitionsTotal($activity->getRepetitionsAvgMin())
                 ->calculateSaveBurnoutEnergyTotal()
                 ->setStartAt($this->faker->dateTime)
                 ;

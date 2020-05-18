@@ -83,22 +83,21 @@ class AccountController extends AbstractController
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function edit(Request $request, EntityManagerInterface $em, UserModelFactoryInterface $userModelFactoryInterface, UserUpdaterInterface $userUpdaterInterface)
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater)
     {
         /** @var User $user */
         $user = $this->getUser();
 
         /** @var UserRegistrationFormModel $userModel */
-        $userModel = $userModelFactoryInterface->create($user);
+        $userModel = $userModelFactory->create($user);
             
         $form = $this->createForm(UserRegistrationFormType::class, $userModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $user = $userUpdaterInterface->update($userModel, $user, $form['imageFile']->getData());
+            $user = $userUpdater->update($userModel, $user, $form['imageFile']->getData());
 
-            $em->persist($user);
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('success', 'Your account is updated!');
 
             return $this->redirectToRoute('account_edit');
@@ -112,7 +111,7 @@ class AccountController extends AbstractController
     /**
      * @Route("/password/reset", name="app_reset_password")
      */
-    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, MailingSystemInterface $mailer, EntityManagerInterface $em)
+    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, MailingSystemInterface $mailer, EntityManagerInterface $entityManager)
     {
     	if($request->isMethod('POST')) {
     		$formData = [
@@ -133,12 +132,12 @@ class AccountController extends AbstractController
         		$passTokenOld = $user->getPasswordToken();
         		$passToken = new PasswordToken($user);
         		$user->setPasswordToken($passToken);
-            	$em->persist($passToken);
-            	$em->persist($user);
+            	$entityManager->persist($passToken);
+            	$entityManager->persist($user);
             	if($passTokenOld) {
-            		$em->remove($passTokenOld);
+            		$entityManager->remove($passTokenOld);
             	}
-            	$em->flush();
+            	$entityManager->flush();
 
                 $mailer->sendResetPasswordMessage($user);
         		$this->addFlash('success', 'Check your email! We send message to you.');
@@ -151,7 +150,7 @@ class AccountController extends AbstractController
     /**
      * @Route("/password/renew/{token}", name="app_renew_password")
      */
-    public function renewPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $em, $token, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, PasswordToken $passwordToken)
+    public function renewPassword($token, Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, PasswordToken $passwordToken)
     {
 
     	if(!$passwordToken || $passwordToken->isExpired()) {
@@ -175,10 +174,9 @@ class AccountController extends AbstractController
 
             $user->setPasswordToken(null);
             $user->resetFailedAttempts();
-            $em->persist($user);
             //$em->flush();
             //$em->remove($passwordToken);
-            $em->flush();
+            $entityManager->flush();
 
             return $guardHandler->authenticateUserAndHandleSuccess(
                 $user,
@@ -196,7 +194,6 @@ class AccountController extends AbstractController
     //API
 
     /**
-     *
      * @Route("/api/account/delete_user_image", name="api_delete_user_image", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */

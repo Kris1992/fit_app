@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Curiosity;
 
 class CuriosityController extends AbstractController
@@ -12,7 +11,7 @@ class CuriosityController extends AbstractController
      /**
      * @Route("/curiosity/{slug}/show", name="curiosity_show", methods={"POST", "GET"})
      */
-    public function show(Curiosity $curiosity, Request $request)
+    public function show(Curiosity $curiosity)
     {            
         
         return $this->render('curiosity/show.html.twig', [

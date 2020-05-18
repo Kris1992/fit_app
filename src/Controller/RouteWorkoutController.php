@@ -40,7 +40,7 @@ class RouteWorkoutController extends AbstractController
     /**
      * @Route("api/route/workout/add_drawed", name="api_route_workout_add_drawed")
      */
-    public function addDrawedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
+    public function addDrawedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $entityManager, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
         $data = json_decode($request->getContent(), true);
         if($data === null) {
@@ -74,8 +74,8 @@ class RouteWorkoutController extends AbstractController
                     $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
                     $workout = $workoutFactory->create($workoutSpecificModel);
 
-                    $em->persist($workout);
-                    $em->flush();
+                    $entityManager->persist($workout);
+                    $entityManager->flush();
                     
                     $response = [
                         'url' => $this->generateUrl(
@@ -134,7 +134,7 @@ class RouteWorkoutController extends AbstractController
     /**
      * @Route("api/route/workout/add_tracked", name="api_route_workout_add_tracked")
      */
-    public function addTrackedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
+    public function addTrackedAction(Request $request, WorkoutSpecificExtender $workoutSpecificExtender, EntityManagerInterface $entityManager, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
         $data = json_decode($request->getContent(), true);
 
@@ -169,8 +169,8 @@ class RouteWorkoutController extends AbstractController
                     $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
                     $workout = $workoutFactory->create($workoutSpecificModel);
 
-                    $em->persist($workout);
-                    $em->flush();
+                    $entityManager->persist($workout);
+                    $entityManager->flush();
                     
                     $response = [
                         'url' => $this->generateUrl(

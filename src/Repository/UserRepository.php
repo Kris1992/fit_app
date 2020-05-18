@@ -64,11 +64,11 @@ class UserRepository extends ServiceEntityRepository
     {   
         if ($searchTerms) {
             return $this->createQueryBuilder('u')
-                ->where('((MATCH_AGAINST(u.firstName, u.secondName) AGAINST(:searchTerms boolean)>0) OR (u.email LIKE :emailTerms)) AND u != :user')
+                ->where('(MATCH_AGAINST(u.firstName, u.secondName) AGAINST(:searchTerms boolean)>0) OR (u.email LIKE :emailTerms)')
                 ->setParameters([
                     'searchTerms' => $searchTerms.'*',
                     'emailTerms' => '%'.$searchTerms.'%',
-                    'user' => $user,
+                    //'user' => $user,AND u != :user
                 ])
                 ->leftJoin('u.invitedFriends', 'if')
                 ->addSelect('if')

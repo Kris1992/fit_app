@@ -488,7 +488,7 @@ import { getStatusError } from './_apiHelper.js';
                         </a>
                     </div>
                     <div class="link-wrapper">
-                        <a href="#" data-toggle="tooltip" data-placement="left" title="Full edit">
+                        <a href="${data['_links']['full_edit']['href']}" data-toggle="tooltip" data-placement="left" title="Full edit">
                            <span class="fa fa-pencil-alt"></span>
                         </a>
                     </div>

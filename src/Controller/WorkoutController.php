@@ -29,6 +29,7 @@ use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 use App\Services\FormApiValidator\FormApiValidatorInterface;
+use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 
 class WorkoutController extends AbstractController
 {
@@ -36,43 +37,16 @@ class WorkoutController extends AbstractController
      * @Route("/workout/list", name="workout_list")
      * @IsGranted("ROLE_USER")
      */
-    public function list(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, AbstractActivityRepository $activityRepository)
+    public function list(WorkoutRepository $workoutRepository, AbstractActivityRepository $activityRepository)
     {
-        //TO DO
     	$user = $this->getUser();
     	$workouts = $workoutRepository->findBy([ 'user' => $user ]);
         $movementActivitiesNames = $activityRepository->findByTypeUniqueNamesAlphabetical('Movement');
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
-        $formAverage->handleRequest($request);
 
-        if ($formAverage->isSubmitted() && $formAverage->isValid()) {
-            $workoutAverageFormModel = $formAverage->getData();
-            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, $this->getUser());
-            
-            //Validation Model data
-            $isValid = $modelValidator->isValid($workoutAverageFormModel, ['model']);
-                    
-            if ($isValid) {
-                $activity = $workoutAverageFormModel->getActivity();
-                $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
-                $workout = $workoutFactory->createWorkout($workoutAverageFormModel);
-
-                $em->persist($workout);
-                $em->flush();
-
-                $this->addFlash('success', 'Workout was added!! ');
-                return $this->redirectToRoute('workout_list');
-            } else {
-                $errors = $modelValidator->getErrors();
-                return $this->render('workout/add.html.twig', [
-                    'workoutForm' => $formAverage->createView(),
-                    'workoutSpecificDataForm' => $formSpecific->createView(),
-                    'errors' => $errors,
-                ]);
-            }
-        }
+        
 
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
@@ -84,10 +58,10 @@ class WorkoutController extends AbstractController
     }
     
     /**
-     * @Route("/workout/stats", name="workout_stats")
+     * @Route("/workout/stats", name="workout_stats", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function stats(Request $request)
+    public function stats()
     {
         return $this->render('workout/stats.html.twig');
     }
@@ -96,7 +70,7 @@ class WorkoutController extends AbstractController
      * @Route("api/workout/get_id_by_date", name="api_workout_id_by_date")
      * @IsGranted("ROLE_USER")
      */
-    public function getWorkoutIdByDateAction(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function getWorkoutIdByDateAction(WorkoutRepository $workoutRepository, Request $request)
     {
         $timeline = json_decode($request->getContent(), true);
 
@@ -124,7 +98,7 @@ class WorkoutController extends AbstractController
      * @Route("api/workout/get_energy_by_date", name="api_workout_energy_by_date")
      * @IsGranted("ROLE_USER")
      */
-    public function getWorkoutEnergyByDateAction(WorkoutRepository $workoutRepository, Request $request, EntityManagerInterface $em)
+    public function getWorkoutEnergyByDateAction(WorkoutRepository $workoutRepository, Request $request)
     {
         $days = json_decode($request->getContent(), true);
 
@@ -175,7 +149,7 @@ class WorkoutController extends AbstractController
      * @Route("/workout/choose_add", name="workout_choose_add", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addPanel(Request $request)
+    public function addPanel()
     {
     
         return $this->render('workout/addPanel.html.twig', []);
@@ -185,7 +159,7 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add_average", name="workout_add_average", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
+    public function addAverage(Request $request, EntityManagerInterface $entityManager, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
         $formAverage->handleRequest($request);
@@ -205,8 +179,8 @@ class WorkoutController extends AbstractController
                         $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
                         $workout = $workoutFactory->create($workoutAverageFormModel);
 
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was added!');
                         return $this->redirectToRoute('workout_list');
@@ -237,7 +211,7 @@ class WorkoutController extends AbstractController
      * @Route("/workout/add_specific", name="workout_add_specific", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
+    public function addSpecific(Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
             
@@ -256,8 +230,8 @@ class WorkoutController extends AbstractController
                         $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
                         $workout = $workoutFactory->create($workoutSpecificModel);
 
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was added!');
                         return $this->redirectToRoute('workout_list');
@@ -288,7 +262,7 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/workout/{id}/delete", name="workout_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
+    public function delete(Workout $workout, EntityManagerInterface $entityManager, MessageBusInterface $messageBus)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
@@ -298,8 +272,8 @@ class WorkoutController extends AbstractController
             $messageBus->dispatch(new DeleteWorkoutImage($subdirectory, $workout->getImageFilename()));
         }
 
-        $em->remove($workout);
-        $em->flush();
+        $entityManager->remove($workout);
+        $entityManager->flush();
     
         return new Response(null, 204);
     }
@@ -308,7 +282,7 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/add_average", name="api_workout_add_average", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function addAverageAction(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
+    public function addAverageAction(Request $request, EntityManagerInterface $entityManager, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
        $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
@@ -337,8 +311,8 @@ class WorkoutController extends AbstractController
                         $activity = $workoutAverageFormModel->getActivity();
                         $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
                         $workout = $workoutFactory->create($workoutAverageFormModel);
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
                     
                         $response = new Response(null, 201);
                         $response->headers->set(
@@ -380,7 +354,7 @@ class WorkoutController extends AbstractController
      * @Route("/api/workout/add_specific", name="api_workout_add_specific", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function addSpecificAction(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
+    public function addSpecificAction(Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
         $data = json_decode($request->getContent(), true);
@@ -406,8 +380,8 @@ class WorkoutController extends AbstractController
                         $activity = $workoutSpecificModel->getActivity();
                         $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
                         $workout = $workoutFactory->create($workoutSpecificModel);
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
                     
                         $response = new Response(null, 201);
                         $response->headers->set(
@@ -457,11 +431,17 @@ class WorkoutController extends AbstractController
         $startAt = date_format($startAt, 'Y-m-d H:i');
         $workout->setStartDate($startAt);
 
+        $linkReport = $this->generateUrl('workout_report', ['id' => $workout->getId()]);
         $linkDelete = $this->generateUrl('workout_delete', ['id' => $workout->getId()]);
         $linkEdit = $this->generateUrl('api_workout_edit', ['id' => $workout->getId()]);
+        $linkFullEdit = $this->generateUrl('workout_edit_average', ['id' => $workout->getId()]);
 
-        $workout->setLinks('delete',$linkDelete);
-        $workout->setLinks('edit',$linkEdit);
+        $workout
+            ->setLinks('delete',$linkDelete)
+            ->setLinks('edit',$linkEdit)
+            ->setLinks('full_edit',$linkFullEdit)
+            ->setLinks('report',$linkReport)
+            ;
 
         return $this->json(
             $workout,
@@ -476,7 +456,7 @@ class WorkoutController extends AbstractController
     /**
      * @Route("/api/workout/{id}/edit", name="api_workout_edit", methods={"PUT"})
      */
-    public function editAction(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
+    public function editAction(Workout $workout, Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, WorkoutUpdaterInterface $workoutUpdater, JsonErrorResponseFactory $jsonErrorFactory, FormApiValidatorInterface $formApiValidator)
     {
 
         $this->denyAccessUnlessGranted('MANAGE', $workout);
@@ -512,8 +492,7 @@ class WorkoutController extends AbstractController
             if ($isValid) {
                 try {
                     $workout = $workoutUpdater->update($workoutSpecificModel, $workout);
-                    $em->persist($workout);
-                    $em->flush();
+                    $entityManager->flush();
                     $response = new Response(null, 200);
 
                     $response->headers->set(
@@ -573,10 +552,9 @@ class WorkoutController extends AbstractController
      */
     public function getServerDateAction()
     {
-        $today = new \DateTime();
 
         return $this->json(
-            $today,
+            new \DateTime(),
             201,
             [],
             []
@@ -642,22 +620,23 @@ class WorkoutController extends AbstractController
             $startAt = $workout->getStartAt();
             $startAt = date_format($startAt, 'Y-m-d H:i');
             $workout->setStartDate($startAt);
-            $workout->setLinks(
-                'thumbImage', 
-                $workoutsImagesManager->getPublicPath($workout->getThumbImagePath())
-            );
-            $workout->setLinks(
-                'image', 
-                $workoutsImagesManager->getPublicPath($workout->getImagePath())
-            );
-            $workout->setLinks(
-                'reaction', 
-                $this->generateUrl('api_workout_reaction', ['id' => $workout->getId()])
-            );
-            $workout->setLinks(
-                'report', 
-                $this->generateUrl('workout_report', ['id' => $workout->getId()])
-            );
+            $workout
+                ->setLinks(
+                    'thumbImage', 
+                    $workoutsImagesManager->getPublicPath($workout->getThumbImagePath())
+                )
+                ->setLinks(
+                    'image', 
+                    $workoutsImagesManager->getPublicPath($workout->getImagePath())
+                )
+                ->setLinks(
+                    'reaction', 
+                    $this->generateUrl('api_workout_reaction', ['id' => $workout->getId()])
+                )
+                ->setLinks(
+                    'report', 
+                    $this->generateUrl('workout_report', ['id' => $workout->getId()])
+                );
             $workout->setReactionsArray($user, [1,2]);
         }
 
@@ -674,13 +653,153 @@ class WorkoutController extends AbstractController
      /**
      * @Route("/workout/{id}/report", name="workout_report", methods={"GET"})
      */
-    public function workoutReport(Request $request, Workout $workout)
+    public function workoutReport(Workout $workout)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
 
         return $this->render('workout/report.html.twig', [
             'workout' => $workout 
+        ]);
+    }
+
+    /**
+     * @Route("/workout/{id}/edit_average", name="workout_edit_average", methods={"POST", "GET"})
+     */
+    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $entityManager, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
+    {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
+        try {
+            $activity = $workout->getActivity();
+            $workoutModelFactory = WorkoutModelFactory::chooseFactory($activity->getType(), 'Average');
+            $workoutAverageFormModel = $workoutModelFactory->create($workout);
+        
+            $formAverage = $this->createForm(WorkoutAverageDataFormType::class, $workoutAverageFormModel,[
+                    'is_admin' => false
+                ]
+            );
+        } catch (\Exception $e) {
+            $formAverage = $this->createForm(WorkoutAverageDataFormType::class, null, [
+                'is_admin' => false
+            ]);
+            $this->addFlash('warning', $e->getMessage());
+        }
+
+        $formAverage->handleRequest($request);
+        if ($formAverage->isSubmitted() && $formAverage->isValid()) {
+            $workoutAverageFormModel = $workoutAverageExtender->fillWorkoutModel($workoutAverageFormModel, null, $formAverage['imageFile']->getData());
+
+            if ($workoutAverageFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutAverageFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutAverageFormModel, $validationGroup);
+
+                if ($isValid) {
+                    try {
+                        $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
+                        $entityManager->flush();
+
+                        $this->addFlash('success', 'Workout was updated!');
+
+                        return $this->redirectToRoute('workout_edit_average', [
+                            'id' => $workout->getId(),
+                        ]);
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                    }
+                } else {
+                    $errors = $modelValidator->getErrors();
+                
+                    return $this->render('workout/edit_average.html.twig', [
+                        'workoutForm' => $formAverage->createView(),
+                        'workoutId' => $workout->getId(),
+                        'errors' => $errors,
+                    ]);
+                }
+            } else {
+                $this->addFlash('warning', 'Cannot update that type of activity.');
+            }
+        }
+       
+        return $this->render('workout/edit_average.html.twig', [
+            'workoutForm' => $formAverage->createView(),
+            'workoutId' => $workout->getId()
+        ]);
+    }
+
+    /**
+     * @Route("/workout/{id}/edit_specific", name="workout_edit_specific", 
+     * methods={"POST", "GET"})
+     */
+    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
+    {
+        $this->denyAccessUnlessGranted('MANAGE', $workout);
+
+        try {
+            $activity = $workout->getActivity();
+            $workoutModelFactory = WorkoutModelFactory::chooseFactory(
+                $activity->getType(), 
+                'Specific'
+            );
+            $workoutSpecificFormModel = $workoutModelFactory->create($workout);
+
+            $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
+                $workoutSpecificFormModel, [
+                'is_admin' => false
+            ]);
+        } catch (\Exception | \Error $e) {
+            $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class,
+                null, [
+                'is_admin' => false
+            ]);
+            if ($e instanceof \Error) {
+                $this->addFlash('danger', $e->getMessage());
+            } else {
+                $this->addFlash('warning', $e->getMessage());
+            }
+        }
+    
+        $formSpecific->handleRequest($request);
+
+        if ($formSpecific->isSubmitted() && $formSpecific->isValid()) {
+            $workoutSpecificFormModel = $workoutSpecificExtender->fillWorkoutModel($workoutSpecificFormModel, null, $formSpecific['imageFile']->getData());
+
+            if ($workoutSpecificFormModel) {
+                //Validation Model data
+                $validationGroup = $validatorChooser->chooseValidationGroup($workoutSpecificFormModel->getType());
+                $isValid = $modelValidator->isValid($workoutSpecificFormModel, $validationGroup);
+
+                if ($isValid) {
+                    try {
+                        $workout = $workoutUpdater->update($workoutSpecificFormModel, $workout);
+                        $entityManager->flush();
+
+                        $this->addFlash('success', 'Workout was updated!');
+
+                        return $this->redirectToRoute('workout_edit_specific', [
+                            'id' => $workout->getId(),
+                        ]);
+                    } catch (\Exception $e) {
+                        $this->addFlash('warning', $e->getMessage());
+                    }
+                } else {
+                    $errors = $modelValidator->getErrors();
+                
+                    return $this->render('workout/edit_specific.html.twig', [
+                        'workoutSpecificDataForm' => $formSpecific->createView(),
+                        'workoutId' => $workout->getId(),
+                        'errors' => $errors,
+                    ]);
+                }
+            } else {
+                $this->addFlash('warning', 'Cannot update that type of activity.');
+            }
+        }
+       
+        return $this->render('workout/edit_specific.html.twig', [
+            'workoutSpecificDataForm' => $formSpecific->createView(),
+            'workoutId' => $workout->getId()
         ]);
     }
     
