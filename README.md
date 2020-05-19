@@ -71,7 +71,8 @@ Integration Tests - PHPUnit
 ## Run Tests
 
 ./vendor/bin/phpspec run
-./vendor/bin/behat
+./vendor/bin/behat OR  ./vendor/bin/behat --tag={tagName}
+php bin/phpunit
 
 ## Used Technologies
 

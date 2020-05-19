@@ -2,14 +2,13 @@
 
 namespace App\Tests\Behat;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-//use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
-use Doctrine\Common\DataFixtures\Loader;
+use Behat\Behat\Context\Context;
 
+use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /*
-                            Use this Context in features needed fixtures data
+    Use this Context in features needed fixtures data
  */
 
 /**
@@ -18,8 +17,14 @@ use Doctrine\Common\DataFixtures\Loader;
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FixturesContext extends HelperContext
+class FixturesContext extends WebTestCase implements Context
 {
+    use FixturesTrait;
+
+    public function __construct()
+    {
+      parent::__construct();
+    }
 
     /**
      * @Given Is database with :typeObject
@@ -28,38 +33,31 @@ class FixturesContext extends HelperContext
     {
         switch ($typeObject) {
             case 'activities':
-                $fixtures = ['BodyweightActivity', 'MovementActivity', 'MovementSetActivity', 'WeightActivity'];
-                $this->loadFixtures($fixtures);
+                $fixturesNames = ['BodyweightActivityFixtures', 'MovementActivityFixtures', 'MovementSetActivityFixtures', 'WeightActivityFixtures'];
+                $this->loadFixturesFromNames($fixturesNames);
                 break;
             case 'workouts':
-                $fixtures = ['BodyweightActivity', 'MovementActivity', 'MovementSetActivity',
-                'WeightActivity', 'User', 'Workout'];
-                $this->loadFixtures($fixtures);
+                $fixturesNames = ['BodyweightActivityFixtures', 'MovementActivityFixtures', 'MovementSetActivityFixtures', 'WeightActivityFixtures', 'UserFixtures', 'WorkoutFixtures'];
+                $this->loadFixturesFromNames($fixturesNames);
                 break;
             case 'users':
-                $this->loadFixtures(['User']);
+                $this->loadFixturesFromNames(['UserFixtures']);
                 break;
             case 'curiosities':
-                $this->loadFixtures(['User', 'Curiosity']);
+                $this->loadFixturesFromNames(['UserFixtures', 'CuriosityFixtures']);
                 break;
             default:
                 break;
         }
     }
 
-    private function loadFixtures($fixturesNames)
-    {
-        
-        $loader = new Loader();
-        foreach ($fixturesNames as $fixtureName) {
-            $fixture = $this->kernel->getContainer()->get('App\DataFixtures\\'.$fixtureName.'Fixtures');
-            $loader->addFixture($fixture);
-
-            //$loader->loadFromFile(__DIR__.'/../../src/DataFixtures/'.$fixture.'Fixtures.php');
+    private function loadFixturesFromNames($fixturesNames)
+    {   
+        $fixtures = [];
+        foreach ($fixturesNames as $fixture) {
+            array_push($fixtures, sprintf('App\DataFixtures\\%s', $fixture));
         }
-
-        $executor = new ORMExecutor($this->getEntityManager());
-        $executor->execute($loader->getFixtures(), true);
+        $this->loadFixtures($fixtures);
     }
 
     /**

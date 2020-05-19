@@ -5,9 +5,9 @@ Feature: Failures in accounts admin panel
     
     Background:
         Given I am logged in as an admin
+        And I am on "/admin/account"
     
     Scenario: Try to add an account (Too weak password message)
-        And I am on "/admin/account"
         And I click "Create"
         And I fill in "user_registration_form[email]" with "userabc0@fit.com"
         And I fill in "user_registration_form[firstName]" with "Krzysztof"
@@ -20,7 +20,6 @@ Feature: Failures in accounts admin panel
         Then I should see "Password should contain at least 2 numbers and 3 letters"
         
     Scenario: Try to delete few accounts without check any user to delete
-        And I am on "/admin/account"
         And I press "Delete checked" 
         And I wait for the page to be loaded
         Then I should see "Nothing to do."

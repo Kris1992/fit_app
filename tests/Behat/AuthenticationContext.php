@@ -238,6 +238,17 @@ class AuthenticationContext extends MinkContext implements Context, SnippetAccep
         return $row;
     }
 
+    /**
+     * @Given I click :linkName on the first row
+     */
+    public function iPressOnTheFirstRow($linkName)
+    {
+        $row = $this->getPage()->find('css', 'table tr');
+        Assertions::assertNotNull($row, 'Cannot find row in table!');
+        $row->clickLink($linkName);
+    }
+
+
     private function findRowByNameAndIntensity($name, $intensity)
     {
         $rows = $this->findRowsByText($name);
@@ -249,6 +260,8 @@ class AuthenticationContext extends MinkContext implements Context, SnippetAccep
         }
         return null;
     }
+
+
 
      /**
      * @Then I fill tinymce field with :text

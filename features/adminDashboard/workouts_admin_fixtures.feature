@@ -2,14 +2,12 @@ Feature: Workouts Admin Panel
     In order to maintain the workouts on the site
     As an admin
     I need to be able to add/edit/delete workouts
-    
-    Background:
-        Given I am logged in as an admin
 
     #base on js
     @javascript @fixtures 
     Scenario: Add a movement workout with average data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         And I click "Create"
         And I select "Cycling" from "activity"
@@ -27,6 +25,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures @file
     Scenario: Add a movement workout with average data and image
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         And I click "Create"
         And I select "Cycling" from "activity"
@@ -45,6 +44,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures
     Scenario: Add a movement workout with specific data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout/add_specific"
         And I select "Cycling" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
@@ -62,6 +62,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures @file
     Scenario: Add a movement workout with specific data and image
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout/add_specific"
         And I select "Cycling" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
@@ -80,6 +81,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures 
     Scenario: Add a bodyweight workout with average data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         And I click "Create"
         And I select "Push-ups" from "activity"
@@ -97,6 +99,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures
     Scenario: Add a bodyweight workout with specific data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout/add_specific"
         And I select "Push-ups" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
@@ -114,6 +117,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures 
     Scenario: Add a weight workout with average data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         And I click "Create"
         And I select "Barbell Bench Press" from "activity"
@@ -131,6 +135,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures
     Scenario: Add a weight workout with specific data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout/add_specific"
         And I select "Barbell Bench Press" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
@@ -149,6 +154,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures
     Scenario: Add a movement with sets workout with average data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         And I click "Create"
         And I select "Cycling circuits" from "activity"
@@ -173,6 +179,7 @@ Feature: Workouts Admin Panel
     @javascript @fixtures
     Scenario: Add a movement with sets workout with specific data
         Given Is database with "activities"
+        Given I am logged in as an admin
         And I am on "/admin/workout/add_specific"
         And I select "Cycling circuits" from "activityName"
         And I fill in "user" with "admin0Test@fit.com"
@@ -194,12 +201,11 @@ Feature: Workouts Admin Panel
         Then I should see "Workout was created!"
         And I should see 1 row in the table
 
-    @fixtures @new
+    @fixtures
     Scenario: Edit a bodyweight workout by average data form 
         Given Is database with "workouts"
         Given I am logged in as an admin
         And I am on "/admin/workout"
-        And break
         Then I fill in "filterValue" with "Push"
         And I press "Search"
         And I press "Edit" in the row with name "Push-ups"
@@ -214,6 +220,7 @@ Feature: Workouts Admin Panel
     @fixtures @file
     Scenario: Edit a bodyweight workout by average data form and image
         Given Is database with "workouts"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         Then I fill in "filterValue" with "Push"
         And I press "Search"
@@ -230,6 +237,7 @@ Feature: Workouts Admin Panel
     @fixtures
     Scenario: Edit a movement workout by average data form 
         Given Is database with "workouts"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         Then I fill in "filterValue" with "Run"
         And I press "Search"
@@ -245,6 +253,7 @@ Feature: Workouts Admin Panel
     @fixtures
     Scenario: Delete a workout
         Given Is database with "workouts"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         Then I fill in "filterValue" with "Run"
         And I press "Search"
@@ -256,6 +265,7 @@ Feature: Workouts Admin Panel
     @fixtures
     Scenario: Delete few workouts
         Given Is database with "workouts"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
         Then I fill in "filterValue" with "Push"
         And I press "Search"
@@ -264,4 +274,3 @@ Feature: Workouts Admin Panel
         And I press "Delete checked"
         And I wait for the page to be loaded
         Then I should see "Workouts were deleted!"
-

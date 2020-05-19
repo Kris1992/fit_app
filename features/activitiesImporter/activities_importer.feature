@@ -5,12 +5,12 @@ Feature: Import activities from csv file
     
     Background:
         Given I am logged in as an admin
-
-    @javascript @file
-    Scenario: Import acticities from valid csv file with 2 activities
         And I am on "/admin/activity"
         And I press "Import from file"
         And I wait for the page to be loaded
+
+    @javascript @file
+    Scenario: Import acticities from valid csv file with 2 activities
         Then I attach the file "csv/valid_csv.txt" to the dropzone
         And I wait for the page to be loaded
         And I press "Close"
@@ -20,9 +20,6 @@ Feature: Import activities from csv file
 
     @javascript @file
     Scenario: Import acticities from half valid (1 valid one not) csv file with 2 activities
-        And I am on "/admin/activity"
-        And I press "Import from file"
-        And I wait for the page to be loaded
         Then I attach the file "csv/half_valid_csv.txt" to the dropzone
         And I wait for the page to be loaded
         Then I should see "The activity with the same name and intensity already exist"
@@ -33,9 +30,6 @@ Feature: Import activities from csv file
 
     @javascript @file
     Scenario: Import acticities from invalid file
-        And I am on "/admin/activity"
-        And I press "Import from file"
-        And I wait for the page to be loaded
         Then I attach the file "image/test.jpg" to the dropzone
         And I wait for the page to be loaded
         Then I should see "Please upload a valid CSV file"
