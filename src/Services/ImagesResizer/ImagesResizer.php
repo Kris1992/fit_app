@@ -7,7 +7,6 @@ use App\Services\FoldersManager\FoldersManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
 use Psr\Log\LoggerInterface;
-use Gedmo\Sluggable\Util\Urlizer;
 
 class ImagesResizer implements ImagesResizerInterface
 {
@@ -103,7 +102,6 @@ class ImagesResizer implements ImagesResizerInterface
                 fwrite($fpThumb, $gifEncoder->GetAnimation());
                 fclose($fpThumb);
 
-                dump($tempPath);
                 $this->foldersManager->clearFolder($tempPath);
             } elseif($extension === 'png') {
                 $image = imagecreatefrompng($source);
@@ -224,19 +222,6 @@ class ImagesResizer implements ImagesResizerInterface
 
         return array($newWidth, $newHeight);
    }
-
-   /**
-    * clearFilename Clear filename from dots and add unique id
-    * @param  string $filename Original filename of uploaded file
-    * @return string           New filename
-    */
-    private function clearFilename(string $filename): string
-    {
-        $clearFilename = str_replace('.', '_', $filename);
-        $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
-        
-        return $clearFilename;
-    } 
 
     /**
      * islibraryLoaded  Check library gd or gd2 can be used

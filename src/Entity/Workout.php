@@ -307,6 +307,9 @@ class Workout
         return $this;
     }
 
+    /**
+    * @Groups("main")
+    */
     public function getAverageSpeed(): ?float
     {   
         if ($this->distanceTotal) {
@@ -316,6 +319,9 @@ class Workout
         return null;
     }
 
+    /**
+    * @Groups("main")
+    */
     public function getAveragePace(): ?float
     {   
         if ($this->distanceTotal) {

@@ -24,7 +24,7 @@ class Base64FileDecoder implements FileDecoderInterface
         $this->foldersManager = $foldersManager;
     }
 
-    public function decode(string $encodedString, string $tagetPath): ?string
+    public function decode(string $encodedString, string $targetPath): ?string
     {
         $imageData = explode( ',', $encodedString);
         $image = base64_decode($imageData[1]);
@@ -32,8 +32,8 @@ class Base64FileDecoder implements FileDecoderInterface
             return null;
         }
         
-        $this->createDir($tagetPath);
-        $imagePath = $this->uploadsDirectory.'/'.$tagetPath.uniqid().'.png';
+        $this->createDir($targetPath);
+        $imagePath = $this->uploadsDirectory.'/'.$targetPath.uniqid().'.png';
         $openFile = fopen($imagePath, 'wb');
         fwrite($openFile, $image);
         fclose($openFile);

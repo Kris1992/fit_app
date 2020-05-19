@@ -55,7 +55,7 @@ class Curiosity
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private $createdAt;///
 
     /**
      * @ORM\Column(type="datetime", nullable=true)

@@ -11,7 +11,7 @@
     {% endif %}
 
     <div class="input-group">
-        <input type="text" value="{{ selectedValue }}" name="{{ filterValueName }}" class="form-control" placeholder="Search...">
+        <input type="text" value="{{ selectedValue }}" name="{{ filterValueName }}" class="form-control" placeholder="{% if placeholder is defined %} {{ placeholder }} {% else %} Search... {% endif %}">
             <div class="input-group-append">
                 <button class="btn btn-primary" name="Search" type="submit">
                     <i class="fa fa-search"></i>

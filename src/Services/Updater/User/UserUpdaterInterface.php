@@ -19,5 +19,5 @@ interface UserUpdaterInterface
      * @param File $uploadedImage File object with uploaded image [optional]
      * @return User
      */
-     public function update(UserRegistrationFormModel $userModel, User $user, ?File $uploadedImage): User;
+    public function update(UserRegistrationFormModel $userModel, User $user, ?File $uploadedImage): User;
 }

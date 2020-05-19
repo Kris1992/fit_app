@@ -167,9 +167,11 @@ h1 {
 .carousel-card {
     height: 515px;
 }
-.js-reactions a:hover{
+.js-reactions a:hover {
     text-decoration: none;
 }
-
+.notifications-count {
+    font-size: 0.4em;
+}
 
 

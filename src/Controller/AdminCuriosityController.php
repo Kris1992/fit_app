@@ -44,7 +44,7 @@ class AdminCuriosityController extends AbstractController
     /**
      * @Route("/admin/curiosity/add", name="admin_curiosity_add", methods={"POST", "GET"})
      */
-    public function add(Request $request, EntityManagerInterface $em, CuriosityFactoryInterface $curiosityFactory, string $tinymce_api_key)
+    public function add(Request $request, EntityManagerInterface $entityManager, CuriosityFactoryInterface $curiosityFactory, string $tinymce_api_key)
     {
         $form = $this->createForm(CuriosityFormType::class);
         $form->handleRequest($request);
@@ -55,8 +55,8 @@ class AdminCuriosityController extends AbstractController
 
             $curiosity = $curiosityFactory->create($curiosityModel, $user, $form['imageFile']->getData());
 
-            $em->persist($curiosity);
-            $em->flush();
+            $entityManager->persist($curiosity);
+            $entityManager->flush();
             $this->addFlash('success', 'Curiosity was created!');
             
             return $this->redirectToRoute('admin_curiosity_list');
@@ -71,19 +71,18 @@ class AdminCuriosityController extends AbstractController
     /**
      * @Route("/admin/curiosity/{slug}/edit", name="admin_curiosity_edit", methods={"POST", "GET"})
      */
-    public function edit(Curiosity $curiosity, Request $request, EntityManagerInterface $em, CuriosityModelFactoryInterface $curiosityModelFactory, CuriosityUpdaterInterface $curiosityUpdater, string $tinymce_api_key)
+    public function edit(Curiosity $curiosity, Request $request, EntityManagerInterface $entityManager, CuriosityModelFactoryInterface $curiosityModelFactory, CuriosityUpdaterInterface $curiosityUpdater, string $tinymce_api_key)
     {            
         
         $curiosityModel = $curiosityModelFactory->create($curiosity);
 
         $form = $this->createForm(CuriosityFormType::class, $curiosityModel);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {    
             $curiosity = $curiosityUpdater->update($curiosityModel, $curiosity, $form['imageFile']->getData());
 
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('success', 'Curiosity was updated!');
 
             return $this->redirectToRoute('admin_curiosity_edit', [
@@ -99,20 +98,9 @@ class AdminCuriosityController extends AbstractController
     }
 
     /**
-     * @Route("/admin/curiosity/{slug}/show", name="admin_curiosity_show", methods={"POST", "GET"})
-     */
-    public function show(Curiosity $curiosity, Request $request)
-    {            
-        
-        return $this->render('admin_curiosity/show.html.twig', [
-            'curiosity' => $curiosity
-        ]);
-    }
-
-    /**
      * @Route("/admin/curiosity/{id}/delete", name="admin_curiosity_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, Curiosity $curiosity)
+    public function delete(Curiosity $curiosity)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($curiosity);

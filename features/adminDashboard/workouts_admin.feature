@@ -77,7 +77,7 @@ Feature: Workouts Admin Panel
         And I should see 1 row in the table
 
     #base on js
-    @javascript @fixtures
+    @javascript @fixtures 
     Scenario: Add a bodyweight workout with average data
         Given Is database with "activities"
         And I am on "/admin/workout"
@@ -194,10 +194,12 @@ Feature: Workouts Admin Panel
         Then I should see "Workout was created!"
         And I should see 1 row in the table
 
-    @fixtures
+    @fixtures @new
     Scenario: Edit a bodyweight workout by average data form 
         Given Is database with "workouts"
+        Given I am logged in as an admin
         And I am on "/admin/workout"
+        And break
         Then I fill in "filterValue" with "Push"
         And I press "Search"
         And I press "Edit" in the row with name "Push-ups"

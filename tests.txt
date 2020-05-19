@@ -1,5 +1,3 @@
-
-
 php bin/console messenger:consume async_priority_high async
 ./vendor/bin/phpspec run  spec/Services/ModelValidator
 ./vendor/bin/phpspec describe App/Services/ModelValidator/ModelValidatorChooser
@@ -9,5 +7,13 @@ php bin/console messenger:consume async_priority_high async
 java -jar selenium-server-standalone-3.0.0.jar
 ./vendor/bin/behat --tags=new
 
+## ElasticSearch
 
-        
+Start/Stop elasticsearch:
+
+sudo systemctl start elasticsearch.service
+sudo systemctl stop elasticsearch.service
+
+http://localhost:9200/
+
+php bin/console fos:elastica:populate

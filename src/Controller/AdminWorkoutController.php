@@ -58,7 +58,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/add_average", name="admin_workout_add", methods={"POST", "GET"})
      */
-    public function addAverage(Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
+    public function addAverage(Request $request, EntityManagerInterface $entityManager, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class, null, [
@@ -81,8 +81,8 @@ class AdminWorkoutController extends AbstractController
                         $activity = $workoutAverageFormModel->getActivity();
                         $workoutFactory = WorkoutFactory::chooseFactory($activity->getType());
                         $workout = $workoutFactory->create($workoutAverageFormModel);
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was created!');
                         return $this->redirectToRoute('admin_workout_list');
@@ -113,7 +113,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/add_specific", name="admin_workout_add_specific", methods={"POST", "GET"})
      */
-    public function addSpecific(Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
+    public function addSpecific(Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser)
     {
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class, null, [
             'is_admin' => true
@@ -135,8 +135,8 @@ class AdminWorkoutController extends AbstractController
                         $workoutFactory = WorkoutFactory::chooseFactory($workoutSpecificModel->getType());
                         $workout = $workoutFactory->create($workoutSpecificModel);
 
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->persist($workout);
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was created!');
                         return $this->redirectToRoute('admin_workout_list');
@@ -167,7 +167,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/{id}/edit_average", name="admin_workout_edit", methods={"POST", "GET"})
      */
-    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
+    public function editAverage(Workout $workout, Request $request, EntityManagerInterface $entityManager, WorkoutAverageExtender $workoutAverageExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
@@ -199,8 +199,7 @@ class AdminWorkoutController extends AbstractController
                 if ($isValid) {
                     try {
                         $workout = $workoutUpdater->update($workoutAverageFormModel, $workout);
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was updated!');
 
@@ -234,7 +233,7 @@ class AdminWorkoutController extends AbstractController
      * @Route("/admin/workout/{id}/edit_specific", name="admin_workout_specific_edit", 
      * methods={"POST", "GET"})
      */
-    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $em, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
+    public function editSpecific(Workout $workout, Request $request, EntityManagerInterface $entityManager, WorkoutSpecificExtender $workoutSpecificExtender, ModelValidatorInterface $modelValidator, WorkoutUpdaterInterface $workoutUpdater, ModelValidatorChooser $validatorChooser)
     {
         $this->denyAccessUnlessGranted('MANAGE', $workout);
 
@@ -275,8 +274,7 @@ class AdminWorkoutController extends AbstractController
                 if ($isValid) {
                     try {
                         $workout = $workoutUpdater->update($workoutSpecificFormModel, $workout);
-                        $em->persist($workout);
-                        $em->flush();
+                        $entityManager->flush();
 
                         $this->addFlash('success', 'Workout was updated!');
 
@@ -309,7 +307,7 @@ class AdminWorkoutController extends AbstractController
     /**
      * @Route("/admin/workout/{id}/delete", name="admin_workout_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, Workout $workout, EntityManagerInterface $em, MessageBusInterface $messageBus)
+    public function delete(Workout $workout, EntityManagerInterface $entityManager, MessageBusInterface $messageBus)
     {
 
         if ($workout->getImageFilename()) {
@@ -318,8 +316,8 @@ class AdminWorkoutController extends AbstractController
             $messageBus->dispatch(new DeleteWorkoutImage($subdirectory, $workout->getImageFilename()));
         }
         
-        $em->remove($workout);
-        $em->flush();
+        $entityManager->remove($workout);
+        $entityManager->flush();
     
         $response = new Response();
         $this->addFlash('success','Workout was deleted!');

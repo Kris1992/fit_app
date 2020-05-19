@@ -46,7 +46,7 @@ class UserRegistration implements UserRegistrationInterface
     {
         //If you run in localhost by symfony serve it will not work because of port
         $recaptcha = new ReCaptcha($this->secret_key);
-        return $isHuman = $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME'])//$_SERVER['REMOTE_ADDR'])
+        return $isHuman = $recaptcha->setExpectedHostname($_SERVER['REMOTE_ADDR'])//$_SERVER['SERVER_NAME'])//$_SERVER['REMOTE_ADDR'])
                 ->verify($request->get('g-recaptcha-response'), $_SERVER['REMOTE_ADDR']);
     }
 }

@@ -6,7 +6,7 @@ Feature: Accounts Admin Panel
     Background:
         Given I am logged in as an admin
 
-    Scenario: Add an account
+    Scenario: Add an account 
         And I am on "/admin/account"
         And I click "Create"
         And I fill in "user_registration_form[email]" with "userabc0@fit.com"
@@ -20,6 +20,7 @@ Feature: Accounts Admin Panel
         And I check "user_registration_form[agreeTerms]"
         And I press "Register"
         And I wait for the page to be loaded
+        And break
         And I press "userabc0@fit.com"
         Then I should see "Logout"
 

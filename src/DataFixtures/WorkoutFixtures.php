@@ -22,22 +22,12 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        //I try to resolve problem with construct UserFixtures
-        if ($_ENV['APP_ENV'] !== 'test') {
-            return [
-                UserFixtures::class,
-                MovementActivityFixtures::class,
-                MovementSetActivityFixtures::class,
-                BodyweightActivityFixtures::class,
-            ];
-        } else {
-            return [
-                //UserFixtures::class,
-                MovementActivityFixtures::class,
-                MovementSetActivityFixtures::class,
-                BodyweightActivityFixtures::class,
-            ];
-        }
+        return [
+            UserFixtures::class,
+            MovementActivityFixtures::class,
+            MovementSetActivityFixtures::class,
+            BodyweightActivityFixtures::class,
+        ];
     }
 
     private $workoutsImagesManager;
@@ -74,13 +64,16 @@ class WorkoutFixtures extends BaseFixture implements DependentFixtureInterface
         });
 
         $this->createMany(10, 'bodyweight_workout', function($i) 
-        {
+        {   
+            $activity = $this->getRandomReference($this->faker->randomElement(self::$bodyweightActivities));
+
             $workout = new Workout();
             $workout
                 ->setUser($this->getRandomReference('main_users'))
-                ->setActivity($this->getRandomReference($this->faker->randomElement(self::$bodyweightActivities)))
+                ->setActivity($activity)
                 ->setDurationSecondsTotal($this->faker->numberBetween($min = 1, $max = 86399))
                 /* max time -> 23:59:59 */ 
+                ->setRepetitionsTotal($activity->getRepetitionsAvgMin())
                 ->calculateSaveBurnoutEnergyTotal()
                 ->setStartAt($this->faker->dateTime)
                 ;

@@ -305,7 +305,7 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         } else {
             $date = \DateTime::createFromFormat('Y-m-d G:i', $data['formData']['startAt']);
         }
-        
+
         $weatherData = $this->weatherService->getWeather($position, $date);
 
         $routeDataModel = new RouteDataModel();

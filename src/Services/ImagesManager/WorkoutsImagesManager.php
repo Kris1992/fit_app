@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use App\Services\ImagesResizer\ImagesResizerInterface;
+use App\Services\FilesManager\FilesManager;
 
 class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInterface
 {
@@ -128,7 +129,7 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
             $originalFilename = $file->getFilename();
         }
 
-        $newFilenameExtFree = $this->clearFilename($originalFilename);
+        $newFilenameExtFree = FilesManager::clearFilename($originalFilename);
 
         $extension = $file->guessExtension();
         $newFilename = $newFilenameExtFree.'.'.$extension;
@@ -178,19 +179,6 @@ class WorkoutsImagesManager extends ImagesConstants implements ImagesManagerInte
         }
 
         return true;   
-    }
-
-   /**
-    * clearFilename Clear filename from dots and add unique id
-    * @param  string $filename Original filename of uploaded file
-    * @return string           New filename
-    */
-    private function clearFilename(string $filename): string
-    {
-        $clearFilename = str_replace('.', '_', $filename);
-        $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
-        
-        return $clearFilename;
     }
 
 }

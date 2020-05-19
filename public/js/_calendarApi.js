@@ -62,10 +62,12 @@ import { getStatusError } from './_apiHelper.js';
 
 			this._getWorkoutInfo(id).then((data) => {
         		Swal.fire({
-  					title: `${data['activity']['name']}`,
+  					title: `${data['activity']['name']} `,
   					html: `<strong>Duration: </strong> ${data['time']}
   							<br/><strong>Burnout Energy: </strong>${data['burnoutEnergyTotal']} <strong>kcal</strong>
-  							<br/><strong>Date: </strong> ${data['startDate']}`,
+  							<br/><strong>Date: </strong> ${data['startDate']}
+                            <br/><a href="${data['_links']['report']['href']}">Show Report</a>
+                            `,
   					type: 'info',
  		 			confirmButtonText: '<i class="fa fa-thumbs-up"></i> OK!',
   					confirmButtonAriaLabel: 'OK!'

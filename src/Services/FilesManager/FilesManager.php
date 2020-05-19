@@ -22,6 +22,7 @@ class FilesManager implements FilesManagerInterface {
      *
      *@param FilesystemInterface $publicUploadsFilesystem
      *@param LoggerInterface $logger
+     *@param FoldersManagerInterface $foldersManager
      *@param string $uploadsDirectory Path to uploads directory
      *
      */
@@ -123,7 +124,7 @@ class FilesManager implements FilesManagerInterface {
      * @param  string $filename Name of uploaded file
      * @return string Cleared filename
      */
-    private function clearFilename(string $filename): string
+    public static function clearFilename(string $filename): string
     {
         $clearFilename = str_replace('.', '_', $filename);
         $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
@@ -131,3 +132,4 @@ class FilesManager implements FilesManagerInterface {
         return $clearFilename;
     } 
 }
+

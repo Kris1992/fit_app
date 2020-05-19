@@ -55,6 +55,33 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
+     * findAllQueryElastica Find all users with following data (with join friends) or empty table 
+     * @param  string $searchTerms Search word
+     * @param  User $user Current user object to ignore
+     * @return Query
+     */
+    public function findAllQueryElastica(string $searchTerms, User $user)
+    {   
+        if ($searchTerms) {
+            return $this->createQueryBuilder('u')
+                ->where('(MATCH_AGAINST(u.firstName, u.secondName) AGAINST(:searchTerms boolean)>0) OR (u.email LIKE :emailTerms)')
+                ->setParameters([
+                    'searchTerms' => $searchTerms.'*',
+                    'emailTerms' => '%'.$searchTerms.'%',
+                    //'user' => $user,AND u != :user
+                ])
+                ->leftJoin('u.invitedFriends', 'if')
+                ->addSelect('if')
+                ->leftJoin('u.invitedByFriends', 'ibf')
+                ->addSelect('ibf')
+                ->getQuery()
+                ;
+        }
+        return [];
+    }    
+
+    /**
+     * 
      * @return User[]
      */
     public function findAllMatching(string $query, int $limit = 5)
@@ -81,36 +108,5 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-
-
-
-    
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+ 
 }

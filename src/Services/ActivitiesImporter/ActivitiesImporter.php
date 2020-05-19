@@ -23,34 +23,36 @@ class ActivitiesImporter implements ActivitiesImporterInterface
 {
 
     private $logger;
-    private $filesManagerInterface;
+    private $filesManager;
     private $uploadsDirectory;
     private $csvFileReader;
-    private $modelValidatorInterface;
-    private $em;
-
+    private $modelValidator;
+    private $entityManager;
 
     /**
      * ActivitiesImporter Constructor
      * 
      * @param LoggerInterface $logger
-     * @param FilesManagerInterface $filesManagerInterface
+     * @param FilesManager $filesManager
+     * @param FileReaderInterface $csvFileReader
+     * @param ModelValidatorInterface $modelValidator
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(LoggerInterface $logger, FilesManagerInterface $filesManagerInterface, FileReaderInterface $csvFileReader, ModelValidatorInterface $modelValidatorInterface, EntityManagerInterface $em, string $uploadsDirectory)  
+    public function __construct(LoggerInterface $logger, FilesManagerInterface $filesManager, FileReaderInterface $csvFileReader, ModelValidatorInterface $modelValidator, EntityManagerInterface $entityManager, string $uploadsDirectory)  
     {
         $this->logger = $logger;
-        $this->filesManagerInterface = $filesManagerInterface;
+        $this->filesManager = $filesManager;
         $this->uploadsDirectory = $uploadsDirectory;
         $this->csvFileReader = $csvFileReader;
-        $this->modelValidatorInterface = $modelValidatorInterface;
-        $this->em = $em;
+        $this->modelValidator = $modelValidator;
+        $this->entityManager = $entityManager;
     }
 
     public function import(File $file): array
     {
 
         try {
-            $filename = $this->filesManagerInterface->upload($file, 'activity_csv');
+            $filename = $this->filesManager->upload($file, 'activity_csv');
         } catch (\Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -76,37 +78,35 @@ class ActivitiesImporter implements ActivitiesImporterInterface
                     $activityModel = $activityTransformer->transformArrayToModel($activityArray);
                     
                     //Validation Model data
-                    $isValid = $this->modelValidatorInterface->isValid($activityModel);
+                    $isValid = $this->modelValidator->isValid($activityModel);
                     if($isValid) {
                         $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
                         //$activities[$key] = $activityFactory->create($activityModel);
                         $activity = $activityFactory->create($activityModel);
                         //in inheritance joined and single table (https://github.com/doctrine/orm/issues/6248) is impossible to make uniqueConstraints on few columns so it must flush one by one or in future i make for this array validator
-                        $this->em->persist($activity);
-                        $this->em->flush();
+                        $this->entityManager->persist($activity);
+                        $this->entityManager->flush();
 
                         $result['valid']++;    
                     } else {
                         $result['invalid']++;
-                        $violation = $this->modelValidatorInterface->getErrorMessage();
 
                         array_push(
                             $result['invalidRows'], 
                             [ 
                                 'id' => $key+2,//header + num from 1 not 0
-                                'message'=> $violation,
+                                'message'=> $this->modelValidator->getErrorMessage(),
                             ]
                         );
                     }
                 } catch (\Exception $e) {
                     $result['invalid']++;
 
-                    $violation = $e->getMessage();
                         array_push(
                             $result['invalidRows'], 
                             [ 
                                 'id' => $key+2,//header + num from 1 not 0
-                                'message'=> $violation,
+                                'message'=> $e->getMessage(),
                             ]
                         );
                 }
@@ -114,10 +114,11 @@ class ActivitiesImporter implements ActivitiesImporterInterface
             
         }
 
-        $this->filesManagerInterface->delete($filename, 'activity_csv');
+        $this->filesManager->delete($filename, 'activity_csv');
         
         if (!$isValidCSV) {
-            throw new \Exception("Uploaded CSV file is not valid");
+            $this->logger->info('Uploaded CSV file was not valid.If You see that message often check http://csvlint.io/package website work.');
+            throw new \Exception("Uploaded CSV file is not valid.");
         }
 
         return $result;
@@ -157,8 +158,6 @@ class ActivitiesImporter implements ActivitiesImporterInterface
         }
 
         return false;
-        //throw new Exception("CSV is not valid or site CSVLint is disconnect");
-        //logger
     }
 
     // second way curl (just for fun)

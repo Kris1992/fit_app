@@ -50,10 +50,10 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/{id}/edit", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $em, UserModelFactoryInterface $userModelFactoryInterface, UserUpdaterInterface $userUpdaterInterface)
+    public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater)
     {
         /** @var UserRegistrationFormModel $userModel */
-        $userModel = $userModelFactoryInterface->create($user);
+        $userModel = $userModelFactory->create($user);
           
         $form = $this->createForm(UserRegistrationFormType::class, $userModel, [
             'is_admin' => true
@@ -62,10 +62,9 @@ class AdminAccountController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             
-            $user = $userUpdaterInterface->update($userModel, $user, $form['imageFile']->getData());
+            $user = $userUpdater->update($userModel, $user, $form['imageFile']->getData());
             
-            $em->persist($user);
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('success', 'User is updated!');
 
             return $this->redirectToRoute('admin_account_edit', [

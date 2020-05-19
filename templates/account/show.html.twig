@@ -1,0 +1,298 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Show User{% endblock %}
+{% block section_class %}account{% endblock %} 
+{% block content_body %}
+	<div class="col-sm-12 bg-profile border rounded">
+        <div class="row">
+            <div class="col-xs-12 col-sm-2">
+                <div class="user-image">
+                    {% if user.imageFilename %}
+                    <img src="{{uploaded_asset(user.thumbImagePath)}}" class="thumbnail" height="100" width="100">
+                    {% else %}
+                    <img src="{{asset('img/users/default.png')}}" class="thumbnail" height="100" width="100">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-10 text-green p-3 mb-3">
+                <h3 class="d-inline-block">{{ user.fullName }}</h3>
+            </div>
+        </div>
+        <div class="row bg-primary">
+            <div class="offset-md-3 col-md-3 text-center">
+                <h3 class="text-uppercase">Workouts</h3>
+                <h4><span class="counter-js">{{ totalData['totalWorkouts'] }}</span></h4>
+                
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-uppercase">Time</h3>
+                <h4><span class="counter-js">{{ totalData['totalDuration'] }}</span> sec</h4>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-uppercase">Likes</h3>
+                <h4><span class="counter-js">{{ totalLikes }}</span></h4>
+            </div>
+        </div>
+        <div class="row bg-white py-3">
+            <div class="col-sm-12 col-md-3">
+                <nav>
+                    <div class="col-12 text-center">
+                        <h4>
+                            <span class="badge badge-secondary text-uppercase">Personal Bests
+                            </span>
+                        </h4>
+                    </div>
+                    {% for record in personalBest %}
+                        <div class="card">
+                            <a class="sidebar-item" data-toggle="collapse" href="#{{ record.activityName | replace({' ': ''}) }}" aria-expanded="false" aria-controls="{{ record.activityName | replace({' ': ''}) }}">
+                                <div class="card-header bg-primary text-white">
+                                    <span class="fas fa-medal"></span>
+                                    <span class="text-uppercase">
+                                        {{ record.activityName }}
+                                    </span>
+                                </div>
+                            </a>
+                            <div class="collapse multi-collapse show" id="{{ record.activityName | replace({' ': ''}) }}">
+                                <div class="card-body p-0">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                            Longest
+                                            <span class="badge badge-primary badge-pill">
+                                                {{ record.totalDuration | time }}
+                                            </span>
+                                        </li>
+                                        {% if  record.totalDistance %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                                Farthest Distance
+                                                <span class="badge badge-primary badge-pill">
+                                                    {{ record.totalDistance | number_format(2) }} km
+                                                </span>
+                                            </li>
+                                        {% endif %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                                            Most Calories Burned
+                                            <span class="badge badge-primary badge-pill">
+                                                {{ record.totalBurnoutEnergy }} kcal
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </nav>
+            </div>
+            <div class="col-sm-12 col-md-9" id="js-workout-cards-wrapper">
+                <div class="col-12 text-center">
+                    <span><h4>Last Workouts</h4></span>
+                </div>
+                {% for workout in workouts %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="text-left">{{ workout.activity.name }}</h5>
+                            </div>
+                    
+                            <div class="card-body">
+                                <div class="card-text row">
+                                    <div class="workout-stat col-md-3">
+                                        <a href="{{ path('workout_report', {id: workout.id} ) }}" target="_blank">
+                                        {% if workout.imageFilename is not null %} 
+                                            <img src="{{ uploaded_asset(workout.thumbImagePath) }}" alt="Workout image">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/150" alt="Workout image">
+                                        {% endif %}
+                                        </a>             
+                                    </div>
+                                    <div class="workout-stat col-md-9">
+                                        <div class="col-12">
+                                            <span class="fas fa-fire color-fire"></span>
+                                            <span class="text-muted text-uppercase">{{workout.burnoutEnergyTotal }} kcal</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="far fa-clock color-clock"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Duration
+                                                {{ workout.durationSecondsTotal | time }}
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-road color-clock"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Distance
+                                                {% if workout.distanceTotal %}
+                                                    {{ workout.distanceTotal }}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                km
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-running text-primary"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Average Speed
+                                                {% if workout.averageSpeed %}
+                                                    {{ workout.averageSpeed | number_format(2)}}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                km/h
+                                            </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="fas fa-tachometer-alt text-primary"></span>
+                                            <span class="text-muted text-uppercase">
+                                                Average Pace
+                                                {% if workout.averagePace %}
+                                                    {{ workout.averagePace | number_format(2) }}
+                                                {% else %}
+                                                    ---
+                                                {% endif %}
+                                                min/km
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <span class="workout-date-js" data-date="{{ workout.startAt | date('Y-m-d H:i') }}">{{ workout.startAt | date('Y-m-d H:i') }}</span>
+                                <span>|</span>
+                                <div class="js-reactions d-inline-block">
+                                    <a href="{{ path('api_workout_reaction', {id: workout.id}) }}" class="js-like">
+                                        {% if workout.isReactedByUserAndType(app.user, 1) %}
+                                            <span class="text-primary fas fa-thumbs-up"></span>
+                                        {% else %}
+                                            <span class="far fa-thumbs-up"></span>
+                                        {% endif%}
+                                    </a>
+                                    <span class="js-like-count">{{ workout.reactionsByType(1) | length }}</span>
+
+                                    <span>|</span>    
+
+                                    <a href="{{ path('api_workout_reaction', {id: workout.id}) }}" class="js-love">
+                                        {% if workout.isReactedByUserAndType(app.user, 2) %}
+                                            <span class="text-danger fas fa-heart"></span>
+                                        {% else %}
+                                            <span class="far fa-heart"></span>
+                                        {% endif%}
+                                    </a>
+                                    <span class="js-love-count">{{ workout.reactionsByType(2) | length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="col-12 my-2 bg-warning" id="loadingWrapper-js" data-url="{{ path('api_workouts_get_after_date') }}"> 
+        
+                </div>
+            </div>
+        </div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.0/jquery.waypoints.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.counterup@2.1.0/jquery.counterup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+
+<script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+<script type="module" src="{{ asset('js/_profile.js') }}"></script>
+<script type="module" src="{{ asset('js/_reaction.js') }}"></script>
+
+<script type="text/template" id="js-workout-card-template">
+<div class="col-12">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="text-left"><%= activity.name %></h5>
+        </div>
+        <div class="card-body">
+            <div class="card-text row">
+                <div class="workout-stat col-md-3">
+                    <a href="<%= _links.report.href %>" target="_blank">
+                    <% if (imageFilename) { %>
+                        <img src="<%= _links.thumbImage.href %>" alt="Workout image">
+                    <% } else { %>
+                        <img src="https://via.placeholder.com/150" alt="Workout image">
+                    <% } %>
+                    </a>
+                </div>
+                <div class="workout-stat col-md-9">
+                    <div class="col-12">
+                        <span class="fas fa-fire color-fire"></span>
+                        <span class="text-muted text-uppercase"><%= burnoutEnergyTotal %> Kcal</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="far fa-clock color-clock"></span>
+                        <span class="text-muted text-uppercase">Duration <%= time %></span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-road color-clock"></span>
+                        <span class="text-muted text-uppercase">Distance 
+                        <% if (distanceTotal) { %>
+                            <%= distanceTotal %>
+                        <% } else { %>
+                            ---
+                        <% } %>
+                        km</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-running text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Speed
+                            <% if (averageSpeed) { %>
+                                <%= averageSpeed.toFixed(2) %>
+                            <% } else { %>
+                                ---
+                            <% } %>
+                            km/h
+                        </span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fas fa-tachometer-alt text-primary"></span>
+                        <span class="text-muted text-uppercase">
+                            Average Pace
+                            <% if (averagePace) { %>
+                                <%= averagePace.toFixed(2) %>
+                            <% } else { %>
+                                ---
+                            <% } %>
+                            min/km
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <span class="workout-date-js" data-date="<%= startDate %>"><%= startDate %></span>
+            <span>|</span>
+            <div class="js-reactions d-inline-block">
+                <a href="<%= _links.reaction.href %>" class="js-like">
+                    <% if (reactionsArray.type[1].reacted) { %>
+                        <span class="text-primary fas fa-thumbs-up"></span>
+                    <% } else { %>
+                        <span class="far fa-thumbs-up"></span>
+                    <% } %>
+                </a>
+                <span class="js-like-count"><%= reactionsArray.type[1].count %></span>
+                
+                <span>|</span>    
+
+                <a href="<%= _links.reaction.href %>" class="js-love">
+                    <% if (reactionsArray.type[2].reacted) { %>
+                        <span class="text-danger fas fa-heart"></span>
+                    <% } else { %>
+                        <span class="far fa-heart"></span>
+                    <% } %>
+                </a>
+                <span class="js-love-count"><%= reactionsArray.type[2].count %></span>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}
+

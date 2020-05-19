@@ -53,7 +53,8 @@ class ActivityController extends AbstractController
         if(!$activities) {
             $jsonError = new JsonErrorResponse(404, 
                 JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-                'Activity not found.');
+                'Activity not found.'
+            );
 
             return $jsonErrorFactory->createResponse($jsonError);
         }

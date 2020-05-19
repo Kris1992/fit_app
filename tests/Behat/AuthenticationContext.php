@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Behat\MinkExtension\Context\RawMinkContext;
+use Behat\MinkExtension\Context\MinkContext;
 
 use Behat\Behat\Context\SnippetAcceptingContext;
 use App\Entity\User;
@@ -25,7 +26,7 @@ use \PHPUnit\Framework\Assert as Assertions;
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class AuthenticationContext extends RawMinkContext implements Context, SnippetAcceptingContext
+class AuthenticationContext extends MinkContext implements Context, SnippetAcceptingContext
 {
     /**
      * @var KernelInterface
@@ -257,6 +258,24 @@ class AuthenticationContext extends RawMinkContext implements Context, SnippetAc
         $this->getSession()->executeScript("tinymce.get()[0].setContent('" . $text . "');");
     }
 
+
+    /**
+    * Attaches file to field with specified name.
+    *
+    * @Then I attach the file :path to the dropzone
+    */
+    public function iAttachTheFileToTheDropzone($path)
+    {
+        $fakeInputScript = "fakeInput = window.$('<input/>').attr({id: 'fakeInput', type:'file'}).appendTo('body');";
+        $this->getSession()->executeScript($fakeInputScript);
+        $this->attachFileToField('fakeInput', $path);
+        $dropFakeFileScript = "
+            dataTransfer = new DataTransfer()
+            dataTransfer.items.add(fakeInput.get(0).files[0])
+            testEvent = new DragEvent('drop', {bubbles:true, dataTransfer: dataTransfer })
+            $('.js-dropzone')[0].dispatchEvent(testEvent)";
+        $this->getSession()->executeScript($dropFakeFileScript);
+    }
 
 
 

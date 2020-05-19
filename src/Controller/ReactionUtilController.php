@@ -22,7 +22,7 @@ class ReactionUtilController extends AbstractController
     /**
      * @Route("/api/workout/{id}/reaction", name="api_workout_reaction", methods={"POST"} )
      */
-    public function workoutReactionAction(Workout $workout, Request $request, ReactionModelFactoryInterface $reactionModelFactory, ReactionFactoryInterface $reactionFactory, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory,EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository, ReactionRepository $reactionRepository)
+    public function workoutReactionAction(Workout $workout, Request $request, ReactionModelFactoryInterface $reactionModelFactory, ReactionFactoryInterface $reactionFactory, ModelValidatorInterface $modelValidator, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager, WorkoutRepository $workoutRepository, ReactionRepository $reactionRepository)
     {
         $reactionData = json_decode($request->getContent(), true);
 

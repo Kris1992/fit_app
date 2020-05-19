@@ -54,7 +54,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/add", name="admin_activity_add", methods={"POST", "GET"})
      */
-    public function add(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
+    public function add(Request $request, EntityManagerInterface $entityManager, ModelValidatorInterface $modelValidator)
     {
 
         $form = $this->createForm(ActivityFormType::class);
@@ -83,8 +83,8 @@ class AdminActivityController extends AbstractController
                     $activityFactory = ActivityFactory::chooseFactory($activityModel->getType());
                     $activity = $activityFactory->create($activityModel);
 
-                    $em->persist($activity);
-                    $em->flush();
+                    $entityManager->persist($activity);
+                    $entityManager->flush();
 
                     $this->addFlash('success', 'Activity was created!');
             
@@ -105,7 +105,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("api/admin/activity/import", name="api_admin_activity_import", methods={"POST", "GET"})
      */
-    public function import(Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator, ActivitiesImporterInterface $activitiesImporter, JsonErrorResponseFactory $jsonErrorFactory)
+    public function import(Request $request, ModelValidatorInterface $modelValidator, ActivitiesImporterInterface $activitiesImporter, JsonErrorResponseFactory $jsonErrorFactory)
     {
 
         /** @var UploadedFile $uploadedFile */
@@ -121,11 +121,9 @@ class AdminActivityController extends AbstractController
         $isValid = $modelValidator->isValid($CSVFileFormModel);
 
         if(!$isValid) {
-            $violation = $modelValidator->getErrorMessage();
-
             $jsonError = new JsonErrorResponse(400, 
                 JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                $violation
+                $modelValidator->getErrorMessage()
             );
 
             return $jsonErrorFactory->createResponse($jsonError);
@@ -149,7 +147,7 @@ class AdminActivityController extends AbstractController
      /**
      * @Route("/admin/activity/{id}/edit", name="admin_activity_edit", methods={"POST", "GET"})
      */
-    public function edit(AbstractActivity $activity, Request $request, EntityManagerInterface $em, ModelValidatorInterface $modelValidator)
+    public function edit(AbstractActivity $activity, Request $request, EntityManagerInterface $entityManager, ModelValidatorInterface $modelValidator)
     {            
         //An entity should be always valid !! so I dont wanna bind to form activity object
         //$form = $this->createForm(ActivityFormType::class, $activity);
@@ -171,8 +169,7 @@ class AdminActivityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {    
             $activity = $activityTransformer->transformToActivity($activityModel, $activity);
 
-            $em->persist($activity);
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('success', 'Activity is updated!');
 
             return $this->redirectToRoute('admin_activity_edit', [
@@ -189,7 +186,7 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/admin/activity/{id}/delete", name="admin_activity_delete",  methods={"DELETE"})
      */
-    public function delete(Request $req, AbstractActivity $activity)
+    public function delete(AbstractActivity $activity)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($activity);
@@ -269,10 +266,10 @@ class AdminActivityController extends AbstractController
      * @Route("/api/admin/activity/download_template", 
      * name="api_admin_activity_download_template", methods={"GET"})
      */
-    public function downloadActivitiesTemplate(Request $request, FilesManagerInterface $filesManagerInterface)
+    public function downloadActivitiesTemplate(Request $request, FilesManagerInterface $filesManager)
     {
         $templatePath = '/templates/activitiesTemplate.csv';
-        $absolutePath = $filesManagerInterface->getAbsolutePath($templatePath);
+        $absolutePath = $filesManager->getAbsolutePath($templatePath);
         
         return $this->file($absolutePath, 'template.csv', ResponseHeaderBag::DISPOSITION_ATTACHMENT);
     }

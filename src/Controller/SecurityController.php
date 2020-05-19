@@ -41,7 +41,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
-    public function register(Request $request, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UserRegistrationInterface $userRegistrationInterface)
+    public function register(Request $request, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UserRegistrationInterface $userRegistration)
     {
 
         $form = $this->createForm(UserRegistrationFormType::class);
@@ -53,7 +53,7 @@ class SecurityController extends AbstractController
             $userModel = $form->getData();
 
             try {
-                $user = $userRegistrationInterface->register(
+                $user = $userRegistration->register(
                             $request, 
                             $userModel, 
                             $form['imageFile']->getData()
@@ -65,9 +65,9 @@ class SecurityController extends AbstractController
                 ]);
             }
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
 
             return $guardHandler->authenticateUserAndHandleSuccess(
                 $user,
