@@ -82,18 +82,15 @@ TO DO
 :hourglass_flowing_sand: Challenges system  
 :hourglass_flowing_sand: Find new friends by elasticsearch
 :hourglass_flowing_sand: Littlebit break out from this project (Messenger needs go forward now)
+:hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
 
-  
+## Last weeks updates
 
 :heavy_check_mark: Add friends system
-
 :heavy_check_mark: Add getErrorsFromForm to service
 :heavy_check_mark: Move messenger to rabbitmq
 :heavy_check_mark: Full Edit in workout history
 :heavy_check_mark: Add few more improvements and bug fixes
-:hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
-
-## Last weeks updates
 
 :heavy_check_mark: Add reactions system (likes, loves)
 :heavy_check_mark: Add curiosity system
