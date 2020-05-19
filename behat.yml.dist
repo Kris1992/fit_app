@@ -2,8 +2,8 @@ default:
     suites:
         default:
             contexts:
+                #- Behat\MinkExtension\Context\MinkContext
                 - App\Tests\Behat\AuthenticationContext
-                - Behat\MinkExtension\Context\MinkContext
                 - App\Tests\Behat\SnapshotContext
                 - App\Tests\Behat\WebContext
                 - App\Tests\Behat\FixturesContext

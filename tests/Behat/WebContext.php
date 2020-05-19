@@ -9,6 +9,8 @@ use Behat\MinkExtension\Context\RawMinkContext;
  */
 class WebContext extends RawMinkContext
 {
+
+
      /**
      * @When I wait for the page to be loaded
      */

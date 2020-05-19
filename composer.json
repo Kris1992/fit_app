@@ -46,6 +46,7 @@
         "friends-of-behat/mink-extension": "^2.4",
         "friends-of-behat/symfony-extension": "^2.1",
         "fzaninotto/faker": "^1.8",
+        "liip/test-fixtures-bundle": "^1.9",
         "phpspec/phpspec": "^6.1",
         "phpunit/phpunit": "^8.5",
         "symfony/debug-pack": "^1.0",

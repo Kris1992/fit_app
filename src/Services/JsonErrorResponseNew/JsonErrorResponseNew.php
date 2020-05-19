@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Services\JsonErrorResponseNew;
+
+/**
+ * Handles api responses with json+problem header (To standarize errors response)
+ */
+class JsonErrorResponseNew
+{
+
+    static private $titles = [
+        JsonErrorConstants::TYPE_INVALID_REQUEST_BODY_FORMAT => 'Invalid JSON format sent',
+        JsonErrorConstants::TYPE_MODEL_VALIDATION_ERROR => 'There was a model validation error.',
+        JsonErrorConstants::TYPE_FORM_VALIDATION_ERROR => 'There was a form validation error.',
+        JsonErrorConstants::TYPE_NOT_FOUND_ERROR => 'Object not found.',
+        JsonErrorConstants::TYPE_ACTION_FAILED => 'Action failed.',
+    ];
+
+    private $statusCode;
+
+    private $type;
+
+    private $title;
+
+    private $extraData = [];
+
+    public function __construct(int $statusCode, string $type, ?string $customTitle)
+    {
+        $this->statusCode = $statusCode;
+        $this->type = $type;
+
+        if ($customTitle) {
+            $this->title = $customTitle;
+        } else {
+            if (!isset(self::$titles[$type])) {
+                throw new \InvalidArgumentException('No title defined for type '.$type);
+            }
+
+            $this->title = self::$titles[$type];
+        }
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function setSingleExtraData(string $name, string $value)
+    {
+        $this->extraData[$name] = $value;
+    }
+
+    public function setArrayExtraData(array $extraData)
+    {
+        $this->extraData = $extraData;
+    }
+
+    public function toArray()
+    {
+        return array_merge(
+            $this->extraData,
+            [
+                'status' => $this->statusCode,
+                'type' => $this->type,
+                'title' => $this->title,
+            ]
+        );
+    }
+    
+
+}

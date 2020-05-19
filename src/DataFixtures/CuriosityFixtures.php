@@ -47,13 +47,10 @@ class CuriosityFixtures extends BaseFixture implements DependentFixtureInterface
                     ;
             }
 
-            //In test env we do need waste of time to upload images
-            if ($_ENV['APP_ENV'] !== 'test') {
-                $imageFilename = $this->uploadFakeImage($curiosity->getAuthor()->getLogin());
-                $curiosity
-                    ->setMainImageFilename($imageFilename)
-                    ;
-            }
+            $imageFilename = $this->uploadFakeImage($curiosity->getAuthor()->getLogin());
+            $curiosity
+                ->setMainImageFilename($imageFilename)
+                ;
 
             return $curiosity;
         });

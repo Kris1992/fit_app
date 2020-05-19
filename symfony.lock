@@ -204,6 +204,9 @@
     "league/html-to-markdown": {
         "version": "4.9.1"
     },
+    "liip/test-fixtures-bundle": {
+        "version": "1.9.1"
+    },
     "lorenzo/pinky": {
         "version": "1.0.5"
     },

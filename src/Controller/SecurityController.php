@@ -53,7 +53,7 @@ class SecurityController extends AbstractController
             $userModel = $form->getData();
 
             try {
-                $user = $userRegistrationInterface->register(
+                $user = $userRegistration->register(
                             $request, 
                             $userModel, 
                             $form['imageFile']->getData()

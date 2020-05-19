@@ -2,28 +2,15 @@
 
 namespace App\Services\FileReader;
 
-use Psr\Log\LoggerInterface;
 use App\Services\FilesManager\FilesManagerInterface;
 
 class CSVFileReader implements FileReaderInterface
 {
 
-    private $logger;
     private $file;
     private $header;
 
     const MAX_LINE_LENGTH = 1000;
-
-
-    /**
-     * CSVFileReader Constructor
-     * 
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)  
-    {
-        $this->logger = $logger;//unused?
-    }
 
     public function __destruct()
     {
@@ -51,10 +38,7 @@ class CSVFileReader implements FileReaderInterface
             $dataArray[] = $rowDataAssoc;
         }
 
-        return $dataArray;
-            
+        return $dataArray;     
     }
 }
-
-
 

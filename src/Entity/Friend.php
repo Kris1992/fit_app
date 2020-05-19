@@ -29,7 +29,7 @@ class Friend
     private $invitee;
 
     /**
-     * @ORM\Column(type="string", length=10, columnDefinition="enum('Accepted', 'Rejected', 'Pending')")
+     * @ORM\Column(type="string", length=10) //There is no enum type in sqlite (test env), columnDefinition="enum('Accepted', 'Rejected', 'Pending')")
      */
     private $status;
 

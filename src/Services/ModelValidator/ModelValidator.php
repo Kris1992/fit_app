@@ -26,7 +26,8 @@ class ModelValidator implements ModelValidatorInterface
 
     /**
      * isValid Check is model data valid
-     * @param  $dataModel Model data object which will be validated
+     * @param $dataModel Model data object which will be validated
+     * @param $groups Validation groups [optional] 
      * @return bool
      */
     public function isValid($dataModel, $groups=null): bool
@@ -59,6 +60,10 @@ class ModelValidator implements ModelValidatorInterface
         }
     }
 
+    /**
+    * getErrors Get all validated errors
+    * @return ConstraintViolationList
+    */
     public function getErrors(): ConstraintViolationList
     {
         if (!$this->isValid) {
@@ -66,6 +71,10 @@ class ModelValidator implements ModelValidatorInterface
         }
     }
 
+    /**
+     * getErrorMessage Get first error from list
+     * @return string
+     */
     public function getErrorMessage(): string
     {
         if (!$this->isValid) {
