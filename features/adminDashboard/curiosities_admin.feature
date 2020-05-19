@@ -5,11 +5,11 @@ Feature: Curiosities Admin Panel
     
     Background:
         Given I am logged in as an admin
+        And I am on "/admin/curiosity"
+        And I click "Create"
 
     @file 
     Scenario: Add a unpublished curiosity with image
-        And I am on "/admin/curiosity"
-        And I click "Create"
         And I fill in "curiosity_form[title]" with "Simple title"
         And I fill in "curiosity_form[description]" with "About me"
         Then I attach the file "image/test.jpg" to "curiosity_form[imageFile]"
@@ -23,8 +23,6 @@ Feature: Curiosities Admin Panel
     
     @file
     Scenario: Add a published curiosity with image
-        And I am on "/admin/curiosity"
-        And I click "Create"
         And I fill in "curiosity_form[title]" with "Simple title"
         And I fill in "curiosity_form[description]" with "About me"
         Then I attach the file "image/test.jpg" to "curiosity_form[imageFile]"
@@ -36,38 +34,4 @@ Feature: Curiosities Admin Panel
         And I should see 1 row in the table
         Then I press "Edit" in the row with name "Simple title"
         And the "curiosity_form[isPublished]" checkbox should be checked
-
-    #@fixtures new
-    #Scenario: Edit a curiosity
-    #    Given Is database with "curiosities"
-    #    And I am on "/admin/curiosity"
-    #   # And I press "Edit" in the row with name "admin0@fit.com"
-    #    And break
         
-
-        #And I press "Update"
-        #And I wait for the page to be loaded
-        #Then I should see "User is updated!" 
-
-    #@fixtures 
-    #Scenario: Delete an account
-    #    Given Is database with "users"
-    #    And I am on "/admin/account"
-    #    And I press "Delete" in the row with name "user0@fit.com"
-    #    And I confirm the popup
-    #    And I wait for the page to be loaded
-    #    Then I should see "User was deleted!"
-
-    #@fixtures
-    #Scenario: Delete few accounts
-    #    Given Is database with "users"
-    #    And I am on "/admin/account"
-    #    And I check "deleteId[]" in the row with name "user0@fit.com"
-    #    And I check "deleteId[]" in the row with name "user1@fit.com"
-    #    And I press "Delete checked" 
-    #    And I wait for the page to be loaded
-    #    Then I should see "Users were deleted!"
-
-        
-    #features/adminDashboard/curiosities_admin.feature:23
-    #features/adminDashboard/curiosities_admin.feature:37
