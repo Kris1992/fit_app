@@ -20,8 +20,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\Transformer\Activity\ActivityTransformer;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 
 use App\Services\FilesManager\FilesManagerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -121,24 +121,23 @@ class AdminActivityController extends AbstractController
         $isValid = $modelValidator->isValid($CSVFileFormModel);
 
         if(!$isValid) {
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
+            return $jsonErrorFactory->createResponse(
+                400, 
+                JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, 
+                null, 
                 $modelValidator->getErrorMessage()
             );
-
-            return $jsonErrorFactory->createResponse($jsonError);
         }
         
         try {
             $result = $activitiesImporter->import($CSVFileFormModel->getUploadedFile());
         } catch (\Exception $e) {
-
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_ACTION_FAILED,
+            return $jsonErrorFactory->createResponse(
+                400, 
+                JsonErrorResponseTypes::TYPE_ACTION_FAILED, 
+                null, 
                 $e->getMessage()
             );
-
-            return $jsonErrorFactory->createResponse($jsonError);
         }
 
         return new JsonResponse($result, Response::HTTP_OK);

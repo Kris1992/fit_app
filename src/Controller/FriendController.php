@@ -9,8 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\FriendInvitation\FriendInvitationFactoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -125,12 +125,7 @@ class FriendController extends AbstractController
             return new JsonResponse(Response::HTTP_OK);
         }
 
-        $jsonError = new JsonErrorResponse(400, 
-            JsonErrorResponse::TYPE_ACTION_FAILED,
-            'Something goes wrong.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
     }
 
     /**
@@ -152,14 +147,7 @@ class FriendController extends AbstractController
             return new JsonResponse(Response::HTTP_OK);
         }
 
-        $jsonError = new JsonErrorResponse(400, 
-            JsonErrorResponse::TYPE_ACTION_FAILED,
-            'Something goes wrong.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
     }
-
-    
 
 }

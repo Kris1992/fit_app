@@ -5,20 +5,15 @@ namespace App\Services\JsonErrorResponse;
 /**
  * Handles api responses with json+problem header (To standarize errors response)
  */
-class JsonErrorResponse 
+class JsonErrorResponse
 {
-    const TYPE_INVALID_REQUEST_BODY_FORMAT = 'invalid_body_format';//Exception
-    const TYPE_MODEL_VALIDATION_ERROR = 'model_validation_error';
-    const TYPE_FORM_VALIDATION_ERROR = 'form_validation_error';
-    const TYPE_NOT_FOUND_ERROR = 'not_found_error';
-    const TYPE_ACTION_FAILED = 'action_failed';
 
     static private $titles = [
-        self::TYPE_INVALID_REQUEST_BODY_FORMAT => 'Invalid JSON format sent',
-        self::TYPE_MODEL_VALIDATION_ERROR => 'There was a model validation error.',
-        self::TYPE_FORM_VALIDATION_ERROR => 'There was a form validation error.',
-        self::TYPE_NOT_FOUND_ERROR => 'Object not found.',
-        self::TYPE_ACTION_FAILED => 'Action failed.',
+        JsonErrorResponseTypes::TYPE_INVALID_REQUEST_BODY_FORMAT => 'Invalid JSON format sent',
+        JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR => 'There was a model validation error.',
+        JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR => 'There was a form validation error.',
+        JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR => 'Object not found.',
+        JsonErrorResponseTypes::TYPE_ACTION_FAILED => 'Action failed.',
     ];
 
     private $statusCode;

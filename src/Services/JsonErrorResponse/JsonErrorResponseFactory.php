@@ -7,18 +7,32 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * Creates JsonErrorResponse object
  */
-class JsonErrorResponseFactory 
+class JsonErrorResponseFactory
 {
-    public function createResponse(JsonErrorResponse $jsonErrorResponse)
+
+    public function createResponse(int $statusCode, string $type, $data = null, $customTitle = null): JsonResponse
     {
-        $data = $jsonErrorResponse->toArray();
+        // tu stworzyć JsonErrorResponse
+        //Data is most important if someone pass data and customTitle 
+        if ($data) {
+            if(is_array($data)){
+                $jsonError = new JsonErrorResponse($statusCode, $type, null);
+                $jsonError->setArrayExtraData($data);
+            } else {
+                $jsonError = new JsonErrorResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, $data);
+            }
+        } else {
+            $jsonError = new JsonErrorResponse($statusCode, $type, $customTitle);
+        }
+
+        $data = $jsonError->toArray();
+
         $response = new JsonResponse(
             $data,
-            $jsonErrorResponse->getStatusCode()
+            $jsonError->getStatusCode()
         );
         $response->headers->set('Content-Type', 'application/problem+json');
 
         return $response;
     }
 }
-

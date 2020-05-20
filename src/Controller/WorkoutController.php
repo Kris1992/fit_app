@@ -26,8 +26,8 @@ use App\Services\Updater\Workout\WorkoutUpdaterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteWorkoutImage;
 use App\Services\ImagesManager\ImagesManagerInterface;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 use App\Services\FormApiValidator\FormApiValidatorInterface;
 use App\Services\Factory\WorkoutModel\WorkoutModelFactory;
 
@@ -45,8 +45,6 @@ class WorkoutController extends AbstractController
 
         $formAverage = $this->createForm(WorkoutAverageDataFormType::class);
         $formSpecific = $this->createForm(WorkoutSpecificDataFormType::class);
-
-        
 
         return $this->render('workout/list.html.twig', [
             'workouts' => $workouts,
@@ -322,32 +320,22 @@ class WorkoutController extends AbstractController
         
                         return $response;
                     } catch (\Exception $e) {
-                        $jsonError = new JsonErrorResponse(400, 
-                            JsonErrorResponse::TYPE_ACTION_FAILED,
-                            $e->getMessage()
-                        ); 
+                        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
                     }
                 } else {
-                    $jsonError = new JsonErrorResponse(400, 
-                        JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                        $modelValidator->getErrorMessage()
-                    );
+                    return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
                 }
             } else {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_ACTION_FAILED,
-                    'Cannot create workout with that type of activity.'
-                );
+                return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot create workout with that type of activity.');
             }
-        } else {
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
-                null
-            );
-            $jsonError->setArrayExtraData($formApiValidator->getErrors($formAverage));
         }
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        
+        return $jsonErrorFactory->createResponse(
+            400, 
+            JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR, 
+            $formApiValidator->getErrors($formAverage)
+        );
+        
     }
 
     /**
@@ -391,33 +379,26 @@ class WorkoutController extends AbstractController
         
                         return $response;
                     } catch (\Exception $e) {
-                        $jsonError = new JsonErrorResponse(400, 
-                            JsonErrorResponse::TYPE_ACTION_FAILED,
-                            $e->getMessage()
-                        ); 
+                        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
                     }
                 } else {
-                    $jsonError = new JsonErrorResponse(400, 
-                        JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                        $modelValidator->getErrorMessage()
-                    );
+                    return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
                 }
             } else {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_ACTION_FAILED,
+                return $jsonErrorFactory->createResponse(
+                    400, 
+                    JsonErrorResponseTypes::TYPE_ACTION_FAILED,
+                    null,
                     'Sorry we dont have activity matching your achievements in database.'
                 );
             }
-        } else {
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
-                null
-            );
-            $jsonError->setArrayExtraData($formApiValidator->getErrors($formSpecific));
-        }
-
-        return $jsonErrorFactory->createResponse($jsonError);
-
+        } 
+        
+        return $jsonErrorFactory->createResponse(
+            400, 
+            JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR, 
+            $formApiValidator->getErrors($formSpecific)
+        );
     }
 
      /**
@@ -472,13 +453,11 @@ class WorkoutController extends AbstractController
         $formSpecific->submit($data);
 
         if (!$formSpecific->isValid()) {
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
-                null
+            return $jsonErrorFactory->createResponse(
+                400, 
+                JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR,
+                $formApiValidator->getErrors($formSpecific)
             );
-            $jsonError->setArrayExtraData($formApiValidator->getErrors($formSpecific));
-
-            return $jsonErrorFactory->createResponse($jsonError);
         }
 
         $workoutSpecificModel = $formSpecific->getData();
@@ -502,25 +481,14 @@ class WorkoutController extends AbstractController
 
                     return $response;
                 } catch (\Exception $e) {
-                    $jsonError = new JsonErrorResponse(400, 
-                        JsonErrorResponse::TYPE_ACTION_FAILED,
-                        $e->getMessage()
-                    );
+                    return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
                 }
             } else {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                    $modelValidator->getErrorMessage()
-                );
+                return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
             }
-        } else {
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_ACTION_FAILED,
-                'Cannot update workout with that type of activity.'
-            );
         }
-
-        return $jsonErrorFactory->createResponse($jsonError);
+            
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot update workout with that type of activity.');
     }
 
      /**
@@ -596,23 +564,13 @@ class WorkoutController extends AbstractController
         $date = json_decode($request->getContent(), true);
 
         if(!strtotime($date)){
-            $jsonError = new JsonErrorResponse(404, 
-                JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-                'No workouts to load.'
-            );
-
-            return $jsonErrorFactory->createResponse($jsonError);
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'No workouts to load.');
         }
 
         $workouts = $workoutRepository->findByUserBeforeDate($user, $date, 10);
 
         if (!$workouts) {
-            $jsonError = new JsonErrorResponse(404, 
-                JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-                'No more workouts to load.'
-            );
-
-            return $jsonErrorFactory->createResponse($jsonError);
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'No more workouts to load.');
         }
 
         foreach ($workouts as $workout) {

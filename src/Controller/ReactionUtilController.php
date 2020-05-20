@@ -7,8 +7,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 use App\Services\Factory\ReactionModel\ReactionModelFactoryInterface;
 use App\Services\Factory\Reaction\ReactionFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
@@ -50,12 +50,7 @@ class ReactionUtilController extends AbstractController
             $isValid = $modelValidator->isValid($reactionModel);
 
             if(!$isValid) {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                    $modelValidator->getErrorMessage()
-                );
-
-                return $jsonErrorFactory->createResponse($jsonError);
+                return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
             }
 
             $reaction = $reactionFactory->create($reactionModel);
