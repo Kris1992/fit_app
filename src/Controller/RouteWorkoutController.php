@@ -126,7 +126,6 @@ class RouteWorkoutController extends AbstractController
         }
 
         $form = $this->createForm(WorkoutWithMapFormType::class, null, [ 'is_drawing' => false ]);
-
         $form->submit($data['formData']);
 
         if (!$form->isValid()) {
@@ -141,7 +140,7 @@ class RouteWorkoutController extends AbstractController
         $workoutSpecificModel = $form->getData();
 
         $workoutSpecificModel = $workoutSpecificExtender->fillWorkoutModelWithMap($workoutSpecificModel, $user, $data);
-
+        
         if ($workoutSpecificModel) {
             $isValid = $modelValidator->isValid($workoutSpecificModel, ['route_model']);
 

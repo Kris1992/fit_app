@@ -87,6 +87,7 @@ TO DO
 
 ## Last weeks updates
 
+:heavy_check_mark: Better solution to JsonErrorResponse (less code and more flexible)
 :heavy_check_mark: Add friends system
 :heavy_check_mark: Add getErrorsFromForm to service
 :heavy_check_mark: Move messenger to rabbitmq
