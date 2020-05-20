@@ -10,8 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\AbstractActivity;
 use App\Repository\AbstractActivityRepository;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 
 class ActivityController extends AbstractController
 {
@@ -51,12 +51,7 @@ class ActivityController extends AbstractController
         );
 
         if(!$activities) {
-            $jsonError = new JsonErrorResponse(404, 
-                JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-                'Activity not found.'
-            );
-
-            return $jsonErrorFactory->createResponse($jsonError);
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Activity not found.');
         }
 
         return $this->json(

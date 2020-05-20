@@ -14,8 +14,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\Attachment\AttachmentFactoryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Envelope;
@@ -71,11 +71,6 @@ class AdminAttachmentController extends AbstractController
             }
         }
 
-        $jsonError = new JsonErrorResponse(400, 
-            JsonErrorResponse::TYPE_ACTION_FAILED,
-            'Wrong data given.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Wrong data given.');
     }
 }

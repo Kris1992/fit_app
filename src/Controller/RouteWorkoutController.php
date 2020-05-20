@@ -16,8 +16,9 @@ use App\Services\ModelValidator\ModelValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\ModelExtender\WorkoutSpecificExtender;
 use App\Exception\Api\ApiBadRequestHttpException;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
+
 use App\Services\FormApiValidator\FormApiValidatorInterface;
 
 class RouteWorkoutController extends AbstractController
@@ -51,14 +52,11 @@ class RouteWorkoutController extends AbstractController
         $form->submit($data['formData']);
 
         if (!$form->isValid()) {
-            $errors = $formApiValidator->getErrors($form);
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
-                null
-                );
-
-            $jsonError->setArrayExtraData($errors);
-            return $jsonErrorFactory->createResponse($jsonError);
+            return $jsonErrorFactory->createResponse(
+                400, 
+                JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR,
+                $formApiValidator->getErrors($form)
+            );
         }
 
         $user = $this->getUser();
@@ -91,30 +89,15 @@ class RouteWorkoutController extends AbstractController
 
                     return new JsonResponse($response, Response::HTTP_OK);
                 } catch (\Exception $e) {
-                    $jsonError = new JsonErrorResponse(400, 
-                        JsonErrorResponse::TYPE_ACTION_FAILED,
-                        $e->getMessage()
-                    );
-
-                    return $jsonErrorFactory->createResponse($jsonError);
+                    return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
                 }
 
             } else {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_ACTION_FAILED,
-                    $modelValidator->getErrorMessage()
-                );
-
-                return $jsonErrorFactory->createResponse($jsonError);
+                return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $modelValidator->getErrorMessage());
             }
         }        
         
-        $jsonError = new JsonErrorResponse(400, 
-            JsonErrorResponse::TYPE_ACTION_FAILED,
-            'Cannot add workout. Please check data and try again.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot add workout. Please check data and try again.');
     }
 
     /**
@@ -147,13 +130,11 @@ class RouteWorkoutController extends AbstractController
         $form->submit($data['formData']);
 
         if (!$form->isValid()) {
-            $errors = $formApiValidator->getErrors($form);
-            $jsonError = new JsonErrorResponse(400, 
-                JsonErrorResponse::TYPE_FORM_VALIDATION_ERROR,
-                $errors
+            return $jsonErrorFactory->createResponse(
+                400, 
+                JsonErrorResponseTypes::TYPE_FORM_VALIDATION_ERROR, 
+                $formApiValidator->getErrors($form)
             );
-
-            return $jsonErrorFactory->createResponse($jsonError);
         }
 
         $user = $this->getUser();
@@ -186,29 +167,14 @@ class RouteWorkoutController extends AbstractController
 
                     return new JsonResponse($response, Response::HTTP_OK);
                 } catch (\Exception $e) {
-                    $jsonError = new JsonErrorResponse(400, 
-                        JsonErrorResponse::TYPE_ACTION_FAILED,
-                        $e->getMessage()
-                    );
-
-                    return $jsonErrorFactory->createResponse($jsonError);
+                    return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
                 }
 
             } else {
-                $jsonError = new JsonErrorResponse(400, 
-                    JsonErrorResponse::TYPE_MODEL_VALIDATION_ERROR,
-                    $modelValidator->getErrorMessage()
-                );
-
-                return $jsonErrorFactory->createResponse($jsonError);
+                return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
             }
         }        
         
-        $jsonError = new JsonErrorResponse(400, 
-            JsonErrorResponse::TYPE_ACTION_FAILED,
-            'Cannot add workout. Please check data and try again.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot add workout. Please check data and try again.');
     }
 }

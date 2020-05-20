@@ -27,8 +27,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteWorkoutImage;
 use App\Exception\Api\ApiBadRequestHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 
 /**
 * @IsGranted("ROLE_ADMIN")
@@ -406,12 +406,7 @@ class AdminWorkoutController extends AbstractController
             }
         }
 
-        $jsonError = new JsonErrorResponse(404, 
-            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-            'Image not found.'
-        );
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
 
 }

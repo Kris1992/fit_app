@@ -18,8 +18,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Command\DeleteUserImage;
 use App\Message\Command\DeleteUserFolders;
 use App\Exception\Api\ApiBadRequestHttpException;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -167,11 +167,7 @@ class AdminAccountController extends AbstractController
             }
         }
 
-        $jsonError = new JsonErrorResponse(404, 
-            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-            'Image not found.');
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
     
 }

@@ -29,8 +29,8 @@ use App\Message\Command\DeleteUserImage;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
 use App\Services\Mailer\MailingSystemInterface;
-use App\Services\JsonErrorResponse\JsonErrorResponse;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
+use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
 
 class AccountController extends AbstractController
 {
@@ -203,7 +203,7 @@ class AccountController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
-
+        
         if ($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
@@ -217,12 +217,8 @@ class AccountController extends AbstractController
                 return new JsonResponse(Response::HTTP_OK);
             }
         }
-
-        $jsonError = new JsonErrorResponse(404, 
-            JsonErrorResponse::TYPE_NOT_FOUND_ERROR,
-            'Image not found.');
-
-        return $jsonErrorFactory->createResponse($jsonError);
+        
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
 
 }
