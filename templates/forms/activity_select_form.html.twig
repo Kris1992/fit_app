@@ -1,0 +1,17 @@
+{%  if challengeForm.activityName is defined %}
+    {{ form_row(challengeForm.activityName, {
+        'label' : 'Activity name: ',
+        attr: { 
+            'class': 'form-control-lg'
+        }
+    }) }}
+{% endif %}
+
+{%  if challengeForm.goalProperty is defined %}
+    {{ form_row(challengeForm.goalProperty, {
+        'label' : 'Goal: ',
+        attr: { 
+            'class': 'form-control-lg'
+        }
+    }) }}
+{% endif %}

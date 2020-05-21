@@ -22,7 +22,6 @@ use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
-
 use App\Services\FilesManager\FilesManagerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 

@@ -1,0 +1,38 @@
+{% block challenge_form %}
+<div class="card-body">
+    <h4 class="card-title text-center text-green text-uppercase">{{ header_text }}</h4>
+        {{ form_start(challengeForm, {
+            'attr': {'class': 'form-signin'}
+        }) }}
+            {{ form_row(challengeForm.title, {
+                'label' : 'Title: ',
+                attr: { placeholder: 'Title' }
+            }) }}
+            {{ form_row(challengeForm.activityType, {
+                'label' : 'Activity type: ',
+                attr: { 
+                    'data-activity-select-url': path('admin_challenge_activity_select'),
+                    'class': 'js-challenge-form-type form-control-lg'
+                }
+            }) }}
+            
+            <div class="js-select-activity-form">
+                {% include './forms/activity_select_form.html.twig' %}
+            </div>
+
+            {{ form_row(challengeForm.startAt, {
+                'label' : 'Start at: ',
+                attr: { placeholder: 'When challenge should be started?' }
+            }) }}
+            {{ form_row(challengeForm.stopAt, {
+                'label' : 'Stop at: ',
+                attr: { placeholder: 'When challenge should be ended?' }
+            }) }}
+
+            <button class="btn btn-lg btn-green btn-block text-uppercase" type="submit">{{ button_text }}</button>
+        
+        {{ form_end(challengeForm) }}
+</div>
+{% endblock %}
+
+
