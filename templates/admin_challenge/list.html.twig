@@ -52,6 +52,11 @@
                                 <td>{{ challenge.activityName }}</td>
                                 <td>{{ challenge.createdAt | date('m/d/Y') }}</td>
                                 <td>
+                                    {% set isInProgress = false %}
+                                    {% if date(challenge.startAt) < date() and date(challenge.stopAt) > date()%}
+                                        {% set isInProgress = true %}
+                                    {% endif %}
+
                                     {% if date(challenge.stopAt) > date() %}
                                         <span class="fa fa-check text-success"></span>
                                     {% else %}
@@ -59,16 +64,22 @@
                                     {% endif %}
                                 </td>
                                 <td class="links-table">
-                                    <div class="link-wrapper">
-                                        <a href="{{ path('admin_activity_edit', { id: challenge.id }) }}" title="Edit">
-                                            <span class="fa fa-pencil-alt"></span>
-                                        </a>
-                                    </div>
-                                    <div class="link-wrapper">
-                                        <a href="{{ path('admin_challenge_delete', { id: challenge.id }) }}" class="delete-item" data-name="challenge" data-id="{{ challenge.id }}" title="Delete">
-                                            <span class="fa fa-trash-alt"></span>
-                                        </a>
-                                    </div>
+                                    {% if not isInProgress %}
+                                        <div class="link-wrapper">
+                                            <a href="{{ path('admin_challenge_edit', { id: challenge.id }) }}" title="Edit">
+                                                <span class="fa fa-pencil-alt"></span>
+                                            </a>
+                                        </div>
+                                        <div class="link-wrapper">
+                                            <a href="{{ path('admin_challenge_delete', { id: challenge.id }) }}" class="delete-item" data-name="challenge" data-id="{{ challenge.id }}" title="Delete">
+                                                <span class="fa fa-trash-alt"></span>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="link-wrapper">
+                                            <span class="text-danger fas fa-ban" data-toggle="tooltip" data-placement="top" title="This challenge is in progress now"></span>
+                                        </div>
+                                    {% endif %}
     		                    </td>              
     		                </tr>
     		            {% endfor %}
@@ -91,4 +102,9 @@
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 {% endblock %}

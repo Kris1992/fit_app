@@ -12,6 +12,9 @@ use App\Entity\Challenge;
 use App\Form\ChallengeFormType;
 use App\Form\Model\Challenge\ChallengeFormModel;
 use App\Services\Factory\Challenge\ChallengeFactoryInterface;
+use Symfony\Component\HttpFoundation\Response;
+use App\Services\Factory\ChallengeModel\ChallengeModelFactoryInterface;
+use App\Services\Updater\Challenge\ChallengeUpdaterInterface;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 /**
@@ -64,6 +67,32 @@ class AdminChallengeController extends AbstractController
     }
 
     /**
+     * @Route("/admin/challenge/{id}/edit", name="admin_challenge_edit", methods={"POST", "GET"})
+     */
+    public function edit(Challenge $challenge, Request $request, EntityManagerInterface $entityManager, ChallengeModelFactoryInterface $challengeModelFactory, ChallengeUpdaterInterface $challengeUpdater)
+    {            
+        $this->denyAccessUnlessGranted('MANAGE', $challenge);
+        $challengeModel = $challengeModelFactory->create($challenge);
+
+        $form = $this->createForm(ChallengeFormType::class, $challengeModel);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {    
+            $challenge = $challengeUpdater->update($challengeModel, $challenge);
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Challenge is updated!');
+
+            return $this->redirectToRoute('admin_challenge_edit', [
+                'id' => $challenge->getId(),
+            ]);
+        }
+
+        return $this->render('admin_challenge/edit.html.twig', [
+            'challengeForm' => $form->createView()
+        ]);
+    }
+
+    /**
      * @Route("/admin/challenge/activity_name_select", name="admin_challenge_activity_select")
      */
     public function getSpecificActivityNameSelect(Request $request)
@@ -87,6 +116,14 @@ class AdminChallengeController extends AbstractController
      */
     public function delete(Request $request, Challenge $challenge, EntityManagerInterface $entityManager)
     {
+        $today = new \DateTime();
+        if ($challenge->getStartAt() < $today && $challenge->getStopAt() > $today) {
+            $response = new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+            $this->addFlash('danger','Challenge is in progress. You can not delete it now!');
+            $response->send();
+            return $response;
+        }
+        
         $entityManager->remove($challenge);
         $entityManager->flush();
 

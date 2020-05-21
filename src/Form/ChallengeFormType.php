@@ -39,7 +39,6 @@ class ChallengeFormType extends AbstractType
             ->add('activityType', ChoiceType::class, [
                 'placeholder' => 'Choose activity type',
                 'choices' => $this->getChoices('activity_type'),
-                'disabled' => $isEdit
             ])
             ->add('startAt', DateTimeType::class, [
                 'input'  => 'datetime',

@@ -178,7 +178,6 @@ class AdminActivityController extends AbstractController
         return $this->render('admin_activity/edit.html.twig', [
             'activityForm' => $form->createView()
         ]);
-
     }
 
     /**
