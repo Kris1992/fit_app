@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\Factory\Challenge;
 
@@ -7,7 +8,6 @@ use App\Form\Model\Challenge\ChallengeFormModel;
 
 class ChallengeFactory implements ChallengeFactoryInterface 
 {
-//Tests
     public function create(ChallengeFormModel $challengeModel): Challenge
     { 
         $challenge = new Challenge();

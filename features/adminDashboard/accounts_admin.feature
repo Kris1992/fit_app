@@ -20,11 +20,10 @@ Feature: Accounts Admin Panel
         And I check "user_registration_form[agreeTerms]"
         And I press "Register"
         And I wait for the page to be loaded
-        And break
         And I press "userabc0@fit.com"
         Then I should see "Logout"
 
-    @file 
+    @file
     Scenario: Add an account with image
         And I fill in "user_registration_form[email]" with "userabc0@fit.com"
         And I fill in "user_registration_form[firstName]" with "Krzysztof"
@@ -40,5 +39,3 @@ Feature: Accounts Admin Panel
         And I wait for the page to be loaded
         And I press "userabc0@fit.com"
         Then I should see "Logout"
-
-

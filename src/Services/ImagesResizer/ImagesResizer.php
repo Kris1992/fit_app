@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\ImagesResizer;
 
@@ -220,7 +221,7 @@ class ImagesResizer implements ImagesResizerInterface
             $newHeight = $originalHeight;
         }
 
-        return array($newWidth, $newHeight);
+        return array(intval($newWidth), intval($newHeight));
    }
 
     /**

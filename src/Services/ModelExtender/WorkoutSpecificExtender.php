@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\ModelExtender;
 
@@ -235,10 +236,10 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
     /**
      * getMovementActivity Get movement activity by given name and average speed 
      * @param  string $activityName Name of activity
-     * @param  int    $averageSpeed Average speed
+     * @param  float    $averageSpeed Average speed
      * @return AbstractActivity|null
      */
-    private function getMovementActivity(string $activityName, int $averageSpeed): ?AbstractActivity
+    private function getMovementActivity(string $activityName, float $averageSpeed): ?AbstractActivity
     {
         return $this->movementRepository->findOneActivityBySpeedAverageAndName(
             $activityName,

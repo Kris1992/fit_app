@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\Updater\Challenge;
 
@@ -7,7 +8,6 @@ use App\Form\Model\Challenge\ChallengeFormModel;
 
 class ChallengeUpdater implements ChallengeUpdaterInterface 
 {   
-    //Tests
     public function update(ChallengeFormModel $challengeModel, Challenge $challenge): Challenge
     {
         $challenge

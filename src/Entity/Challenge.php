@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -185,6 +186,26 @@ class Challenge
         $this->goalProperty = $goalProperty;
 
         return $this;
+    }
+
+    /**
+     * getGoalPropertyDescription Get string with human readable description 
+     * @return string|null
+     */
+    public function getGoalPropertyDescription(): string
+    {
+        switch ($this->goalProperty) {
+            case 'durationSecondsTotal':
+                return 'Most time spent';
+            case 'burnoutEnergyTotal':
+                return 'Most burnout calories';
+            case 'distanceTotal':
+                return 'Most distance traveled';
+            case 'repetitionsTotal':
+                return 'Most number of repetitions';
+            default:
+                return '';
+        }
     }
 
 }

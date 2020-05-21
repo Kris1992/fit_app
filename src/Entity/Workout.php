@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -217,7 +218,7 @@ class Workout
         $workoutDurationTotal = $this->durationSecondsTotal;
         $burnoutEnergyTotal = $activityEnergy * ($workoutDurationTotal/(60*60));
 
-        $this->burnoutEnergyTotal = $burnoutEnergyTotal;
+        $this->burnoutEnergyTotal = intval($burnoutEnergyTotal);
 
         return $this;
     }

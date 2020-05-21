@@ -74,7 +74,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
 
         $movementRepository->findOneActivityBySpeedAverageAndName(
             Argument::type('string'),
-            Argument::type('int')
+            Argument::type('float')
         )->willReturn($activity);
 
         $workout = $this->fillWorkoutModel($workoutModel, $user, null);
@@ -97,7 +97,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
 
         $movementRepository->findOneActivityBySpeedAverageAndName(
             Argument::type('string'),
-            Argument::type('int')
+            Argument::type('float')
         )->willReturn(null);
 
         $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);
@@ -186,7 +186,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
 
         $movementRepository->findOneActivityBySpeedAverageAndName(
             Argument::type('string'),
-            Argument::type('int')
+            Argument::type('float')
         )->shouldBeCalledTimes(1)->willReturn($activity);
 
         $movementSetActivity = new MovementSetActivity();
@@ -226,7 +226,7 @@ class WorkoutSpecificExtenderSpec extends ObjectBehavior
 
         $movementRepository->findOneActivityBySpeedAverageAndName(
             Argument::type('string'),
-            Argument::type('int')
+            Argument::type('float')
         )->shouldBeCalledTimes(1)->willReturn(null);
 
         $this->fillWorkoutModel($workoutModel, null, null)->shouldBe(null);

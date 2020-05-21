@@ -151,7 +151,7 @@ Feature: Workouts Admin Panel
         And I should see 1 row in the table
 
     #base on js
-    @javascript @fixtures
+    @javascript @fixtures @nem
     Scenario: Add a movement with sets workout with average data
         Given Is database with "activities"
         Given I am logged in as an admin
@@ -274,3 +274,5 @@ Feature: Workouts Admin Panel
         And I press "Delete checked"
         And I wait for the page to be loaded
         Then I should see "Workouts were deleted!"
+
+#    features/adminDashboard/workouts_admin_fixtures.feature:155

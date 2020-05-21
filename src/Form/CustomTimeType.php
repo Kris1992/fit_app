@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -61,7 +63,7 @@ class CustomTimeType extends AbstractType
 
         $hours = $minutes = $seconds = [];        
         foreach ($options['hours'] as $hour) {
-            $hours[str_pad($hour, 2, '0', STR_PAD_LEFT)] = $hour;
+            $hours[str_pad(strval($hour), 2, '0', STR_PAD_LEFT)] = $hour;
         }
 
         $hourOptions['choices'] = $hours;
@@ -69,7 +71,7 @@ class CustomTimeType extends AbstractType
         $hourOptions['choice_translation_domain'] = $options['choice_translation_domain']['hour'];
 
         foreach ($options['minutes'] as $minute) {
-            $minutes[str_pad($minute, 2, '0', STR_PAD_LEFT)] = $minute;
+            $minutes[str_pad(strval($minute), 2, '0', STR_PAD_LEFT)] = $minute;
         }
         
         $minuteOptions['choices'] = $minutes;
@@ -77,15 +79,12 @@ class CustomTimeType extends AbstractType
         $minuteOptions['choice_translation_domain'] = $options['choice_translation_domain']['minute'];
 
         foreach ($options['seconds'] as $second) {
-            $seconds[str_pad($second, 2, '0', STR_PAD_LEFT)] = $second;
+            $seconds[str_pad(strval($second), 2, '0', STR_PAD_LEFT)] = $second;
         }
         
         $secondOptions['choices'] = $seconds;
         $secondOptions['placeholder'] = $options['placeholder']['second'];
         $secondOptions['choice_translation_domain'] = $options['choice_translation_domain']['second']; 
-
-               
-        
 
         $builder
             ->add('hour', ChoiceType::class, $hourOptions)

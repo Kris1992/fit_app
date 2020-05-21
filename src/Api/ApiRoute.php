@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Api;
 
 use Symfony\Component\Routing\Annotation\Route;

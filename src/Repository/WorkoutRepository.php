@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -136,7 +137,6 @@ class WorkoutRepository extends ServiceEntityRepository
      /**
     * @return Array[] Returns an array 
     */
-    
     public function findByUserAndDateArray($user, $timeline)
     {
         return $this->createQueryBuilder('w')
@@ -336,7 +336,7 @@ FROM t1 WHERE (id,rev) IN
 
     public function countAllWorkoutsReactionsByUserAndType($user, int $type): int
     {
-        return $this->createQueryBuilder('w')
+        $result = $this->createQueryBuilder('w')
             ->andWhere('w.user = :user')
             ->setParameter('user', $user)
             ->innerJoin('w.reactions', 'r')
@@ -346,59 +346,8 @@ FROM t1 WHERE (id,rev) IN
             ->getQuery()
             ->getSingleScalarResult()
             ;
+
+        return intval($result);
     }
 
-    
-
-
-
-    
-/*
-    
-    * @return Workout[] Returns an array of Workout objects
-    *
-    
-    public function findByUserAndDate($user, $timeline)
-    {
-
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.user = :val')
-            ->andWhere('w.startAt BETWEEN :startVal AND :stopVal')
-            ->setParameters(array('val' => $user, 'startVal' => $timeline['startDate'], 'stopVal' => $timeline['stopDate']))
-            ->orderBy( 'w.startAt', 'ASC' )
-            ->getQuery()
-            ->getResult();
-    }*/
-
-  
-
-
-    // /**
-    //  * @return Workout[] Returns an array of Workout objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('w.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Workout
-    {
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

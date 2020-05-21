@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -59,6 +60,20 @@ class ChallengeRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->andWhere('c.id IN(:ids)')
             ->setParameter('ids', $arrayIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * getNearestChallenges Get nearest by time challenges
+     * @param  int $limit The number of challenges to return
+     * @return Challenge[]
+     */
+    public function getNearestChallenges(int $limit)
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy( 'c.startAt', 'ASC' )
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }

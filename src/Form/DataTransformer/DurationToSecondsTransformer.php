@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-
 
 class DurationToSecondsTransformer implements DataTransformerInterface
 {
