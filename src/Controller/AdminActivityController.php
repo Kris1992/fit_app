@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -22,7 +23,6 @@ use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\ActivitiesImporter\ActivitiesImporterInterface;
 use App\Services\JsonErrorResponse\JsonErrorResponseFactory;
 use App\Services\JsonErrorResponse\JsonErrorResponseTypes;
-
 use App\Services\FilesManager\FilesManagerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
@@ -179,7 +179,6 @@ class AdminActivityController extends AbstractController
         return $this->render('admin_activity/edit.html.twig', [
             'activityForm' => $form->createView()
         ]);
-
     }
 
     /**

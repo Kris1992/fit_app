@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form\Model\Workout\WorkoutSet;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -108,7 +110,7 @@ class AbstractActivitySetFormModel
         $workoutDuration = $this->durationSeconds;
         $burnoutEnergy = $activityEnergy * ($workoutDuration/(60*60));
 
-        $this->burnoutEnergy = $burnoutEnergy;
+        $this->burnoutEnergy = intval($burnoutEnergy);
 
         return $this;
     }

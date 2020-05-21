@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -21,8 +22,6 @@ use App\Entity\Friend;
 
 use App\Repository\UserRepository;
 use App\Repository\FriendRepository;
-
-
 
 /**
 * @IsGranted("ROLE_USER")

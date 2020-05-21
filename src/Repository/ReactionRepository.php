@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -38,15 +39,19 @@ class ReactionRepository extends ServiceEntityRepository
 
     public function countReactionsByWorkoutAndType(Workout $workout, int $type): int
     {
-        return (int) $this->createQueryBuilder('r')
+        
+        $result = $this->createQueryBuilder('r')
             ->select( "COUNT(r)")
             ->andWhere('r.workout = :workout AND r.type = :type')
             ->setParameters(array('workout' => $workout, 'type' => $type))
             ->getQuery()
             ->getSingleScalarResult()
         ;
+
+        return intval($result);
     }
 
+/**
     public function countReactionsByWorkoutsIdsGroupByType(Array $workoutsIds): Array
     {
 
@@ -62,34 +67,5 @@ class ReactionRepository extends ServiceEntityRepository
 
         dump($result);
     }
-    
-            
-    // /**
-    //  * @return Reaction[] Returns an array of Reaction objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Reaction
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+*/
 }

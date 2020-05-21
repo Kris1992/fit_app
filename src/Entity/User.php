@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -125,12 +126,18 @@ class User implements UserInterface
      */
     private $invitedByFriends;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Challenge", mappedBy="participants")
+     */
+    private $challenges;
+
     public function __construct()
     {
         $this->workouts = new ArrayCollection();
         $this->curiosities = new ArrayCollection();
         $this->invitedFriends = new ArrayCollection();
         $this->invitedByFriends = new ArrayCollection();
+        $this->challenges = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -484,6 +491,34 @@ class User implements UserInterface
         $criteria = FriendRepository::createNotRejectedFriendsByInviterCriteria($user);
 
         return $this->invitedByFriends->matching($criteria);
+    }
+
+    /**
+     * @return Collection|Challenge[]
+     */
+    public function getChallenges(): Collection
+    {
+        return $this->challenges;
+    }
+
+    public function addChallenge(Challenge $challenge): self
+    {
+        if (!$this->challenges->contains($challenge)) {
+            $this->challenges[] = $challenge;
+            $challenge->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChallenge(Challenge $challenge): self
+    {
+        if ($this->challenges->contains($challenge)) {
+            $this->challenges->removeElement($challenge);
+            $challenge->removeParticipant($this);
+        }
+
+        return $this;
     }
 
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\Model\Curiosity;
 
@@ -20,7 +21,7 @@ class CuriosityFormModel
      * @Assert\NotBlank(message="Please enter title.") 
      * @Assert\Length(
      *      max = 100,
-     *      maxMessage = "Your first name cannot be longer than {{ limit }} characters",
+     *      maxMessage = "Title cannot be longer than {{ limit }} characters",
      *      allowEmptyString = false
      * )
      */ 
@@ -30,7 +31,7 @@ class CuriosityFormModel
      * @Assert\NotBlank(message="Please enter few words of description.")
      * @Assert\Length(
      *      max = 40,
-     *      maxMessage = "Your first name cannot be longer than {{ limit }} characters",
+     *      maxMessage = "Description cannot be longer than {{ limit }} characters",
      *      allowEmptyString = false
      * )
      */

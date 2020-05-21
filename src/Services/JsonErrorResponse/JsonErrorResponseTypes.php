@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\JsonErrorResponse;
 
@@ -12,4 +13,5 @@ class JsonErrorResponseTypes
     const TYPE_FORM_VALIDATION_ERROR = 'form_validation_error';
     const TYPE_NOT_FOUND_ERROR = 'not_found_error';
     const TYPE_ACTION_FAILED = 'action_failed';
+    
 }

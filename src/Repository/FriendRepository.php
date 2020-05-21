@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -140,7 +141,7 @@ class FriendRepository extends ServiceEntityRepository
      */
     public function countInvitationsByUser(User $user, $status = 'Pending'): int
     {
-        return $this->createQueryBuilder('f')
+        $result = $this->createQueryBuilder('f')
             ->select('count(f.id)')
             ->andWhere('f.invitee = :user AND f.status = :status')
             ->setParameters([
@@ -150,10 +151,9 @@ class FriendRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult()
             ; 
+
+        return intval($result);
     }
-
-
-
 
 
 

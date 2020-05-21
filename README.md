@@ -82,8 +82,8 @@ TO DO
 
 :hourglass_flowing_sand: Challenges system  
 :hourglass_flowing_sand: Find new friends by elasticsearch
+
 :hourglass_flowing_sand: Littlebit break out from this project (Messenger needs go forward now)
-:hourglass_flowing_sand: Add unit, integration and functional tests (every week add few) 
 
 ## Last weeks updates
 

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form\Model\Workout;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -57,7 +59,7 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
         return $this;
     }    
 
-    public function getRepetitionsTotal(): ?float
+    public function getRepetitionsTotal(): ?int
     {
         return $this->repetitionsTotal;
     }
@@ -69,7 +71,7 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
 
         $repetitionsTotal = $repetitionsPerHour * ($this->getDurationSecondsTotal() / 3600);
 
-        $this->repetitionsTotal = (int)$repetitionsTotal;
+        $this->repetitionsTotal = intval($repetitionsTotal);
 
         return $this;
     }
@@ -91,7 +93,7 @@ class WorkoutAverageFormModel extends AbstractWorkoutFormModel
         $dumbbellWeightDiff = $this->activity->getWeightAvgMax() - $this->activity->getWeightAvgMin();
         $dumbbellWeight = $this->activity->getWeightAvgMin() + ($dumbbellWeightDiff / 2);
 
-        $this->dumbbellWeight = (int)$dumbbellWeight;
+        $this->dumbbellWeight = intval($dumbbellWeight);
 
         return $this;
     }

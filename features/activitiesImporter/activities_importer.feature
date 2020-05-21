@@ -9,7 +9,7 @@ Feature: Import activities from csv file
         And I press "Import from file"
         And I wait for the page to be loaded
 
-    @javascript @file
+    @javascript @file @n
     Scenario: Import acticities from valid csv file with 2 activities
         Then I attach the file "csv/valid_csv.txt" to the dropzone
         And I wait for the page to be loaded
@@ -37,4 +37,9 @@ Feature: Import activities from csv file
         Then I reload the page
         And I wait for the page to be loaded
         And I should see 0 row in the table 
+
+
+
+#   features/activitiesImporter/activities_importer.feature:13
+#    features/activitiesImporter/activities_importer.feature:22
 

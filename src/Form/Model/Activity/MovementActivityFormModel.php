@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form\Model\Activity;
 
 use Symfony\Component\Validator\Constraints as Assert;

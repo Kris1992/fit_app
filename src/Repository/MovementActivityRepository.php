@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -22,11 +23,11 @@ class MovementActivityRepository extends ServiceEntityRepository
     /**
      * findOneActivityWithRange  Find activity by name with speed in range 
      * @param  string $activityName    Activity name
-     * @param  int    $speedAverageMin Min average speed
-     * @param  int    $speedAverageMax Max average speed
+     * @param  float    $speedAverageMin Min average speed
+     * @param  float    $speedAverageMax Max average speed
      * @return MovementActivity
      */
-    public function findOneActivityWithRange(string $activityName,int $speedAverageMin, int $speedAverageMax)
+    public function findOneActivityWithRange(string $activityName,float $speedAverageMin, float $speedAverageMax)
     {
         return $this->createQueryBuilder('a')
             ->where('a.name LIKE :activityName')
@@ -42,7 +43,7 @@ class MovementActivityRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findOneActivityBySpeedAverageAndName(string $activityName,int $speedAverage)
+    public function findOneActivityBySpeedAverageAndName(string $activityName, float $speedAverage)
     {
         return $this->createQueryBuilder('a')
             ->where('a.name LIKE :activityName')
@@ -57,32 +58,4 @@ class MovementActivityRepository extends ServiceEntityRepository
         ;
     }
 
-    // /**
-    //  * @return MovementActivity[] Returns an array of MovementActivity objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?MovementActivity
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

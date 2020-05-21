@@ -30,12 +30,9 @@
                 
 						<ul class="navbar-nav ml-auto">
 							{% if is_granted('ROLE_USER') %}
-                            <!-- next week patch 
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Competitions</a>
-                            </li>--> 
-
-
+                                <a class="nav-link {{ app.request.get('_route') == 'challenge_list' ? 'active' }}" href="{{ path('challenge_list') }}">Challenges</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ app.request.get('_route') == 'friend_list' ? 'active' }}" href="{{ path('friend_list') }}">Friends</a>
                             </li>
