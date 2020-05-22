@@ -37,10 +37,11 @@ class ArrayConverter
                 dump($typos);
                 $methodName = $method->getName();
                 if ($typos) {
-                    $object->$methodName(settype($array[$key], $typos));//cast variable  
-                } else {
-                    $object->$methodName($array[$key]);
+                    settype($array[$key], $typos);
                 }
+                
+                $object->$methodName($array[$key]);
+                
             }
         }
         
