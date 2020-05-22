@@ -1,0 +1,116 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}{{ challenge.title }}{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/_show.css') }}">
+{% endblock %}
+
+{% block section_class %}showChallenge{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content_body %}
+<div class="col-sm-9 mx-auto">
+    <div class="card card-signin my-5 shadow-box">
+        <div class="row mx-2 my-3">
+            <div class="col-3">
+                <img class="img-fluid" src="{{ asset('img/challenges/challenge.jpg') }}" alt="Challenge Image">
+            </div>
+            <div class="col-9 text-uppercase my-2">
+                <div class="row">
+                    <div class="col-12 text-green">
+                        <h5>{{ challenge.title }}</h5>
+                    </div>
+                    <div class="col-12">
+                        <span>
+                            Goal:
+                            <small class="text-muted">
+                                {{ challenge.goalPropertyDescription }}
+                            </small>
+                        </span>
+                    </div>
+                    <div class="col-12">
+                        <span>
+                            Start date:
+                        </span>
+                        <small class="text-muted">
+                            {{ challenge.startAt | date('m/d/Y') }} 
+                        </small>
+                    </div>
+                    <div class="col-12">
+                        <span>
+                            Stop date:
+                        </span>
+                        <small class="text-muted">
+                            {{ challenge.stopAt | date('m/d/Y') }} 
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 bg-light">
+                <div class="row">
+                    <div class="col-4">
+                        <span class="text-uppercase">
+                            <small class="text-muted">
+                                Participants
+                                <strong>
+                                    {{ challenge.participants | length }}
+                                </strong>
+                            </small>
+                        </span>
+                    </div>
+                    <div class="col-8">
+                        <span class="text-uppercase">
+                            <small class="text-muted">
+                                {% if challenge.isParticipant(app.user) %}
+                                    You are participant
+                                {% else %}
+                                    You are not participating
+                                    <strong>
+                                        <a id="js-join" href="{{ path('api_challenge_participate', {id:challenge.id}) }}"><span>Join now</span></a>
+                                    </strong>
+                                {%endif%}
+                            </small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% if challenge.participants | length > 0 %}
+                {% for participant in challenge.participants %}
+                    <div class="col-12">
+                        <div class="row my-2">
+                            <div class="col-1">
+                                {% if participant.imageFilename %}
+                                    <img src="{{uploaded_asset(participant.thumbImagePath)}}" class="thumbnail" height="30" width="30">
+                                {% else %}
+                                    <img src="{{asset('img/users/default.png')}}" class="thumbnail" height="30" width="30">
+                                {% endif %}
+                            </div>
+                            <div class="col-4 text-left">
+                                <span>
+                                    <small class="text-muted">
+                                        {{ participant.fullName }}
+                                    </small>
+                                </span>
+                            </div>
+                            <div class="col-6">
+                            
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 bg-light">
+                    <span>This challenge don't have any participants now.</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script type="module" src="{{ asset('js/_apiHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_challenge.js') }}"></script>
+{% endblock %}

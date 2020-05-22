@@ -19,7 +19,6 @@ class ArrayConverter
     {
         $class = new \ReflectionObject($object);
         $methodList = $class->getMethods();
-        dump($methodList);
         //$class = get_class($object);
         //$methodList = get_class_methods($class);
 
@@ -34,13 +33,12 @@ class ArrayConverter
 
             if($prefix == 'set' && !empty($array[$key])) {
                 $typos = $method->getParameters()[0]->getType()->getName();
-                dump($typos);
                 $methodName = $method->getName();
                 if ($typos) {
-                    $object->$methodName(settype($array[$key], $typos));//cast variable  
-                } else {
-                    $object->$methodName($array[$key]);
-                }
+                    settype($array[$key], $typos);
+                } 
+                
+                $object->$methodName($array[$key]);
             }
         }
         

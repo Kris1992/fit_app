@@ -121,7 +121,7 @@ class FriendController extends AbstractController
             $friend = $friendInvitationFactory->create($currentUser, $user);
             $entityManager->persist($friend);
             $entityManager->flush();
-            return new JsonResponse(Response::HTTP_OK);
+            return new JsonResponse(null, Response::HTTP_OK);
         }
 
         return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
@@ -143,7 +143,7 @@ class FriendController extends AbstractController
         if ($friend->getInvitee() === $currentUser) {
             $friend = $friendUpdater->update($friend, $data['status']);
             $entityManager->flush();
-            return new JsonResponse(Response::HTTP_OK);
+            return new JsonResponse(null, Response::HTTP_OK);
         }
 
         return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');

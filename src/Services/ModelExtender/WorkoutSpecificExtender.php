@@ -286,18 +286,18 @@ class WorkoutSpecificExtender implements WorkoutExtenderInterface {
         foreach ($data['routeData'] as $route) {
             $routeData = explode(',', $route);
             if (!$altitudeMax && !$altitudeMin) {
-                $altitudeMax = $routeData[2];
-                $altitudeMin = $routeData[2];
+                $altitudeMax = floatval($routeData[2]);
+                $altitudeMin = floatval($routeData[2]);
                 $position = [
                     'lat' => $routeData[0],
                     'lng' => $routeData[1]
                 ];
             } 
             if ($routeData[2] < $altitudeMin) {
-                $altitudeMin = $routeData[2];
+                $altitudeMin = floatval($routeData[2]);
             }
             if ($routeData[2] > $altitudeMax) {
-                $altitudeMax = $routeData[2];
+                $altitudeMax = floatval($routeData[2]);
             }
         }
 

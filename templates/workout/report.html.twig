@@ -107,19 +107,18 @@
                         <span class="fas fa-thermometer-half text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Average Temperature
-                            {% if workout.routeData.temperature is defined %}
-                                {{ workout.routeData.temperature }}
+                            {% if workout.routeData.temperature is defined and workout.routeData.temperature %}
+                                {{ workout.routeData.temperature }} &#x2103;
                             {% else %}
                                 ---
                             {% endif %}
-                            &#x2103;
                         </span>
                     </div>
                     <div class="col-12 text-center py-2 border">
                         <span class="fas fa-cloud-sun text-primary"></span>
                         <span class="text-muted text-uppercase">
                             Weather Conditions
-                            {% if workout.routeData.weatherConditions is defined %}
+                            {% if workout.routeData.weatherConditions is defined and workout.routeData.weatherConditions %}
                                 "{{ workout.routeData.weatherConditions }}"
                             {% else %}
                                 ---
