@@ -173,5 +173,6 @@ h1 {
 .notifications-count {
     font-size: 0.4em;
 }
-
-
+.challenge-card:hover {
+    background-color: rgba(100,240,255,.35);
+}

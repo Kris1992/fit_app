@@ -31,9 +31,10 @@ class ChallengeRepository extends ServiceEntityRepository
             return $this->searchByTermsQuery($searchTerms);
         }
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.participants', 'u')
+            ->addSelect('u')
             ->getQuery()
-        ;
-        
+        ; 
     }
 
     /**

@@ -46,6 +46,12 @@ class ChallengeFixtures extends BaseFixture implements DependentFixtureInterface
                 ->setStopAt($this->faker->dateTimeBetween('+1 month', '+3 month'))
                 ;
 
+            for($index = 0; $index < 6; $index++) {
+                $challenge
+                    ->addParticipant($this->getReferenceByIndex('main_users', $index))
+                ;
+            }
+
             return $challenge;
         });
 

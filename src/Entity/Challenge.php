@@ -65,7 +65,6 @@ class Challenge
         $this->participants = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -131,6 +130,16 @@ class Challenge
         }
 
         return $this;
+    }
+
+    /**
+     * isParticipant Check is user participant
+     * @param User $user User to check
+     * @return bool
+     */
+    public function isParticipant(User $user): bool
+    {
+        return $this->participants->contains($user);
     }
 
     public function getCreatedAt(): ?\DateTimeInterface

@@ -41,11 +41,13 @@ abstract class BaseFixture extends Fixture
             if (null === $entity) {
                 throw new \LogicException('Did you forget to return the entity object from your callback to BaseFixture::createMany()?');
             }
+
             $this->manager->persist($entity);
             // store for usage later as groupName_#COUNT#
             $this->addReference(sprintf('%s_%d', $groupName, $i), $entity);
         }
     }
+
     protected function getRandomReference(string $groupName) {
         if (!isset($this->referencesIndex[$groupName])) {
             $this->referencesIndex[$groupName] = [];
@@ -55,18 +57,56 @@ abstract class BaseFixture extends Fixture
                 }
             }
         }
+
         if (empty($this->referencesIndex[$groupName])) {
             throw new \InvalidArgumentException(sprintf('Did not find any references saved with the group name "%s"', $groupName));
         }
+
         $randomReferenceKey = $this->faker->randomElement($this->referencesIndex[$groupName]);
         return $this->getReference($randomReferenceKey);
     }
+
     protected function getRandomReferences(string $className, int $count)
     {
         $references = [];
         while (count($references) < $count) {
             $references[] = $this->getRandomReference($className);
         }
+
         return $references;
+    }
+
+    protected function getReferencesByCount(string $className, int $count)
+    {
+        $references = [];
+        $index = 0;
+        while (count($references) < $count) {
+            $references[] = $this->getReferenceByIndex($className, $index);
+            $index++;
+        }
+
+        return $references;
+    }
+
+    protected function getReferenceByIndex(string $groupName, int $index) {
+        if (!isset($this->referencesIndex[$groupName])) {
+            $this->referencesIndex[$groupName] = [];
+            foreach ($this->referenceRepository->getReferences() as $key => $ref) {
+                if (strpos($key, $groupName.'_') === 0) {
+                    $this->referencesIndex[$groupName][] = $key;
+                }
+            }
+        }
+
+        if (empty($this->referencesIndex[$groupName])) {
+            throw new \InvalidArgumentException(sprintf('Did not find any references saved with the group name "%s"', $groupName));
+        }
+
+        if (!isset($this->referencesIndex[$groupName][$index])) {
+            throw new \InvalidArgumentException(sprintf('Did not find reference with this index saved with the group name "%s"', $groupName));
+        }
+
+        $referenceKey = $this->referencesIndex[$groupName][$index];
+        return $this->getReference($referenceKey);
     }
 }

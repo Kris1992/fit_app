@@ -7,8 +7,15 @@ use App\Entity\User;
 use App\Form\Model\Workout\AbstractWorkoutFormModel;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\ModelExtender\WorkoutAverageStrategy\AverageExtender;
+use App\Services\ModelExtender\WorkoutAverageStrategy\BodyweightWorkoutStrategy;
+use App\Services\ModelExtender\WorkoutAverageStrategy\MovementSetWorkoutStrategy;
+use App\Services\ModelExtender\WorkoutAverageStrategy\MovementWorkoutStrategy;
+use App\Services\ModelExtender\WorkoutAverageStrategy\WeightWorkoutStrategy;
+use App\Services\ModelExtender\WorkoutImageFiller\WorkoutImageFiller;
 
-class WorkoutAverageExtender implements WorkoutExtenderInterface {
+class WorkoutAverageExtender implements WorkoutExtenderInterface 
+{
 
     private $workoutsImagesManager;
 
@@ -20,11 +27,6 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
     public function __construct(ImagesManagerInterface $workoutsImagesManager)  
     {
         $this->workoutsImagesManager = $workoutsImagesManager;
-    }
-
-    public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
-    {
-        
     }
 
     public function fillWorkoutModel(AbstractWorkoutFormModel $workoutModel, ?User $user, ?File $image): ?AbstractWorkoutFormModel
@@ -40,86 +42,34 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface {
 
         switch ($activity->getType()) {
             case 'Movement':
-                $workoutModel = $this->fillMovementProperties($workoutModel);
+                $strategy = new MovementWorkoutStrategy();
                 break;
             case 'MovementSet':
-                $workoutModel = $this->fillMovementSetProperties($workoutModel);
+                $strategy = new MovementSetWorkoutStrategy();
                 break;
             case 'Bodyweight':
-                $workoutModel = $this->fillBodyweightProperties($workoutModel);
+                $strategy = new BodyweightWorkoutStrategy();
                 break;
             case 'Weight':
-                $workoutModel = $this->fillWeightProperties($workoutModel);
+                $strategy = new WeightWorkoutStrategy();
                 break;
             default:
                 return null;
         }
 
+        $averageExtender = new AverageExtender($workoutModel, $strategy);
+        $workoutModel = $averageExtender->getFilledWorkoutModel();
+
         if ($image) {
-            $subdirectory = $workoutModel->getUser()->getLogin();
-            $newFilename = $this->workoutsImagesManager->uploadImage($image, $workoutModel->getImageFilename(), $subdirectory);
-            $workoutModel->setImageFilename($newFilename);
+            $workoutModel = WorkoutImageFiller::fill($this->workoutsImagesManager, $workoutModel, $image);
         }
 
         return $workoutModel;
     }
 
-    private function fillMovementProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel
+    public function fillWorkoutModelWithMap(AbstractWorkoutFormModel $workoutModel, User $user, Array $data): ?AbstractWorkoutFormModel
     {
-
-        $workoutModel
-            ->calculateSaveBurnoutEnergyTotal()
-            ->calculateSaveDistanceTotal()
-            ;
-
-        return $workoutModel;
-    }
-
-    private function fillWeightProperties(AbstractWorkoutFormModel $workoutModel):AbstractWorkoutFormModel
-    {
-        $workoutModel
-            ->calculateSaveBurnoutEnergyTotal()
-            ->calculateSaveDumbbellWeight()
-            ->calculateSaveRepetitionsTotal()
-            ;
-
-        return $workoutModel;
-    }
-
-    private function fillBodyweightProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel
-    {
-
-        $workoutModel
-            ->calculateSaveBurnoutEnergyTotal()
-            ->calculateSaveRepetitionsTotal()
-            ;
-
-        return $workoutModel;
-    }
-
-    private function fillMovementSetProperties(AbstractWorkoutFormModel $workoutModel): AbstractWorkoutFormModel
-    {
-        $durationSecondsTotal = 0;
-        $burnoutEnergyTotal = 0;
-        $distanceTotal = 0;
-
-        $movementSetCollection = $workoutModel->getMovementSets();
-        foreach ($movementSetCollection as $movementSet) {
-            $movementSet
-                ->calculateSaveBurnoutEnergy()
-                ->calculateSaveDistance()
-                ;
-            $durationSecondsTotal += $movementSet->getDurationSeconds();
-            $burnoutEnergyTotal += $movementSet->getBurnoutEnergy();
-            $distanceTotal += $movementSet->getDistance();
-        }
         
-        $workoutModel
-            ->setDurationSecondsTotal($durationSecondsTotal)
-            ->setBurnoutEnergyTotal($burnoutEnergyTotal)
-            ->setDistanceTotal($distanceTotal)
-            ;
-            
-        return $workoutModel;
     }
+    
 }

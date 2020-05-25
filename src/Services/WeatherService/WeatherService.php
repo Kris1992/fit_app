@@ -46,7 +46,7 @@ class WeatherService implements WeatherServiceInterface
 
             if ($temperature && $weatherConditions) {
                 return [
-                    'temperature' => $temperature,
+                    'temperature' => intval($temperature),
                     'weatherConditions' => $weatherConditions
                 ];
             }
