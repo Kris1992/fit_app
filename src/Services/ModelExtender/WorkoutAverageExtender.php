@@ -12,6 +12,7 @@ use App\Services\ModelExtender\WorkoutAverageStrategy\BodyweightWorkoutStrategy;
 use App\Services\ModelExtender\WorkoutAverageStrategy\MovementSetWorkoutStrategy;
 use App\Services\ModelExtender\WorkoutAverageStrategy\MovementWorkoutStrategy;
 use App\Services\ModelExtender\WorkoutAverageStrategy\WeightWorkoutStrategy;
+use App\Services\ModelExtender\WorkoutImageFiller\WorkoutImageFiller;
 
 class WorkoutAverageExtender implements WorkoutExtenderInterface 
 {
@@ -60,9 +61,7 @@ class WorkoutAverageExtender implements WorkoutExtenderInterface
         $workoutModel = $averageExtender->getFilledWorkoutModel();
 
         if ($image) {
-            $subdirectory = $workoutModel->getUser()->getLogin();
-            $newFilename = $this->workoutsImagesManager->uploadImage($image, $workoutModel->getImageFilename(), $subdirectory);
-            $workoutModel->setImageFilename($newFilename);
+            $workoutModel = WorkoutImageFiller::fill($this->workoutsImagesManager, $workoutModel, $image);
         }
 
         return $workoutModel;

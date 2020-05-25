@@ -12,9 +12,9 @@ class AverageExtender
     private $averageStrategy;
     
     /**
-     * [__construct Create Attack]
-     * @param float    $power        Initial value of power 
-     * @param StrategyInterface $attackStrategy Choosen strategy
+     * [__construct AverageExtender]
+     * @param AbstractWorkoutFormModel    $workoutModel    Workout model before fill extend data 
+     * @param AverageStrategyInterface $averageStrategy Choosen strategy
      */
     public function __construct(AbstractWorkoutFormModel $workoutModel, AverageStrategyInterface $averageStrategy)
     {
@@ -28,7 +28,7 @@ class AverageExtender
      */
     public function getFilledWorkoutModel(): AbstractWorkoutFormModel
     {   
-        return  $this->averageStrategy->fill($this->workoutModel);
+        return $this->averageStrategy->fill($this->workoutModel);
     }
 
 }
