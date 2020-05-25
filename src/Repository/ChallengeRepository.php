@@ -34,8 +34,7 @@ class ChallengeRepository extends ServiceEntityRepository
             ->leftJoin('c.participants', 'u')
             ->addSelect('u')
             ->getQuery()
-        ;
-        
+        ; 
     }
 
     /**
